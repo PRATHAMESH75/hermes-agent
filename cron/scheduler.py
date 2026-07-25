@@ -17,6 +17,7 @@ import logging
 import os
 import re
 import shutil
+import signal
 import subprocess
 import sys
 import threading
@@ -40,7 +41,10 @@ from typing import Any, List, Optional
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from hermes_constants import get_hermes_home
-from hermes_cli._subprocess_compat import windows_hide_flags
+from hermes_cli._subprocess_compat import (
+    windows_detach_flags_without_breakaway,
+    windows_hide_flags,
+)
 from hermes_cli.config import load_config, _expand_env_vars
 from hermes_cli.fallback_config import get_fallback_chain
 from hermes_time import now as _hermes_now
@@ -2202,6 +2206,48 @@ def _windows_cron_python_invocation(python_exe: str) -> tuple[str, dict[str, str
     return str(interpreter), env_overlay
 
 
+def _terminate_script_process_tree(proc: "subprocess.Popen") -> None:
+    """Force-kill a timed-out cron script *and every descendant it spawned*.
+
+    ``subprocess`` timeout handling only kills the direct child.  A script
+    that forked subprocesses (the normal case — a bash watchdog running
+    ``git``/``curl``/…) leaves those descendants orphaned: on POSIX they
+    re-parent to PID 1 and keep running, and — because they inherited the
+    captured stdout/stderr pipes — they can hold those pipes open, blocking
+    the scheduler thread in ``communicate()`` well past the timeout (#71148).
+
+    The child is spawned in its own session / process group (``start_new_session``
+    on POSIX, ``CREATE_NEW_PROCESS_GROUP`` on Windows) so the whole tree can be
+    torn down in one shot here.  Best-effort throughout: a process that already
+    exited, or a group we can't signal, degrades to killing just the child.
+    """
+    if proc.poll() is not None:
+        # Already exited between the timeout and now — nothing to tree-kill.
+        return
+    if sys.platform == "win32":
+        # taskkill /T walks the child-PID tree even without a shared group.
+        try:
+            subprocess.run(
+                ["taskkill", "/F", "/T", "/PID", str(proc.pid)],
+                capture_output=True,
+                creationflags=windows_hide_flags(),
+                timeout=10,
+            )
+            return
+        except Exception:
+            pass  # fall through to the plain-child kill below
+    else:
+        try:
+            os.killpg(os.getpgid(proc.pid), signal.SIGKILL)  # windows-footgun: ok
+            return
+        except (ProcessLookupError, PermissionError, OSError):
+            pass  # group gone or unsignalable — fall back to the child
+    try:
+        proc.kill()
+    except OSError:
+        pass
+
+
 def _run_job_script(
     script_path: str,
     workdir: Optional[str] = None,
@@ -2298,13 +2344,21 @@ def _run_job_script(
     try:
         from tools.environments.local import _sanitize_subprocess_env
 
-        popen_kwargs = {}
+        # Put the script in its own session / process group so a timeout can
+        # kill the WHOLE tree, not just the direct child (#71148).  POSIX uses
+        # start_new_session (os.setsid); Windows uses CREATE_NEW_PROCESS_GROUP
+        # (bundled with the console-flash-suppressing CREATE_NO_WINDOW by
+        # windows_detach_flags_without_breakaway — no job breakaway, so the
+        # tree still dies with the scheduler).
+        popen_kwargs: dict = {}
         if sys.platform == "win32":
             popen_kwargs = {
-                "creationflags": windows_hide_flags(),
+                "creationflags": windows_detach_flags_without_breakaway(),
                 "encoding": "utf-8",
                 "errors": "replace",
             }
+        else:
+            popen_kwargs = {"start_new_session": True}
         env = _sanitize_subprocess_env(os.environ.copy())
         env.update(env_overlay)
         # Use the job's workdir as the subprocess cwd when configured,
@@ -2312,17 +2366,30 @@ def _run_job_script(
         # NEVER mutate the Python process cwd — that would leak into
         # concurrent gateway sessions (#69396).
         _script_cwd = workdir or str(path.parent)
-        result = subprocess.run(
+        proc = subprocess.Popen(
             argv,
-            capture_output=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             text=True,
-            timeout=script_timeout,
             cwd=_script_cwd,
             env=env,
             **popen_kwargs,
         )
-        stdout = (result.stdout or "").strip()
-        stderr = (result.stderr or "").strip()
+        try:
+            raw_stdout, raw_stderr = proc.communicate(timeout=script_timeout)
+        except subprocess.TimeoutExpired:
+            # Kill the entire process tree, then drain the pipes.  Without the
+            # group kill, orphaned descendants keep the inherited stdout/stderr
+            # pipes open and this second communicate() could itself block
+            # indefinitely — the same hazard the timeout was meant to bound.
+            _terminate_script_process_tree(proc)
+            try:
+                proc.communicate(timeout=10)
+            except (subprocess.TimeoutExpired, ValueError, OSError):
+                pass
+            return False, f"Script timed out after {script_timeout}s: {path}"
+        stdout = (raw_stdout or "").strip()
+        stderr = (raw_stderr or "").strip()
 
         # Redact secrets from both stdout and stderr before any return path.
         try:
@@ -2334,8 +2401,8 @@ def _run_job_script(
             stdout = "[REDACTED - redaction failed]"
             stderr = "[REDACTED - redaction failed]"
 
-        if result.returncode != 0:
-            parts = [f"Script exited with code {result.returncode}"]
+        if proc.returncode != 0:
+            parts = [f"Script exited with code {proc.returncode}"]
             if stderr:
                 parts.append(f"stderr:\n{stderr}")
             if stdout:
@@ -2344,8 +2411,6 @@ def _run_job_script(
 
         return True, stdout
 
-    except subprocess.TimeoutExpired:
-        return False, f"Script timed out after {script_timeout}s: {path}"
     except Exception as exc:
         return False, f"Script execution failed: {exc}"
 
