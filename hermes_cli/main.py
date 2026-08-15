@@ -2129,18 +2129,24 @@ def _make_tui_argv(tui_dir: Path, tui_dev: bool) -> tuple[list[str], Path]:
         if not os.environ.get("HERMES_QUIET"):
             print("Installing TUI dependencies…")
         npm_cwd = _workspace_root(tui_dir)
-        # --workspace ui-tui avoids resolving apps/desktop (Electron + node-pty).
-        # See #38772.
+        # Use the same selected-workspace oracle as the lockfile freshness
+        # comparison.  Keeping selection in one helper prevents the install
+        # argv and its closure from drifting when another TUI workspace is
+        # added (for example the nested @hermes/ink workspace).
         # When ui-tui/ has its own package-lock.json (e.g. curl install),
         # _workspace_root() returns tui_dir itself.  Passing --workspace in
         # that case fails because npm cannot find a workspace named "ui-tui"
         # inside ui-tui/.  See #42973.
-        npm_workspace_args: tuple[str, ...] = () if npm_cwd == tui_dir else ("--workspace", "ui-tui")
-        if termux_startup:
-            npm_cwd, npm_workspace_args = _termux_workspace_install_context(
-                tui_dir,
-                include_child_workspaces=True,
+        npm_workspace_args: tuple[str, ...] = ()
+        if npm_cwd != tui_dir:
+            selected_workspaces = _tui_selected_workspace_keys(tui_dir, npm_cwd)
+            npm_workspace_args = tuple(
+                item
+                for workspace in sorted(selected_workspaces)
+                for item in ("--workspace", workspace)
             )
+            if termux_startup:
+                npm_workspace_args += ("--include-workspace-root=false",)
         result = subprocess.run(
             [
                 npm,
