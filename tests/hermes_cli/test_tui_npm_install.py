@@ -433,6 +433,40 @@ def test_make_tui_argv_keeps_desktop_workspace_install_behaviour(
     _assert_utf8_replace_capture(calls[1][1])
 
 
+def test_make_tui_argv_and_freshness_share_workspace_selection(
+    tmp_path: Path, main_mod, monkeypatch
+) -> None:
+    """A newly selected workspace must reach npm without a second argv edit."""
+    tui_dir = tmp_path / "ui-tui"
+    tui_dir.mkdir()
+    (tui_dir / "package.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "package-lock.json").write_text("{}", encoding="utf-8")
+
+    monkeypatch.delenv("TERMUX_VERSION", raising=False)
+    monkeypatch.setenv("PREFIX", "/usr")
+    monkeypatch.setattr(main_mod, "_tui_need_npm_install", lambda _root: True)
+    monkeypatch.setattr(
+        main_mod,
+        "_tui_selected_workspace_keys",
+        lambda _tui, _root: {"ui-tui", "ui-tui/packages/hermes-ink"},
+    )
+    monkeypatch.setattr(main_mod.shutil, "which", lambda name: f"/bin/{name}")
+    calls = []
+
+    def fake_run(*args, **kwargs):
+        calls.append((args, kwargs))
+        return types.SimpleNamespace(returncode=0, stdout="", stderr="")
+
+    monkeypatch.setattr(main_mod.subprocess, "run", fake_run)
+
+    main_mod._make_tui_argv(tui_dir, tui_dev=False)
+
+    install_cmd = calls[0][0][0]
+    assert install_cmd.count("--workspace") == 2
+    assert "ui-tui" in install_cmd
+    assert "ui-tui/packages/hermes-ink" in install_cmd
+
+
 def test_make_tui_argv_npm_install_forces_include_dev(
     tmp_path: Path, main_mod, monkeypatch
 ) -> None:
