@@ -1,0 +1,1700 @@
+{
+ "repo": "NousResearch/hermes-agent",
+ "author": "PRATHAMESH75",
+ "feedPrecision": "day",
+ "generatedAt": "2026-09-27T18:30:00Z",
+ "source": "Public GitHub pages, read by Claude",
+ "complete": false,
+ "totals": {
+  "all": 212,
+  "open": 81,
+  "merged": 8,
+  "closed": 123
+ },
+ "prs": [
+  {
+   "n": 125331,
+   "title": "fix(agent): decode sentinel-encoded multimodal turns before the alternation repair",
+   "issue": 125299,
+   "state": "open",
+   "created": "2026-09-27",
+   "comments": 1,
+   "labels": [
+    "area/sessions",
+    "comp/agent",
+    "P2",
+    "sweeper:risk-session-state",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 125246,
+   "title": "fix(backup): exclude the win-arm64 build-tools vcpkg cache from HERMES_HOME backups",
+   "issue": 125237,
+   "state": "open",
+   "created": "2026-09-27",
+   "comments": 1,
+   "labels": [
+    "comp/cli",
+    "P2",
+    "platform/windows",
+    "sweeper:risk-platform-windows",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 124891,
+   "title": "fix(agent): log the native cause before a refusal/invalid-response fallback",
+   "issue": 124874,
+   "state": "open",
+   "created": "2026-09-27",
+   "comments": 1,
+   "labels": [
+    "comp/agent",
+    "P2",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 124855,
+   "title": "fix(cron): stop an adopted external worker from re-exec'ing and losing its payload",
+   "issue": 124827,
+   "state": "open",
+   "created": "2026-09-27",
+   "comments": 1,
+   "labels": [
+    "comp/cron",
+    "P2",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 124851,
+   "title": "fix(copilot-acp): reap the launcher's native descendant on teardown",
+   "issue": 124835,
+   "state": "open",
+   "created": "2026-09-27",
+   "comments": 1,
+   "labels": [
+    "comp/acp",
+    "comp/agent",
+    "P2",
+    "provider/copilot",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 124028,
+   "title": "fix(vision): apply the discovery-chain boundary to the aux vision auto-route",
+   "issue": 123998,
+   "state": "open",
+   "created": "2026-09-26",
+   "comments": 2,
+   "labels": [
+    "comp/agent",
+    "P2",
+    "tool/vision",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 123952,
+   "title": "fix(pm): stage the PM runtime with --frozen so a pip mirror doesn't abort the install",
+   "issue": 123943,
+   "state": "open",
+   "created": "2026-09-26",
+   "comments": 2,
+   "labels": [
+    "area/config",
+    "area/install-update",
+    "comp/cli",
+    "needs-decision",
+    "P2",
+    "python:uv",
+    "sweeper:risk-compatibility",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 123950,
+   "title": "fix(agent): shield the protect_first_n head from the Phase-1 tool-result prune",
+   "issue": 123935,
+   "state": "open",
+   "created": "2026-09-26",
+   "comments": 3,
+   "labels": [
+    "area/compression",
+    "comp/agent",
+    "P2",
+    "sweeper:risk-session-state",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 123791,
+   "title": "fix(computer-use): fix Windows cua-driver autostart readiness false-negative",
+   "issue": 123774,
+   "state": "open",
+   "created": "2026-09-26",
+   "comments": 2,
+   "labels": [
+    "area/install-update",
+    "comp/cli",
+    "P3",
+    "platform/windows",
+    "sweeper:risk-compatibility",
+    "sweeper:risk-platform-windows",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 123749,
+   "title": "fix(kanban): degrade `kanban list` to a plain read in fenced child contexts",
+   "issue": null,
+   "state": "open",
+   "created": "2026-09-26",
+   "comments": 3,
+   "labels": [
+    "comp/cli",
+    "P3",
+    "tool/delegate",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 122704,
+   "title": "fix(acp): archive dropped rows on non-owning-agent persist instead of hard-deleting",
+   "issue": 122699,
+   "state": "open",
+   "created": "2026-09-25",
+   "comments": 1,
+   "labels": [
+    "area/sessions",
+    "comp/acp",
+    "P2",
+    "sweeper:risk-session-state",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 122636,
+   "title": "fix(build): skip macOS Finder metadata in build freshness hashing",
+   "issue": 122632,
+   "state": "open",
+   "created": "2026-09-25",
+   "comments": 4,
+   "labels": [
+    "area/install-update",
+    "comp/desktop",
+    "P3",
+    "sweeper:risk-compatibility",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 120332,
+   "title": "fix(dashboard): run plugin API routes in the profile secret scope",
+   "issue": 120310,
+   "state": "open",
+   "created": "2026-09-23",
+   "comments": 10,
+   "labels": [
+    "area/auth",
+    "area/profiles",
+    "comp/cli",
+    "comp/dashboard",
+    "comp/plugins",
+    "P3",
+    "sweeper:risk-security-boundary",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 120311,
+   "title": "fix(tools): coerce a blank string to {} for object-typed tool args",
+   "issue": 120269,
+   "state": "open",
+   "created": "2026-09-23",
+   "comments": 1,
+   "labels": [
+    "comp/tools",
+    "P3",
+    "tool/mcp",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 119402,
+   "title": "fix(streaming): retry unrepairable tool args on a terminal finish_reason",
+   "issue": 119389,
+   "state": "open",
+   "created": "2026-09-22",
+   "comments": 1,
+   "labels": [
+    "area/streaming",
+    "comp/agent",
+    "P2",
+    "tool/file",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(tools): heal a stale local session-cwd record instead of bricking the terminal",
+   "issue": 107156,
+   "state": "open",
+   "created": "2026-09-10",
+   "comments": 3,
+   "labels": [
+    "area/sessions",
+    "backend/local",
+    "comp/gateway",
+    "comp/tools",
+    "P2",
+    "sweeper:risk-session-state",
+    "tool/terminal",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(tui): run quick-command skill aliases via command.dispatch on desktop/TUI",
+   "issue": null,
+   "state": "open",
+   "created": "2026-09-08",
+   "comments": 3,
+   "labels": [
+    "area/config",
+    "comp/desktop",
+    "comp/tui",
+    "P2",
+    "tool/skills",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(gateway): treat a configured local terminal.cwd as a context workspace, not a launch artifact",
+   "issue": 106012,
+   "state": "open",
+   "created": "2026-09-08",
+   "comments": 6,
+   "labels": [
+    "area/config",
+    "area/profiles",
+    "comp/desktop",
+    "comp/tui",
+    "P2",
+    "sweeper:risk-session-state",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(cli): bind --create-if-missing sessions to the launch cwd",
+   "issue": 106016,
+   "state": "open",
+   "created": "2026-09-08",
+   "comments": 1,
+   "labels": [
+    "area/sessions",
+    "comp/cli",
+    "P2",
+    "sweeper:risk-session-state",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(wecom): give media uploads a generous, tunable timeout",
+   "issue": 105900,
+   "state": "open",
+   "created": "2026-09-08",
+   "comments": 2,
+   "labels": [
+    "comp/plugins",
+    "P3",
+    "platform/wecom",
+    "sweeper:risk-message-delivery",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "test(agent): isolate runtime-main state in auxiliary vision tests",
+   "issue": 105888,
+   "state": "open",
+   "created": "2026-09-08",
+   "comments": 1,
+   "labels": [
+    "comp/agent",
+    "P3",
+    "tool/vision",
+    "type/test"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(update): degrade past repo-scoped HTTP 429 with bounded retry",
+   "issue": 105857,
+   "state": "open",
+   "created": "2026-09-08",
+   "comments": 4,
+   "labels": [
+    "area/install-update",
+    "comp/cli",
+    "P2",
+    "sweeper:risk-compatibility",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(gateway): carry an active /goal across idle/daily session reset",
+   "issue": 104445,
+   "state": "open",
+   "created": "2026-09-06",
+   "comments": 1,
+   "labels": [
+    "area/sessions",
+    "comp/cli",
+    "comp/gateway",
+    "P2",
+    "sweeper:risk-session-state",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(local-models): resume ranged model downloads per-worker instead of restarting from zero",
+   "issue": 103416,
+   "state": "open",
+   "created": "2026-09-05",
+   "comments": 1,
+   "labels": [
+    "area/local-models",
+    "comp/cli",
+    "comp/desktop",
+    "P2",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(desktop): deliver kanban review-lifecycle events to TUI/desktop sessions",
+   "issue": 99436,
+   "state": "open",
+   "created": "2026-08-31",
+   "comments": 2,
+   "labels": [
+    "area/sessions",
+    "comp/cron",
+    "comp/tui",
+    "duplicate",
+    "P3",
+    "sweeper:risk-message-delivery",
+    "sweeper:risk-session-state",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "docs(windows): correct gateway Scheduled Task name and launch mechanism",
+   "issue": 94941,
+   "state": "open",
+   "created": "2026-08-25",
+   "comments": 3,
+   "labels": [
+    "comp/cli",
+    "P3",
+    "platform/windows",
+    "type/docs"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(gateway): allow persisted DM /resume across a flipped user_id namespace",
+   "issue": 89123,
+   "state": "open",
+   "created": "2026-08-18",
+   "comments": 1,
+   "labels": [
+    "area/sessions",
+    "comp/gateway",
+    "P2",
+    "platform/feishu",
+    "sweeper:risk-session-state",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(doctor): show install command for not-installed optional packages",
+   "issue": 89121,
+   "state": "open",
+   "created": "2026-08-18",
+   "comments": 7,
+   "labels": [
+    "comp/cli",
+    "P3",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(gateway): honor API_SERVER_ENABLED=false as an off switch",
+   "issue": 87856,
+   "state": "open",
+   "created": "2026-08-16",
+   "comments": 1,
+   "labels": [
+    "area/config",
+    "area/docker",
+    "comp/gateway",
+    "P2",
+    "sweeper:risk-compatibility",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(cli): resolve bracket-style list indices in config set/get/unset",
+   "issue": 87689,
+   "state": "open",
+   "created": "2026-08-16",
+   "comments": 2,
+   "labels": [
+    "area/config",
+    "comp/cli",
+    "P2",
+    "sweeper:risk-compatibility",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(agent): canonicalize ALIASES providers in credential-pool mismatch guard",
+   "issue": 87526,
+   "state": "open",
+   "created": "2026-08-16",
+   "comments": 3,
+   "labels": [
+    "area/usage-cost",
+    "comp/agent",
+    "P2",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(providers): fail closed on malformed base URL in get_hostname",
+   "issue": null,
+   "state": "open",
+   "created": "2026-08-15",
+   "comments": 2,
+   "labels": [
+    "area/config",
+    "comp/agent",
+    "P2",
+    "sweeper:risk-compatibility",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(slack): drop non-Slack thread ids in standalone delivery instead of failing",
+   "issue": 86264,
+   "state": "open",
+   "created": "2026-08-14",
+   "comments": 9,
+   "labels": [
+    "comp/plugins",
+    "P3",
+    "platform/slack",
+    "sweeper:risk-message-delivery",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "feat(toolsets): add file_readonly toolset (read_file + search_files only)",
+   "issue": null,
+   "state": "open",
+   "created": "2026-08-14",
+   "comments": 3,
+   "labels": [
+    "comp/tools",
+    "P3",
+    "tool/file",
+    "type/feature"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(whatsapp): pair into the session dir the gateway reads, and reject empty creds",
+   "issue": null,
+   "state": "open",
+   "created": "2026-08-13",
+   "comments": 5,
+   "labels": [
+    "comp/cli",
+    "comp/gateway",
+    "comp/plugins",
+    "P3",
+    "platform/whatsapp",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(telegram): anchor fenced-code regex so inline triple backticks aren't mangled",
+   "issue": null,
+   "state": "open",
+   "created": "2026-08-13",
+   "comments": 9,
+   "labels": [
+    "comp/plugins",
+    "P3",
+    "platform/telegram",
+    "sweeper:risk-message-delivery",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(gateway): propagate HERMES_BUNDLED_* into launchd/systemd units",
+   "issue": null,
+   "state": "open",
+   "created": "2026-08-13",
+   "comments": 10,
+   "labels": [
+    "comp/cli",
+    "comp/gateway",
+    "P2",
+    "sweeper:risk-compatibility",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(desktop): drive the pet from any working session, not just the foreground one",
+   "issue": null,
+   "state": "open",
+   "created": "2026-08-12",
+   "comments": 1,
+   "labels": [
+    "comp/desktop",
+    "P3",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(tools): route config credential-file mounts through the master-store deny-list",
+   "issue": null,
+   "state": "open",
+   "created": "2026-08-12",
+   "comments": 11,
+   "labels": [
+    "area/config",
+    "area/profiles",
+    "comp/tools",
+    "P3",
+    "sweeper:risk-compatibility",
+    "type/security"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(gateway): tolerate sub-2s start-time drift in PID-reuse liveness guard",
+   "issue": 78498,
+   "state": "open",
+   "created": "2026-08-04",
+   "comments": 2,
+   "labels": [
+    "comp/gateway",
+    "P2",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(discord): accept relay-lane kwargs in native rename_thread",
+   "issue": 78487,
+   "state": "open",
+   "created": "2026-08-04",
+   "comments": 3,
+   "labels": [
+    "comp/plugins",
+    "P3",
+    "platform/discord",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(tts): split streaming sentences on CJK terminators",
+   "issue": 78477,
+   "state": "open",
+   "created": "2026-08-04",
+   "comments": 5,
+   "labels": [
+    "area/streaming",
+    "P2",
+    "tool/tts",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(desktop): count calendar days for the relative next-run label",
+   "issue": 76725,
+   "state": "open",
+   "created": "2026-08-02",
+   "comments": 4,
+   "labels": [
+    "comp/desktop",
+    "P3",
+    "sweeper:blast-moderate",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(agent): drop client web_search on OpenRouter xAI :online requests",
+   "issue": 76481,
+   "state": "open",
+   "created": "2026-08-02",
+   "comments": 5,
+   "labels": [
+    "comp/agent",
+    "P2",
+    "provider/openrouter",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(copilot): don't warn on classic PATs in shared GitHub env vars",
+   "issue": 75687,
+   "state": "open",
+   "created": "2026-07-31",
+   "comments": 2,
+   "labels": [
+    "area/auth",
+    "comp/cli",
+    "P3",
+    "provider/copilot",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(gateway): show the active fallback route in /status and /usage",
+   "issue": 75535,
+   "state": "open",
+   "created": "2026-07-31",
+   "comments": 19,
+   "labels": [
+    "area/usage-cost",
+    "comp/gateway",
+    "P2",
+    "sweeper:blast-moderate",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "feat(web): forward custom request headers from web_extract to Firecrawl",
+   "issue": 74177,
+   "state": "open",
+   "created": "2026-07-29",
+   "comments": 7,
+   "labels": [
+    "comp/plugins",
+    "P3",
+    "sweeper:blast-moderate",
+    "type/feature"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(tts): fall back to mp3 when an OpenAI-compatible backend rejects response_format",
+   "issue": null,
+   "state": "open",
+   "created": "2026-07-28",
+   "comments": 4,
+   "labels": [
+    "P2",
+    "provider/openai",
+    "sweeper:blast-moderate",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(agent): add Kimi K2.x/K3 to reasoning stale-timeout allowlist",
+   "issue": 73337,
+   "state": "open",
+   "created": "2026-07-28",
+   "comments": 1,
+   "labels": [
+    "comp/agent",
+    "P2",
+    "provider/kimi",
+    "type/bug"
+   ]
+  },
+  {
+   "n": null,
+   "title": "fix(desktop): make auto-project Hide from sidebar reversible via an Undo toast",
+   "issue": null,
+   "state": "open",
+   "created": "2026-07-28",
+   "comments": 2,
+   "labels": [
+    "comp/desktop",
+    "P3",
+    "sweeper:blast-contained",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 73076,
+   "title": "fix(gateway): cancel the whole queue on /stop and /new, not just the head",
+   "issue": null,
+   "state": "open",
+   "created": "2026-07-28",
+   "comments": 2,
+   "labels": [
+    "comp/gateway",
+    "P2",
+    "sweeper:blast-moderate",
+    "sweeper:risk-message-delivery",
+    "sweeper:risk-session-state",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 71965,
+   "title": "fix(approval): keep self-termination gated under the container-backend bypass",
+   "issue": null,
+   "state": "open",
+   "created": "2026-07-26",
+   "comments": 5,
+   "labels": [
+    "backend/docker",
+    "comp/tools",
+    "needs-decision",
+    "P2",
+    "sweeper:blast-moderate",
+    "sweeper:risk-security-boundary",
+    "tool/terminal",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 71958,
+   "title": "feat(config): render web.backend/search_backend/extract_backend as Config Form selects",
+   "issue": null,
+   "state": "open",
+   "created": "2026-07-26",
+   "comments": 5,
+   "labels": [
+    "area/config",
+    "comp/cli",
+    "P3",
+    "sweeper:blast-moderate",
+    "sweeper:risk-compatibility",
+    "tool/web",
+    "type/feature"
+   ]
+  },
+  {
+   "n": 71816,
+   "title": "fix(tools): inject items into array tool schemas so Gemini accepts declarations",
+   "issue": null,
+   "state": "open",
+   "created": "2026-07-26",
+   "comments": 7,
+   "labels": [
+    "comp/tools",
+    "needs-decision",
+    "P2",
+    "provider/gemini",
+    "sweeper:blast-broad",
+    "sweeper:risk-compatibility",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 69274,
+   "title": "fix(cron): build failure reason from metadata, not the agent's final_response",
+   "issue": null,
+   "state": "open",
+   "created": "2026-07-22",
+   "comments": 4,
+   "labels": [
+    "comp/cron",
+    "P2",
+    "sweeper:blast-moderate",
+    "sweeper:risk-compatibility",
+    "sweeper:risk-message-delivery",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 69215,
+   "title": "fix(agent): checkpoint every terminal call, not just regex-matched ones",
+   "issue": null,
+   "state": "open",
+   "created": "2026-07-22",
+   "comments": 8,
+   "labels": [
+    "comp/agent",
+    "P2",
+    "sweeper:blast-contained",
+    "sweeper:risk-session-state",
+    "tool/terminal",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 69159,
+   "title": "fix(gateway): declare webhook sessions stateless so background delegations run inline",
+   "issue": null,
+   "state": "open",
+   "created": "2026-07-22",
+   "comments": 2,
+   "labels": [
+    "area/sessions",
+    "comp/gateway",
+    "P2",
+    "platform/webhook",
+    "sweeper:blast-moderate",
+    "sweeper:risk-message-delivery",
+    "sweeper:risk-session-state",
+    "tool/delegate",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 69068,
+   "title": "fix(agent): strip inherited Authorization header in Gemini native client",
+   "issue": null,
+   "state": "open",
+   "created": "2026-07-22",
+   "comments": 2,
+   "labels": [
+    "comp/agent",
+    "P2",
+    "provider/gemini",
+    "sweeper:blast-moderate",
+    "sweeper:risk-compatibility",
+    "sweeper:risk-security-boundary",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 68967,
+   "title": "fix(discord): retry post-connect slash-command sync while connected",
+   "issue": null,
+   "state": "open",
+   "created": "2026-07-21",
+   "comments": 5,
+   "labels": [
+    "comp/plugins",
+    "P3",
+    "platform/discord",
+    "sweeper:blast-moderate",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 68953,
+   "title": "fix(desktop): open macOS PDFs via Preview when the default handler is broken",
+   "issue": null,
+   "state": "open",
+   "created": "2026-07-21",
+   "comments": 7,
+   "labels": [
+    "comp/desktop",
+    "P3",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 68829,
+   "title": "fix(cli): honor excluded_providers in the TUI /model picker's unconfigured rows",
+   "issue": null,
+   "state": "open",
+   "created": "2026-07-21",
+   "comments": 7,
+   "labels": [
+    "area/config",
+    "comp/cli",
+    "comp/desktop",
+    "comp/tui",
+    "P2",
+    "sweeper:blast-moderate",
+    "sweeper:risk-compatibility",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 68823,
+   "title": "fix(telegram): parse ALLOW_ALL_USERS as boolean so an explicit false unblocks DM pairing",
+   "issue": null,
+   "state": "open",
+   "created": "2026-07-21",
+   "comments": 4,
+   "labels": [
+    "area/auth",
+    "comp/plugins",
+    "P3",
+    "platform/telegram",
+    "sweeper:blast-moderate",
+    "sweeper:risk-compatibility",
+    "sweeper:risk-security-boundary",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 68271,
+   "title": "fix(gateway): route TUI skill secret prompts to the owning session",
+   "issue": null,
+   "state": "open",
+   "created": "2026-07-20",
+   "comments": 4,
+   "labels": [
+    "area/sessions",
+    "comp/tui",
+    "P2",
+    "sweeper:blast-moderate",
+    "sweeper:risk-security-boundary",
+    "sweeper:risk-session-state",
+    "tool/skills",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 68180,
+   "title": "fix(bootstrap): reject truncated install-script downloads via Content-Length",
+   "issue": null,
+   "state": "open",
+   "created": "2026-07-20",
+   "comments": 3,
+   "labels": [
+    "area/install-update",
+    "comp/desktop",
+    "P2",
+    "platform/windows",
+    "sweeper:blast-moderate",
+    "sweeper:risk-compatibility",
+    "sweeper:risk-platform-windows",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 68151,
+   "title": "fix(agent): price reasoning tokens in estimate_usage_cost",
+   "issue": null,
+   "state": "open",
+   "created": "2026-07-20",
+   "comments": 3,
+   "labels": [
+    "area/usage-cost",
+    "comp/agent",
+    "P2",
+    "sweeper:blast-broad",
+    "sweeper:risk-compatibility",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 68059,
+   "title": "fix(config): skip symlinked HERMES_HOME subdirs in _secure_dir",
+   "issue": null,
+   "state": "open",
+   "created": "2026-07-20",
+   "comments": 4,
+   "labels": [
+    "area/config",
+    "comp/cli",
+    "P2",
+    "sweeper:blast-contained",
+    "sweeper:risk-compatibility",
+    "tool/skills",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 67947,
+   "title": "fix(agent): resolve custom-provider key_env preferring .env over stale os.environ",
+   "issue": null,
+   "state": "open",
+   "created": "2026-07-20",
+   "comments": 4,
+   "labels": [
+    "area/auth",
+    "area/config",
+    "comp/agent",
+    "P2",
+    "provider/openai",
+    "sweeper:blast-moderate",
+    "sweeper:risk-compatibility",
+    "sweeper:risk-security-boundary",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 67471,
+   "title": "fix(cli): run -w/--worktree in one-shot mode instead of silently ignoring it",
+   "issue": null,
+   "state": "open",
+   "created": "2026-07-19",
+   "comments": 8,
+   "labels": [
+    "comp/cli",
+    "P2",
+    "sweeper:blast-contained",
+    "sweeper:risk-compatibility",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 67250,
+   "title": "fix(feishu): repair Windows system SOCKS proxy for WS event channel",
+   "issue": null,
+   "state": "open",
+   "created": "2026-07-19",
+   "comments": 8,
+   "labels": [
+    "comp/plugins",
+    "P3",
+    "platform/feishu",
+    "platform/windows",
+    "sweeper:blast-moderate",
+    "sweeper:risk-message-delivery",
+    "sweeper:risk-platform-windows",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 65887,
+   "title": "fix(agent): survive context-files kwarg skew instead of crashing the backend",
+   "issue": null,
+   "state": "open",
+   "created": "2026-07-16",
+   "comments": 6,
+   "labels": [
+    "area/install-update",
+    "comp/agent",
+    "P2",
+    "sweeper:blast-broad",
+    "sweeper:risk-compatibility",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 63899,
+   "title": "fix(delegate): surface child's resolved toolsets in async completion block",
+   "issue": null,
+   "state": "open",
+   "created": "2026-07-13",
+   "comments": 5,
+   "labels": [
+    "comp/agent",
+    "P2",
+    "sweeper:blast-contained",
+    "sweeper:risk-session-state",
+    "tool/delegate",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 63898,
+   "title": "fix(tools): escalate repeated malformed patch calls instead of looping",
+   "issue": null,
+   "state": "open",
+   "created": "2026-07-13",
+   "comments": 4,
+   "labels": [
+    "comp/agent",
+    "P2",
+    "sweeper:blast-contained",
+    "tool/file",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 63187,
+   "title": "fix(gateway): stop standing-goal loop after a failed provider turn",
+   "issue": null,
+   "state": "open",
+   "created": "2026-07-12",
+   "comments": 2,
+   "labels": [
+    "comp/gateway",
+    "P2",
+    "sweeper:blast-moderate",
+    "sweeper:risk-message-delivery",
+    "sweeper:risk-session-state",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 62826,
+   "title": "fix(cli): treat bool handler results as exit 0, not status 1",
+   "issue": null,
+   "state": "open",
+   "created": "2026-07-11",
+   "comments": 5,
+   "labels": [
+    "comp/cli",
+    "P2",
+    "sweeper:blast-broad",
+    "sweeper:risk-automation",
+    "sweeper:risk-compatibility",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 62246,
+   "title": "fix(cli): don't reroute /model onto an unconfigured provider",
+   "issue": null,
+   "state": "open",
+   "created": "2026-07-10",
+   "comments": 3,
+   "labels": [
+    "area/config",
+    "comp/cli",
+    "P2",
+    "sweeper:blast-moderate",
+    "sweeper:risk-compatibility",
+    "sweeper:risk-session-state",
+    "type/bug"
+   ]
+  },
+  {
+   "n": 123378,
+   "title": "fix(desktop): list root-level personalities in the Settings dropdown",
+   "issue": 123297,
+   "state": "merged",
+   "created": "2026-09-26",
+   "comments": 7,
+   "labels": [
+    "comp/desktop"
+   ],
+   "closed": "2026-09-27T17:59:35Z",
+   "via": "OutThisLife"
+  },
+  {
+   "n": null,
+   "title": "fix(telegram): honor group_allowed_chats in early auth under multiplex profiles",
+   "issue": 87132,
+   "state": "merged",
+   "created": "2026-08-15",
+   "comments": 1,
+   "labels": []
+  },
+  {
+   "n": null,
+   "title": "fix(mcp): prefer server-native tool over generated utility on name collision",
+   "issue": 87112,
+   "state": "merged",
+   "created": "2026-08-15",
+   "comments": 2,
+   "labels": []
+  },
+  {
+   "n": null,
+   "title": "fix(gateway): don't crash on a foreign XDG_RUNTIME_DIR in user-systemd preflight",
+   "issue": 86558,
+   "state": "merged",
+   "created": "2026-08-15",
+   "comments": 0,
+   "labels": []
+  },
+  {
+   "n": null,
+   "title": "fix(codex): clamp oversized Responses call_id so MCP tools don't brick sessions",
+   "issue": 73492,
+   "state": "merged",
+   "created": "2026-07-28",
+   "comments": 3,
+   "labels": []
+  },
+  {
+   "n": null,
+   "title": "fix(anthropic): coerce empty/whitespace-only text blocks on the request path",
+   "issue": 69512,
+   "state": "merged",
+   "created": "2026-07-22",
+   "comments": 1,
+   "labels": []
+  },
+  {
+   "n": null,
+   "title": "fix(agent): don't re-append persisted transcript on cold-resume rotating compression",
+   "issue": 68196,
+   "state": "merged",
+   "created": "2026-07-20",
+   "comments": 0,
+   "labels": []
+  },
+  {
+   "n": null,
+   "title": "fix(cron): never stale-remove a one-shot whose run is still alive",
+   "issue": 62002,
+   "state": "merged",
+   "created": "2026-07-10",
+   "comments": 1,
+   "labels": []
+  },
+  {
+   "n": 122652,
+   "title": "feat(skills): exclude .stversions and _archive from skill discovery",
+   "issue": 122613,
+   "state": "closed",
+   "created": "2026-09-25",
+   "comments": 2,
+   "labels": [],
+   "closed": "2026-09-25",
+   "closeKind": "duplicate",
+   "note": "Same change as #122646, opened 6 minutes earlier. Closed by the autoresolver."
+  },
+  {
+   "n": 117517,
+   "title": "fix(plugin-guard): treat an env-var NAME literal as public, not a hardcoded secret",
+   "issue": 116221,
+   "state": "closed",
+   "created": "2026-09-20",
+   "comments": 1,
+   "labels": [],
+   "closed": "2026-09-22",
+   "closeKind": "superseded",
+   "note": "Fixed on main first by #116875 with a pattern-level carve-out."
+  },
+  {
+   "n": 114273,
+   "title": "docs(portal): shared token store refreshes a login, it does not seed one",
+   "issue": 114259,
+   "state": "closed",
+   "created": "2026-09-17",
+   "comments": 1,
+   "labels": []
+  },
+  {
+   "n": 114250,
+   "title": "fix(desktop): keep the caret in a focused clarify/text field when the pointer moves",
+   "issue": 114245,
+   "state": "closed",
+   "created": "2026-09-17",
+   "comments": 3,
+   "labels": [],
+   "closed": "2026-09-18",
+   "closeKind": "salvaged",
+   "note": "Cherry-picked into #114943 by teknium1, authorship preserved.",
+   "via": "teknium1"
+  },
+  {
+   "n": 107592,
+   "title": "fix(desktop): flag a rebuild when the installed app's commit is behind HEAD",
+   "issue": 107542,
+   "state": "closed",
+   "created": "2026-09-10",
+   "comments": 2,
+   "labels": []
+  },
+  {
+   "n": 107584,
+   "title": "fix(update): reuse the parent's pre-update backup in the Windows exe hand-off child",
+   "issue": 107543,
+   "state": "closed",
+   "created": "2026-09-10",
+   "comments": 2,
+   "labels": []
+  },
+  {
+   "n": 107335,
+   "title": "fix(file-safety): resolve HERMES_HOME/config per call so multiplex profiles don't poison the write guards",
+   "issue": 107327,
+   "state": "closed",
+   "created": "2026-09-10",
+   "comments": 4,
+   "labels": [],
+   "closed": "2026-09-11",
+   "closeKind": "salvaged",
+   "note": "Both commits cherry-picked into #108440 by teknium1, authorship preserved.",
+   "via": "teknium1"
+  },
+  {
+   "n": 107284,
+   "title": "fix(agent): don't attach a pre-API steer to a prior turn's tool result",
+   "issue": 107272,
+   "state": "closed",
+   "created": "2026-09-10",
+   "comments": 2,
+   "labels": []
+  },
+  {
+   "n": 107280,
+   "title": "fix(memory): bound the external-drift refusal and stop duplicate .bak clutter",
+   "issue": 107270,
+   "state": "closed",
+   "created": "2026-09-10",
+   "comments": 2,
+   "labels": []
+  },
+  {
+   "n": null,
+   "title": "ci(lint): bound the advisory public-surface step so it can't time out the blocking footguns job",
+   "issue": 106103,
+   "state": "closed",
+   "created": "2026-09-08",
+   "comments": 2,
+   "labels": []
+  },
+  {
+   "n": null,
+   "title": "fix(whatsapp): unwrap ephemeral/view-once envelopes when reading quoted text",
+   "issue": null,
+   "state": "closed",
+   "created": "2026-09-08",
+   "comments": 2,
+   "labels": []
+  },
+  {
+   "n": null,
+   "title": "fix(desktop): keep the active gateway default reachable in the fleet condensed profile dropdown",
+   "issue": 106017,
+   "state": "closed",
+   "created": "2026-09-08",
+   "comments": 2,
+   "labels": []
+  },
+  {
+   "n": null,
+   "title": "fix(desktop): roster age reflects the last worker run, not only the last chat",
+   "issue": 105874,
+   "state": "closed",
+   "created": "2026-09-08",
+   "comments": 2,
+   "labels": []
+  },
+  {
+   "n": null,
+   "title": "fix(cron): keep a delivered run's success through a transient post-delivery claim blip",
+   "issue": 105861,
+   "state": "closed",
+   "created": "2026-09-08",
+   "comments": 3,
+   "labels": []
+  },
+  {
+   "n": null,
+   "title": "fix(cron): persist the full traceback in a failed run's output doc",
+   "issue": 104538,
+   "state": "closed",
+   "created": "2026-09-06",
+   "comments": 2,
+   "labels": []
+  },
+  {
+   "n": null,
+   "title": "fix(cron): skip short-circuit status stubs when selecting context_from output",
+   "issue": 104541,
+   "state": "closed",
+   "created": "2026-09-06",
+   "comments": 2,
+   "labels": []
+  },
+  {
+   "n": null,
+   "title": "fix(desktop): pass HERMES_HOME for named-profile SSH serves so DB isolation holds",
+   "issue": 103467,
+   "state": "closed",
+   "created": "2026-09-05",
+   "comments": 2,
+   "labels": []
+  },
+  {
+   "n": null,
+   "title": "fix(cli): reference in-scope desktop-presence flag in macOS update TCC notice",
+   "issue": 95309,
+   "state": "closed",
+   "created": "2026-08-26",
+   "comments": 0,
+   "labels": []
+  },
+  {
+   "n": null,
+   "title": "fix(install): ship pre_update_backup: quick in the config template",
+   "issue": 94944,
+   "state": "closed",
+   "created": "2026-08-25",
+   "comments": 2,
+   "labels": []
+  },
+  {
+   "n": null,
+   "title": "fix(time): resolve the timezone per profile instead of freezing one per process",
+   "issue": 94945,
+   "state": "closed",
+   "created": "2026-08-25",
+   "comments": 2,
+   "labels": []
+  },
+  {
+   "n": null,
+   "title": "fix(terminal): drain stdout with poll() so output survives pipe fds >= FD_SETSIZE",
+   "issue": 94928,
+   "state": "closed",
+   "created": "2026-08-25",
+   "comments": 2,
+   "labels": []
+  },
+  {
+   "n": null,
+   "title": "fix(cli): accept singular 'plugin' as an alias for the plugins command",
+   "issue": 89120,
+   "state": "closed",
+   "created": "2026-08-18",
+   "comments": 3,
+   "labels": []
+  },
+  {
+   "n": null,
+   "title": "fix(desktop): stop the composite scope key leaking into remote --profile",
+   "issue": 88625,
+   "state": "closed",
+   "created": "2026-08-18",
+   "comments": 1,
+   "labels": []
+  },
+  {
+   "n": null,
+   "title": "fix(compression): disable Codex 85% autoraise above the verified window",
+   "issue": 88511,
+   "state": "closed",
+   "created": "2026-08-17",
+   "comments": 2,
+   "labels": []
+  },
+  {
+   "n": null,
+   "title": "fix(config): decode JSON-string-typed providers at load time",
+   "issue": 88451,
+   "state": "closed",
+   "created": "2026-08-17",
+   "comments": 5,
+   "labels": []
+  }
+ ],
+ "feed": [
+  {
+   "at": "2026-09-27T17:59",
+   "who": "OutThisLife",
+   "pr": 123378,
+   "kind": "merge",
+   "text": "Merged into main with 30 checks passing."
+  },
+  {
+   "at": "2026-09-27T17:58",
+   "who": "OutThisLife",
+   "pr": 123378,
+   "kind": "approve",
+   "text": "Approved after confirming the \"behavioural test red on base and green with the fix.\""
+  },
+  {
+   "at": "2026-09-27T16:00",
+   "who": "PRATHAMESH75",
+   "pr": 123378,
+   "kind": "push",
+   "text": "Fixed lint: braced conditionals and reordered imports."
+  },
+  {
+   "at": "2026-09-27T10:00",
+   "who": "PRATHAMESH75",
+   "pr": 123950,
+   "kind": "push",
+   "text": "Rebased after upstream refactored the prune passes; the head shield now guards only the Pass 2 demote loop."
+  },
+  {
+   "at": "2026-09-26T22:00",
+   "who": "Enough1122",
+   "pr": 120332,
+   "kind": "comment",
+   "text": "Withdrew the gate concern: the production-mount test covers the seam and no blocking issues remain."
+  },
+  {
+   "at": "2026-09-26T21:00",
+   "who": "PRATHAMESH75",
+   "pr": 120332,
+   "kind": "comment",
+   "text": "Explained the multiplex gate is a deliberate no-op when multiplexing is off, point by point."
+  },
+  {
+   "at": "2026-09-26T20:00",
+   "who": "Enough1122",
+   "pr": 120332,
+   "kind": "review",
+   "text": "Three findings: the multiplex gate discards ?profile=, the test doesn't pin gate behavior, and sync profile-scope work blocks the event loop."
+  },
+  {
+   "at": "2026-09-26T19:00",
+   "who": "PRATHAMESH75",
+   "pr": 123378,
+   "kind": "push",
+   "text": "Folded personality names with str(name).strip().lower() to match the runtime and filtered neutral names."
+  },
+  {
+   "at": "2026-09-26T18:00",
+   "who": "Enough1122",
+   "pr": 123378,
+   "kind": "review",
+   "text": "Names are listed verbatim but the runtime folds case and whitespace, so some dropdown rows are unreachable."
+  },
+  {
+   "at": "2026-09-26T17:00",
+   "who": "PRATHAMESH75",
+   "pr": 120332,
+   "kind": "push",
+   "text": "Added a production-mount test that exercises the real discovery, mount and request path."
+  },
+  {
+   "at": "2026-09-26T16:00",
+   "who": "andrexibiza",
+   "pr": 120332,
+   "kind": "review",
+   "text": "New blocker: #123384 would overwrite the request profile scope if both land unchanged."
+  },
+  {
+   "at": "2026-09-26T15:00",
+   "who": "PRATHAMESH75",
+   "pr": 123378,
+   "kind": "push",
+   "text": "Added enumOptionsFor tests for the root personalities block and switched to direct array equality."
+  },
+  {
+   "at": "2026-09-26T14:00",
+   "who": "DavidMetcalfe",
+   "pr": 123378,
+   "kind": "review",
+   "text": "Requested tests for the new root-block read and direct array equality: \"Position matters here.\""
+  },
+  {
+   "at": "2026-09-26T13:00",
+   "who": "kiramakes",
+   "pr": 123950,
+   "kind": "review",
+   "text": "Automated review: ready to merge. Root cause is correct and the head bound decays to zero after the first compression, as intended."
+  },
+  {
+   "at": "2026-09-26T12:00",
+   "who": "PRATHAMESH75",
+   "pr": 123749,
+   "kind": "comment",
+   "text": "All list variants are covered: _cmd_list is the single entry point and the guard wraps its one recompute_ready call."
+  },
+  {
+   "at": "2026-09-26T11:00",
+   "who": "kiramakes",
+   "pr": 123749,
+   "kind": "review",
+   "text": "Automated review: \"a clean fix\", ready to merge. Asked whether --json with --assignee should also skip recompute_ready."
+  },
+  {
+   "at": "2026-09-25T18:00",
+   "who": "PRATHAMESH75",
+   "pr": 120332,
+   "kind": "comment",
+   "text": "Acknowledged the gaps and offered a follow-up test harness rather than more coverage in this PR."
+  },
+  {
+   "at": "2026-09-25T16:00",
+   "who": "andrexibiza",
+   "pr": 120332,
+   "kind": "review",
+   "text": "Core fix is correct, but blocked on test state leaks, an unverified production mount, a competing implementation, missing attribution and red CI."
+  },
+  {
+   "at": "2026-09-25T15:00",
+   "who": "PRATHAMESH75",
+   "pr": 122652,
+   "kind": "close",
+   "text": "Closed as a duplicate of #122646, which was opened 6 minutes earlier with the same change."
+  },
+  {
+   "at": "2026-09-25T14:30",
+   "who": "alt-glitch",
+   "pr": 122652,
+   "kind": "comment",
+   "text": "Flagged as a duplicate of #122646: identical exclusion-set change and regression test."
+  },
+  {
+   "at": "2026-09-25T10:00",
+   "who": "PRATHAMESH75",
+   "pr": 120332,
+   "kind": "push",
+   "text": "Routed the dependency through the canonical profile scope so env-only launch credentials work."
+  },
+  {
+   "at": "2026-09-24T12:00",
+   "who": "adevwithpurpose",
+   "pr": 120332,
+   "kind": "review",
+   "text": "Asked to delegate to _config_profile_scope instead of hand-building the scope."
+  },
+  {
+   "at": "2026-09-22T12:00",
+   "who": "PRATHAMESH75",
+   "pr": 117517,
+   "kind": "close",
+   "text": "Closed: main already fixed #116221 via #116875 with a pattern-level carve-out."
+  },
+  {
+   "at": "2026-09-18T12:00",
+   "who": "teknium1",
+   "pr": 114250,
+   "kind": "salvage",
+   "text": "Salvaged into #114943 (cherry-picked, authorship preserved) and merged."
+  },
+  {
+   "at": "2026-09-17T15:00",
+   "who": "PRATHAMESH75",
+   "pr": 114250,
+   "kind": "push",
+   "text": "Added a fourth test pinning the focused-dropdown exemption as intended behavior."
+  },
+  {
+   "at": "2026-09-17T13:00",
+   "who": "KeyArgo",
+   "pr": 114250,
+   "kind": "review",
+   "text": "Verified independently: tests fail on base and pass with the fix, and all 489 nearby tests still pass."
+  },
+  {
+   "at": "2026-09-11T12:00",
+   "who": "teknium1",
+   "pr": 107335,
+   "kind": "salvage",
+   "text": "Landed on main via #108440 with both commits cherry-picked, authorship preserved."
+  },
+  {
+   "at": "2026-09-10T16:00",
+   "who": "PRATHAMESH75",
+   "pr": 107335,
+   "kind": "push",
+   "text": "Bound the fallback to the active profile and added regression tests that force resolver failures."
+  },
+  {
+   "at": "2026-09-10T14:00",
+   "who": "andrexibiza",
+   "pr": 107335,
+   "kind": "review",
+   "text": "\"The fallback reintroduces the same cross-profile authority bug on the exception path.\""
+  }
+ ]
+}

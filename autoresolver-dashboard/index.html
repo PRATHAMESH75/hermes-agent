@@ -1,0 +1,839 @@
+<title>Hermes Base</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@500;700;800&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root{
+  color-scheme: dark;
+  --forest:#1f3a24; --forest-2:#274a2c;
+  --grass:#6aa447; --grass-2:#5d943d; --grass-line:rgba(255,255,255,.07);
+  --dirt:#c9a46a; --dirt-2:#a9844c;
+  --stone:#8b95a1; --stone-2:#646e7a; --stone-3:#b9c1ca;
+  --wood:#4a2f1d; --wood-2:#5e3c25; --wood-3:#7a5033; --wood-edge:#2c1b10;
+  --parch:#f4e6c4; --parch-2:#e8d4a7; --ink:#3a2616; --ink-2:#6b5038;
+  --gold:#f3bb2d; --gold-2:#b98410;
+  --elixir:#b65ae3; --elixir-2:#7d2fb0;
+  --salvage:#2bb3a3; --closed:#8a8f98; --danger:#d9533b; --ok:#57b04a;
+  --text:#fff6e2; --text-dim:#e7d6b4;
+  --shadow: 0 3px 0 var(--wood-edge), 0 8px 18px rgba(0,0,0,.35);
+  --display:"Lilita One", "Arial Rounded MT Bold", "Trebuchet MS", system-ui, sans-serif;
+  --body:"Nunito", ui-rounded, "Segoe UI", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+*{box-sizing:border-box}
+html,body{background:var(--forest)}
+body{
+  font-family:var(--body); color:var(--text); font-size:15px; line-height:1.45;
+  background:
+    radial-gradient(1200px 500px at 50% -10%, #2f5a34 0%, transparent 70%),
+    repeating-linear-gradient(135deg, transparent 0 22px, rgba(0,0,0,.05) 22px 44px),
+    var(--forest);
+  min-height:100%;
+}
+.wrap > *, .board > *, .lower > *{min-width:0}
+.wrap{max-width:1320px; margin:0 auto; padding-inline:16px; padding-block:14px 48px; display:grid; gap:16px}
+a{color:inherit}
+a:focus-visible, button:focus-visible, input:focus-visible, [tabindex]:focus-visible{outline:3px solid var(--gold); outline-offset:2px; border-radius:6px}
+
+/* ---------- top bar ---------- */
+.topbar{
+  display:flex; flex-wrap:wrap; align-items:center; gap:14px 22px; justify-content:space-between;
+  background:linear-gradient(var(--wood-3), var(--wood-2)); border:3px solid var(--wood-edge);
+  border-radius:16px; padding:10px 16px; box-shadow:var(--shadow);
+}
+.brand{display:flex; align-items:center; gap:12px; min-width:0}
+.brand svg{flex:none}
+.brand h1{font-family:var(--display); font-weight:400; font-size:30px; margin:0; letter-spacing:.5px; line-height:1;
+  color:var(--text); text-shadow:0 2px 0 var(--wood-edge), 0 0 1px var(--wood-edge)}
+.brand .sub{font-size:12.5px; color:var(--text-dim); margin-top:3px}
+.brand .sub b{font-family:var(--mono); font-weight:500}
+.resources{display:flex; flex-wrap:wrap; gap:10px 18px}
+.res{display:grid; grid-template-columns:auto 1fr; align-items:center; gap:6px; min-width:150px}
+.res .bar{position:relative; height:22px; border-radius:11px; background:rgba(0,0,0,.45); border:2px solid var(--wood-edge); overflow:hidden}
+.res .fill{position:absolute; inset:0 auto 0 0; border-radius:9px; transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.res .fill::after{content:""; position:absolute; inset:2px 4px auto 4px; height:5px; border-radius:4px; background:rgba(255,255,255,.35)}
+.res .num{position:absolute; inset:0; display:flex; align-items:center; justify-content:flex-end; padding-right:9px;
+  font-family:var(--display); font-size:15px; text-shadow:0 1px 0 #000, 0 0 3px #000}
+.res .lbl{grid-column:2; font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-dim); margin-top:-3px}
+.res.gold .fill{background:linear-gradient(var(--gold), var(--gold-2))}
+.res.elixir .fill{background:linear-gradient(#d487f5, var(--elixir-2))}
+.res.stone .fill{background:linear-gradient(var(--stone-3), var(--stone-2))}
+
+/* ---------- panels ---------- */
+.board{display:grid; grid-template-columns:minmax(0,1fr) 380px; gap:16px; align-items:start}
+@media (max-width:1020px){ .board{grid-template-columns:minmax(0,1fr)} }
+.panel{background:linear-gradient(var(--wood-2), var(--wood)); border:3px solid var(--wood-edge); border-radius:18px; box-shadow:var(--shadow); padding:12px}
+.panel > h2, .sect-title{font-family:var(--display); font-weight:400; font-size:21px; letter-spacing:.4px; margin:2px 4px 10px; text-shadow:0 2px 0 var(--wood-edge); text-wrap:balance}
+.panel > h2 small{font-family:var(--body); font-size:12.5px; color:var(--text-dim); letter-spacing:0; text-shadow:none; margin-left:6px; font-weight:700}
+
+/* ---------- scene ---------- */
+.scene-wrap{position:relative; border-radius:12px; overflow:hidden; border:3px solid var(--wood-edge); background:#23422a}
+.scene-wrap svg{display:block; width:100%; height:auto}
+.scene-hint{position:absolute; left:10px; bottom:10px; font-size:12px; background:rgba(20,12,6,.72); padding:5px 10px; border-radius:999px; color:var(--text-dim); pointer-events:none}
+.tip{position:absolute; pointer-events:none; transform:translate(-50%, calc(-100% - 12px)); background:var(--parch); color:var(--ink);
+  border:3px solid var(--wood-edge); border-radius:12px; padding:7px 11px; font-size:13px; min-width:170px; box-shadow:0 6px 16px rgba(0,0,0,.4); z-index:3}
+.tip b{font-family:var(--display); font-weight:400; font-size:16px; display:block; line-height:1.1}
+.tip .row{display:flex; gap:10px; margin-top:3px; font-weight:800; font-variant-numeric:tabular-nums}
+.tip .row span{display:flex; align-items:center; gap:4px}
+.dot{width:9px; height:9px; border-radius:50%; display:inline-block; border:1.5px solid rgba(0,0,0,.35); flex:none}
+.bld{cursor:pointer}
+.bld .glow{opacity:0; transition:opacity .2s}
+.bld:hover .glow, .bld.sel .glow{opacity:1}
+.bld .lift{transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+.bld:hover .lift{transform:translateY(-4px)}
+.hero-bob{animation:bob 2.6s ease-in-out infinite; transform-box:fill-box; transform-origin:bottom center}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.flag-wave{animation:wave 1.8s ease-in-out infinite; transform-box:fill-box; transform-origin:left center}
+@keyframes wave{0%,100%{transform:skewY(0) scaleX(1)}50%{transform:skewY(-8deg) scaleX(.9)}}
+.selring{stroke-dasharray:10 7; animation:march 1.2s linear infinite}
+@keyframes march{to{stroke-dashoffset:-34}}
+.cloud{animation:drift 70s linear infinite}
+.cloud.c2{animation-duration:95s; animation-delay:-40s}
+@keyframes drift{from{transform:translateX(-260px)}to{transform:translateX(1260px)}}
+.coin{animation:shine 3s ease-in-out infinite}
+@keyframes shine{0%,100%{filter:brightness(1)}50%{filter:brightness(1.35)}}
+.sparkle{animation:twinkle 2.2s ease-in-out infinite; transform-box:fill-box; transform-origin:center}
+@keyframes twinkle{0%,100%{opacity:0; transform:scale(.4)}50%{opacity:1; transform:scale(1)}}
+
+.gate-row{display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:10px; padding:0 4px}
+.gate-row .lbl{font-family:var(--display); font-size:15px; margin-right:4px}
+.chip{display:inline-flex; align-items:center; gap:6px; padding:3px 10px 3px 4px; border-radius:999px; background:rgba(0,0,0,.28); border:2px solid rgba(0,0,0,.35); font-size:12.5px; font-weight:800}
+.chip .av{width:20px; height:20px; border-radius:50%; display:grid; place-items:center; font-size:10px; font-family:var(--display); color:#fff; border:1.5px solid rgba(255,255,255,.6)}
+.chip .n{font-family:var(--mono); color:var(--text-dim); font-weight:500}
+
+/* ---------- dossier ---------- */
+.dossier{background:var(--parch); color:var(--ink); border:3px solid var(--wood-edge); border-radius:18px; box-shadow:var(--shadow);
+  overflow:hidden; position:sticky; top:calc(env(safe-area-inset-top, 0px) + 12px)}
+@media (max-width:1020px){ .dossier{position:static} }
+.dz-head{display:grid; grid-template-columns:76px 1fr; gap:12px; padding:14px 14px 12px; background:linear-gradient(var(--parch-2), var(--parch)); border-bottom:2px dashed rgba(58,38,22,.3)}
+.dz-head .port{width:76px; height:76px; border-radius:14px; border:3px solid var(--wood-edge); display:grid; place-items:center; overflow:hidden}
+.dz-head h3{font-family:var(--display); font-weight:400; font-size:24px; margin:0; line-height:1.05; color:var(--ink)}
+.dz-head .spec{font-size:12.5px; color:var(--ink-2); margin-top:2px}
+.lvl{display:flex; align-items:center; gap:8px; margin-top:7px}
+.lvl .shield{font-family:var(--display); font-size:13px; color:#fff; background:var(--wood-3); border:2px solid var(--wood-edge); border-radius:7px 7px 12px 12px; padding:1px 7px}
+.lvl .xp{flex:1; height:10px; border-radius:6px; background:rgba(58,38,22,.18); overflow:hidden; border:1.5px solid rgba(58,38,22,.35)}
+.lvl .xp i{display:block; height:100%; background:linear-gradient(90deg, #8fd16b, var(--ok))}
+.dz-stats{display:grid; grid-template-columns:repeat(5,1fr); gap:0; border-bottom:2px dashed rgba(58,38,22,.3)}
+.dz-stats div{padding:8px 4px; text-align:center}
+.dz-stats b{display:block; font-family:var(--display); font-weight:400; font-size:22px; line-height:1; font-variant-numeric:tabular-nums}
+.dz-stats span{font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-2); font-weight:800}
+.dz-body{padding:6px 14px 14px; display:grid; gap:12px; max-height:620px; overflow:auto}
+@media (max-width:1020px){ .dz-body{max-height:none} }
+.dz-sec h4{font-family:var(--display); font-weight:400; font-size:16px; margin:8px 0 6px; display:flex; align-items:center; gap:8px; color:var(--ink)}
+.dz-sec h4 .count{font-family:var(--mono); font-size:12px; background:var(--ink); color:var(--parch); border-radius:999px; padding:0 7px}
+.dz-sec .empty{font-size:13px; color:var(--ink-2); font-style:italic}
+.pr{display:grid; grid-template-columns:auto 1fr; gap:3px 9px; padding:7px 0; border-top:1px solid rgba(58,38,22,.14)}
+.pr:first-of-type{border-top:0}
+.pr .pin{width:10px; height:10px; margin-top:5px; border-radius:3px; transform:rotate(45deg); border:1.5px solid rgba(0,0,0,.35)}
+.pr a{font-weight:800; font-size:13.5px; text-decoration:none; color:var(--ink)}
+.pr a:hover{text-decoration:underline}
+.pr .meta{grid-column:2; display:flex; flex-wrap:wrap; gap:4px 8px; font-size:12px; color:var(--ink-2); align-items:center}
+.pr .quote{grid-column:2; font-size:12.5px; color:var(--ink); background:rgba(58,38,22,.08); border-left:3px solid var(--wood-3); padding:5px 8px; border-radius:0 8px 8px 0; margin-top:2px}
+.pr .quote b{font-weight:800}
+.tag{display:inline-block; font-size:10.5px; font-weight:800; letter-spacing:.03em; padding:1px 7px; border-radius:999px; text-transform:uppercase; white-space:nowrap}
+.t-open{background:#ecd6f8; color:#5d1f86}
+.t-merged{background:#fbe6a6; color:#6e4b00}
+.t-salvaged{background:#c7efe9; color:#0f5a52}
+.t-superseded{background:#dfe3ea; color:#374151}
+.t-duplicate{background:#f6d6cf; color:#8a2c19}
+.t-closed{background:#e4e1dc; color:#4b4540}
+.t-risk{background:#fde2d9; color:#8a2c19}
+.t-decide{background:#fff0bf; color:#6e4b00}
+.mono{font-family:var(--mono); font-size:11.5px}
+
+/* ---------- lower ---------- */
+.lower{display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1fr); gap:16px; align-items:start}
+@media (max-width:1020px){ .lower{grid-template-columns:minmax(0,1fr)} }
+.filters{display:flex; flex-wrap:wrap; gap:6px; margin:0 4px 10px}
+.btn{font:inherit; font-size:12.5px; font-weight:800; color:var(--text); background:linear-gradient(var(--wood-3), var(--wood-2)); border:2px solid var(--wood-edge); border-radius:10px; padding:4px 11px; cursor:pointer; box-shadow:0 2px 0 var(--wood-edge)}
+.btn[aria-pressed="true"]{background:linear-gradient(#ffd564, var(--gold-2)); color:var(--ink)}
+.btn:active{transform:translateY(2px); box-shadow:none}
+.log{display:grid; gap:8px; max-height:560px; overflow:auto; padding-right:2px}
+.ev{display:grid; grid-template-columns:34px 1fr; gap:10px; background:var(--parch); color:var(--ink); border-radius:12px; padding:9px 11px; border:2px solid var(--wood-edge)}
+.ev .ico{width:34px; height:34px; border-radius:10px; display:grid; place-items:center; border:2px solid rgba(0,0,0,.3)}
+.ev .top{display:flex; flex-wrap:wrap; gap:4px 8px; align-items:baseline; font-size:12.5px; color:var(--ink-2)}
+.ev .who{font-weight:800; color:var(--ink); font-size:13.5px}
+.ev .txt{font-size:13.5px; margin-top:2px}
+.ev .on{font-size:12px; margin-top:4px; color:var(--ink-2)}
+.ev .on a{font-weight:800; color:var(--ink)}
+.bot{font-size:10px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; background:var(--ink); color:var(--parch); border-radius:5px; padding:0 5px}
+
+.report{display:grid; gap:10px}
+.intel{display:grid; grid-template-columns:40px 1fr; gap:10px; background:rgba(0,0,0,.22); border:2px solid rgba(0,0,0,.35); border-radius:12px; padding:10px 12px}
+.intel .badge{width:40px; height:40px; border-radius:11px; display:grid; place-items:center; font-family:var(--display); font-size:15px; border:2px solid rgba(0,0,0,.4)}
+.intel h5{margin:0; font-size:14.5px; font-weight:800}
+.intel p{margin:3px 0 0; font-size:13.5px; color:var(--text-dim); max-width:65ch}
+.intel p b{color:var(--text)}
+.good .badge{background:#3f7d36; color:#eaffdf}
+.warn .badge{background:#9a6a12; color:#fff3cf}
+.bad .badge{background:#8f3222; color:#ffe4dc}
+.chart{background:rgba(0,0,0,.22); border:2px solid rgba(0,0,0,.35); border-radius:12px; padding:10px 12px}
+.chart h5{margin:0 0 6px; font-size:14.5px; font-weight:800}
+.chart .legend{display:flex; flex-wrap:wrap; gap:4px 12px; font-size:12px; color:var(--text-dim); margin-top:6px}
+.chart .legend span{display:inline-flex; align-items:center; gap:5px}
+.chart svg{width:100%; height:auto; display:block}
+
+/* ---------- ledger ---------- */
+.ledger-tools{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:0 4px 10px}
+.ledger-tools input{font:inherit; font-size:13.5px; color:var(--ink); background:var(--parch); border:2px solid var(--wood-edge); border-radius:10px; padding:6px 10px; min-width:0; flex:1 1 220px}
+.table-scroll{overflow:auto; max-height:620px; border-radius:12px; border:2px solid var(--wood-edge)}
+table{width:100%; border-collapse:collapse; background:var(--parch); color:var(--ink); font-size:13px; min-width:720px}
+th{font-family:var(--display); font-weight:400; font-size:14px; text-align:left; background:var(--parch-2); padding:8px 10px; position:sticky; top:0}
+td{padding:7px 10px; border-top:1px solid rgba(58,38,22,.14); vertical-align:top}
+td.num{font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap}
+td a{color:var(--ink); font-weight:700; text-decoration:none}
+td a:hover{text-decoration:underline}
+.agentchip{display:inline-flex; align-items:center; gap:5px; font-weight:800; font-size:12px; white-space:nowrap}
+.foot{font-size:12.5px; color:var(--text-dim); text-align:center; max-width:80ch; margin:0 auto}
+.foot code{font-family:var(--mono); font-size:12px}
+.banner{background:rgba(0,0,0,.35); border:2px dashed var(--gold); color:var(--text); border-radius:12px; padding:9px 12px; font-size:13.5px}
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{animation:none !important; transition:none !important}
+}
+@media (max-width:560px){
+  .brand h1{font-size:25px}
+  .res{min-width:130px}
+  .dz-stats b{font-size:19px}
+}
+</style>
+
+<div class="wrap">
+  <header class="topbar">
+    <div class="brand">
+      <svg width="44" height="44" viewBox="0 0 44 44" aria-hidden="true">
+        <path d="M22 3 L39 10 V23 C39 33 31 39 22 42 C13 39 5 33 5 23 V10 Z" fill="#f3bb2d" stroke="#2c1b10" stroke-width="3"/>
+        <path d="M14 14 V30 M30 14 V30 M14 22 H30" stroke="#2c1b10" stroke-width="4" stroke-linecap="round"/>
+        <path d="M30 8 l3 -4 l3 4" fill="none" stroke="#fff6e2" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <h1>Hermes Base</h1>
+        <div class="sub" id="subline">Autoresolver campaign on <b>NousResearch/hermes-agent</b> · scouting…</div>
+      </div>
+    </div>
+    <div class="resources" id="resources"></div>
+  </header>
+
+  <div id="banner" class="banner" hidden></div>
+
+  <section class="board">
+    <div class="panel">
+      <h2>The base <small>Hover or tap an agent to open its dossier</small></h2>
+      <div class="scene-wrap" id="sceneWrap">
+        <svg id="scene" viewBox="0 0 1000 570" role="img" aria-label="Isometric base: six autoresolver agents around the main-branch town hall"></svg>
+        <div class="tip" id="tip" hidden></div>
+        <div class="scene-hint" id="hint">Troops marching to the town hall are PRs in active review</div>
+      </div>
+      <div class="gate-row" id="gate"></div>
+    </div>
+
+    <aside class="dossier" id="dossier" aria-live="polite"></aside>
+  </section>
+
+  <section class="lower">
+    <div class="panel">
+      <h2>Battle log <small id="logNote"></small></h2>
+      <div class="filters" id="logFilters"></div>
+      <div class="log" id="log"></div>
+    </div>
+    <div class="panel">
+      <h2>War report <small>what is working, what is not</small></h2>
+      <div class="report" id="report"></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>PR ledger <small id="ledgerNote"></small></h2>
+    <div class="ledger-tools">
+      <div class="filters" id="ledgerFilters" style="margin:0"></div>
+      <input id="ledgerSearch" type="search" placeholder="Search titles, issues, labels" aria-label="Search PRs">
+    </div>
+    <div class="table-scroll"><table id="ledger"></table></div>
+  </section>
+
+  <p class="foot" id="foot"></p>
+</div>
+
+<script>
+(() => {
+"use strict";
+const REPO = "NousResearch/hermes-agent";
+const GH = "https://github.com/" + REPO;
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- agents ---------- */
+const AGENTS = [
+  { id:"core",    name:"Core Sage",      spec:"Agent loop, providers, compression, streaming", color:"#8e5bd8", dark:"#5b3596", item:"staff",
+    scopes:["agent","streaming","compression","vision","anthropic","codex","copilot","copilot-acp","acp","local-models","memory","providers","delegate","openrouter","gemini"], comps:["agent","acp"] },
+  { id:"gateway", name:"Gateway Herald", spec:"Messaging gateway and platform adapters", color:"#3b82c4", dark:"#23568a", item:"horn",
+    scopes:["gateway","telegram","discord","slack","whatsapp","wecom","feishu","webhook","signal","matrix"], comps:["gateway","plugins"] },
+  { id:"desktop", name:"Desktop Artisan", spec:"Desktop app, TUI, dashboard, builds", color:"#e07a4f", dark:"#a24a26", item:"brush",
+    scopes:["desktop","tui","dashboard","build","pm","electron"], comps:["desktop","tui","dashboard"] },
+  { id:"cli",     name:"CLI Smith",      spec:"CLI, config, install and update", color:"#c98a2b", dark:"#8a5a12", item:"hammer",
+    scopes:["cli","config","install","update","backup","doctor","bootstrap","time","portal","docs","ci","windows","setup"], comps:["cli"] },
+  { id:"tools",   name:"Tool Tinkerer",  spec:"Tools, terminal, files, skills, MCP", color:"#2e9e7e", dark:"#1a6a53", item:"wrench",
+    scopes:["tools","terminal","file-safety","approval","plugin-guard","tts","web","toolsets","skills","mcp","computer-use","browser","file"], comps:["tools"] },
+  { id:"cron",    name:"Cron Keeper",    spec:"Scheduler, kanban, background work", color:"#c2455b", dark:"#86263a", item:"hourglass",
+    scopes:["cron","kanban","scheduler"], comps:["cron"] },
+];
+const AG = Object.fromEntries(AGENTS.map(a => [a.id, a]));
+const scopeMap = {};
+AGENTS.forEach(a => a.scopes.forEach(s => scopeMap[s] = a.id));
+
+function agentOf(pr){
+  const m = /^[a-z]+\(([^)]+)\)/i.exec(pr.title || "");
+  if (m){
+    const sc = m[1].toLowerCase().split(/[,/ ]/)[0];
+    if (scopeMap[sc]) return scopeMap[sc];
+  }
+  for (const l of pr.labels || []){
+    if (l.startsWith("comp/")){
+      const c = l.slice(5);
+      const a = AGENTS.find(x => x.comps.includes(c));
+      if (a) return a.id;
+    }
+  }
+  return "cli";
+}
+
+/* ---------- helpers ---------- */
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const $ = id => document.getElementById(id);
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function fmtDate(s){ if(!s) return "—"; const d = new Date(s.length <= 10 ? s + "T12:00:00Z" : s); return MONTHS[d.getUTCMonth()] + " " + d.getUTCDate(); }
+function fmtStamp(s){ if(!s) return "—"; const d = new Date(s); return fmtDate(s) + ", " + String(d.getUTCHours()).padStart(2,"0") + ":" + String(d.getUTCMinutes()).padStart(2,"0") + " UTC"; }
+function daysBetween(a, b){ return Math.round((new Date(b) - new Date(a.length <= 10 ? a + "T12:00:00Z" : a)) / 864e5); }
+function prUrl(pr){
+  if (pr.n) return GH + "/pull/" + pr.n;
+  return GH + "/pulls?q=" + encodeURIComponent('is:pr author:' + (SNAP.author || "PRATHAMESH75") + ' in:title "' + pr.title.replace(/"/g, "") + '"');
+}
+function outcome(pr){
+  if (pr.state === "open") return "open";
+  if (pr.state === "merged") return "merged";
+  return pr.closeKind || "closed";
+}
+const OUT_LABEL = { open:"Open", merged:"Merged", salvaged:"Salvaged", superseded:"Superseded", duplicate:"Duplicate", closed:"Closed" };
+const OUT_COLOR = { open:"#b65ae3", merged:"#f3bb2d", salvaged:"#2bb3a3", superseded:"#8a8f98", duplicate:"#d9533b", closed:"#8a8f98" };
+const tag = o => `<span class="tag t-${o}">${OUT_LABEL[o]}</span>`;
+function initials(n){ const p = n.replace(/[^A-Za-z0-9]+/g, " ").trim().split(" "); return (p[0][0] + (p[1] ? p[1][0] : (p[0][1] || ""))).toUpperCase(); }
+function hue(n){ let h = 0; for (const c of n) h = (h * 31 + c.charCodeAt(0)) % 360; return `hsl(${h} 45% 42%)`; }
+
+/* ---------- state ---------- */
+let SNAP = null;
+let stats = {};
+let selected = "core", pinned = false, logFilter = "all", ledgerFilter = "all", ledgerQuery = "";
+
+function computeStats(){
+  const today = SNAP.generatedAt || new Date().toISOString();
+  stats = {};
+  AGENTS.forEach(a => stats[a.id] = { open:[], merged:[], closed:[], review:[], all:[] });
+  const lastByPr = {};
+  (SNAP.feed || []).forEach(e => { if (!lastByPr[e.pr] || e.at > lastByPr[e.pr].at) lastByPr[e.pr] = e; });
+  const nonAuthorByPr = {};
+  (SNAP.feed || []).forEach(e => { if (e.who !== SNAP.author && (!nonAuthorByPr[e.pr] || e.at > nonAuthorByPr[e.pr].at)) nonAuthorByPr[e.pr] = e; });
+  for (const pr of SNAP.prs){
+    pr._agent = agentOf(pr);
+    pr._out = outcome(pr);
+    pr._age = daysBetween(pr.created, today);
+    pr._last = pr.n ? (nonAuthorByPr[pr.n] || lastByPr[pr.n]) : null;
+    const s = stats[pr._agent];
+    s.all.push(pr);
+    if (pr.state === "open"){
+      s.open.push(pr);
+      if ((pr.comments || 0) >= 3 || pr._last) s.review.push(pr);
+    } else if (pr.state === "merged" || pr.closeKind === "salvaged") s.merged.push(pr);
+    else s.closed.push(pr);
+  }
+  const byNew = (a, b) => (b.created || "").localeCompare(a.created || "");
+  AGENTS.forEach(a => {
+    const s = stats[a.id];
+    s.open.sort(byNew); s.merged.sort(byNew); s.closed.sort(byNew);
+    s.review.sort((x, y) => ((y._last && y._last.at) || y.created).localeCompare((x._last && x._last.at) || x.created));
+    s.level = 1 + Math.floor(s.all.length / 5);
+    s.xp = (s.all.length % 5) / 5;
+  });
+}
+
+/* ---------- scene drawing ---------- */
+const CX = 500, CY = 285;
+const POS = AGENTS.map((a, i) => {
+  const ang = (-90 + i * 60) * Math.PI / 180;
+  return { x: CX + 290 * Math.cos(ang), y: CY + 145 * Math.sin(ang) };
+});
+function pt(x, y){ return x.toFixed(1) + "," + y.toFixed(1); }
+function shade(hex, f){
+  const n = parseInt(hex.slice(1), 16); let r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+  const t = f < 0 ? 0 : 255, p = Math.abs(f);
+  r = Math.round((t - r) * p + r); g = Math.round((t - g) * p + g); b = Math.round((t - b) * p + b);
+  return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+}
+function isoBox(cx, cy, s, h, wall, roof, roofH){
+  const hs = s / 2;
+  const L = [cx - s, cy], B = [cx, cy + hs], R = [cx + s, cy], T = [cx, cy - hs];
+  const up = p => [p[0], p[1] - h];
+  const e = 1.16, rs = s * e, rhs = hs * e;
+  const rL = [cx - rs, cy - h], rB = [cx, cy - h + rhs], rR = [cx + rs, cy - h], rT = [cx, cy - h - rhs];
+  const apex = [cx, cy - h - roofH];
+  const poly = (pts, fill, extra = "") => `<polygon points="${pts.map(p => pt(p[0], p[1])).join(" ")}" fill="${fill}" stroke="#2c1b10" stroke-width="2" stroke-linejoin="round" ${extra}/>`;
+  return [
+    poly([L, B, up(B), up(L)], shade(wall, -0.18)),
+    poly([B, R, up(R), up(B)], wall),
+    poly([rT, rL, apex], shade(roof, -0.28)),
+    poly([rT, rR, apex], shade(roof, -0.1)),
+    poly([rL, rB, apex], shade(roof, -0.12)),
+    poly([rB, rR, apex], roof),
+    `<polyline points="${pt(apex[0], apex[1])} ${pt(rB[0], rB[1])}" stroke="rgba(255,255,255,.35)" stroke-width="2" fill="none"/>`
+  ].join("");
+}
+function itemIcon(kind, x, y, sc = 1, stroke = "#2c1b10"){
+  const t = `transform="translate(${x},${y}) scale(${sc})"`;
+  const sw = `stroke="${stroke}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"`;
+  switch (kind){
+    case "staff": return `<g ${t}><line x1="0" y1="10" x2="0" y2="-9" ${sw}/><circle cx="0" cy="-11" r="4.5" fill="#d9b7ff" ${sw}/></g>`;
+    case "horn": return `<g ${t}><path d="M-8 4 L6 -6 L8 6 Z" fill="#ffe29a" ${sw}/><line x1="-8" y1="4" x2="-10" y2="9" ${sw}/></g>`;
+    case "brush": return `<g ${t}><line x1="-6" y1="9" x2="4" y2="-5" ${sw}/><path d="M3 -4 Q9 -12 10 -10 Q9 -3 5 -2 Z" fill="#ffb38f" ${sw}/></g>`;
+    case "hammer": return `<g ${t}><line x1="-4" y1="10" x2="3" y2="-4" ${sw}/><rect x="-3" y="-11" width="13" height="7" rx="1.5" fill="#cfd6de" ${sw} transform="rotate(26 3 -7)"/></g>`;
+    case "wrench": return `<g ${t}><line x1="-6" y1="9" x2="3" y2="-3" ${sw}/><circle cx="5" cy="-5" r="5" fill="#bfeee0" ${sw}/><circle cx="7" cy="-7" r="1.6" fill="${stroke}"/></g>`;
+    case "hourglass": return `<g ${t}><path d="M-6 -10 H6 L0 0 L6 10 H-6 L0 0 Z" fill="#ffd0d8" ${sw}/></g>`;
+  }
+  return "";
+}
+function hero(a, x, y, sc = 1){
+  return `<g transform="translate(${x},${y}) scale(${sc})">
+    <ellipse cx="0" cy="2" rx="12" ry="5" fill="rgba(0,0,0,.28)"/>
+    <g class="hero-bob">
+      <rect x="-6" y="-8" width="4.5" height="9" rx="2" fill="#3a2616"/><rect x="1.5" y="-8" width="4.5" height="9" rx="2" fill="#3a2616"/>
+      <path d="M-11 -6 Q-12 -24 0 -27 Q12 -24 11 -6 Z" fill="${a.color}" stroke="#2c1b10" stroke-width="2"/>
+      <path d="M-4 -26 L0 -14 L4 -26" fill="${shade(a.color, .35)}" stroke="#2c1b10" stroke-width="1.5"/>
+      <circle cx="0" cy="-33" r="8.5" fill="#f2c79b" stroke="#2c1b10" stroke-width="2"/>
+      <path d="M-9 -34 Q-8 -45 0 -45 Q8 -45 9 -34 Q4 -38 0 -38 Q-4 -38 -9 -34 Z" fill="${a.dark}" stroke="#2c1b10" stroke-width="1.8"/>
+      <circle cx="-3" cy="-32" r="1.3" fill="#2c1b10"/><circle cx="3" cy="-32" r="1.3" fill="#2c1b10"/>
+      ${itemIcon(a.item, 14, -18, .9)}
+    </g>
+  </g>`;
+}
+function pill(x, y, n, fill, dark, label){
+  const w = 14 + String(n).length * 9 + (label ? 0 : 0);
+  return `<g transform="translate(${x},${y})">
+    <rect x="${-w/2}" y="-10" width="${w}" height="20" rx="10" fill="${fill}" stroke="#2c1b10" stroke-width="2"/>
+    <rect x="${-w/2 + 4}" y="-7" width="${w - 8}" height="5" rx="2.5" fill="rgba(255,255,255,.35)"/>
+    <text x="0" y="5.5" text-anchor="middle" font-family="Lilita One, sans-serif" font-size="15" fill="#fff" stroke="#2c1b10" stroke-width="3" paint-order="stroke">${n}</text>
+    <title>${esc(label)}</title>
+  </g>`;
+}
+
+function drawScene(){
+  const svg = $("scene");
+  const parts = [];
+  parts.push(`<defs>
+    <pattern id="grid" width="64" height="32" patternUnits="userSpaceOnUse">
+      <path d="M0 16 L32 0 L64 16 L32 32 Z" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
+    </pattern>
+    <radialGradient id="glow"><stop offset="0" stop-color="#fff3b0" stop-opacity=".75"/><stop offset="1" stop-color="#fff3b0" stop-opacity="0"/></radialGradient>
+    <radialGradient id="vign" cx=".5" cy=".5" r=".75"><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></radialGradient>
+  </defs>`);
+  // forest floor + trees
+  parts.push(`<rect width="1000" height="570" fill="#284b2d"/>`);
+  const trees = [[60,70],[130,40],[40,160],[900,60],[960,150],[850,30],[60,470],[140,530],[40,390],[930,480],[860,540],[960,390],[230,30],[770,20],[250,545],[760,550],[20,280],[980,280]];
+  // base diamond
+  const D = { t:[500,70], r:[930,285], b:[500,500], l:[70,285] };
+  const dia = `${pt(...D.t)} ${pt(...D.r)} ${pt(...D.b)} ${pt(...D.l)}`;
+  parts.push(`<polygon points="${dia}" fill="#6aa447"/>`);
+  parts.push(`<polygon points="${dia}" fill="url(#grid)"/>`);
+  // subtle lawn stripes
+  parts.push(`<polygon points="${pt(500,120)} ${pt(830,285)} ${pt(500,450)} ${pt(170,285)}" fill="#76ae52" opacity=".45"/>`);
+  // paths to hall
+  POS.forEach(p => {
+    parts.push(`<line x1="${p.x}" y1="${p.y}" x2="${CX}" y2="${CY}" stroke="#a9844c" stroke-width="30" stroke-linecap="round" opacity=".9"/>`);
+    parts.push(`<line x1="${p.x}" y1="${p.y}" x2="${CX}" y2="${CY}" stroke="#c9a46a" stroke-width="22" stroke-linecap="round"/>`);
+    parts.push(`<line x1="${p.x}" y1="${p.y}" x2="${CX}" y2="${CY}" stroke="rgba(255,255,255,.18)" stroke-width="2" stroke-dasharray="3 12" stroke-linecap="round"/>`);
+  });
+  parts.push(`<path d="M500 500 L${CX} ${CY}" stroke="#a9844c" stroke-width="30" stroke-linecap="round"/><path d="M500 500 L${CX} ${CY}" stroke="#c9a46a" stroke-width="22" stroke-linecap="round"/>`);
+  // walls
+  const wall = (a, b) => `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#4e5763" stroke-width="16" stroke-linecap="round"/>
+    <line x1="${a[0]}" y1="${a[1]-5}" x2="${b[0]}" y2="${b[1]-5}" stroke="#9aa5b1" stroke-width="10" stroke-linecap="round"/>
+    <line x1="${a[0]}" y1="${a[1]-5}" x2="${b[0]}" y2="${b[1]-5}" stroke="#646e7a" stroke-width="10" stroke-dasharray="2 16"/>`;
+  const gateL = [470, 485], gateR = [530, 485];
+  parts.push(wall(D.l, D.t), wall(D.t, D.r));
+  // trees behind (top half)
+  trees.filter(t => t[1] < 285).forEach(t => parts.push(tree(t[0], t[1])));
+  // collect depth-sorted objects
+  const objs = [];
+  AGENTS.forEach((a, i) => objs.push({ y: POS[i].y, html: building(a, POS[i]) }));
+  objs.push({ y: CY, html: townHall() });
+  objs.sort((p, q) => p.y - q.y).forEach(o => parts.push(o.html));
+  // troops
+  if (!reduced && SNAP) AGENTS.forEach((a, i) => {
+    const n = Math.min(3, stats[a.id].review.length);
+    for (let k = 0; k < n; k++){
+      const p = POS[i];
+      parts.push(`<g><circle r="6" fill="${a.color}" stroke="#fff" stroke-width="2"/><circle r="2.2" cy="-1.5" fill="#f2c79b"/>
+        <animateMotion dur="7s" begin="${(k * 2.3 + i * .7).toFixed(1)}s" repeatCount="indefinite" path="M${p.x},${p.y + 12} L${CX},${CY + 18}" keyPoints="0;1;1" keyTimes="0;.85;1" calcMode="linear"/>
+        <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.1;.8;.86" dur="7s" begin="${(k * 2.3 + i * .7).toFixed(1)}s" repeatCount="indefinite"/></g>`);
+    }
+  });
+  // front walls + gate
+  parts.push(wall(D.l, gateL), wall(gateR, D.r));
+  parts.push(`<g><rect x="468" y="462" width="12" height="32" rx="3" fill="#646e7a" stroke="#2c1b10" stroke-width="2"/><rect x="520" y="462" width="12" height="32" rx="3" fill="#646e7a" stroke="#2c1b10" stroke-width="2"/>
+    <path d="M466 466 Q500 440 534 466" fill="none" stroke="#2c1b10" stroke-width="6"/><path d="M466 466 Q500 440 534 466" fill="none" stroke="#9aa5b1" stroke-width="3"/></g>`);
+  // reviewers at the gate
+  if (SNAP){
+    const revs = reviewerList().slice(0, 7);
+    revs.forEach((r, k) => {
+      const x = 500 + (k - (revs.length - 1) / 2) * 34, y = 528 + (k % 2) * 8;
+      parts.push(`<g transform="translate(${x},${y})"><title>${esc(r.who)}: ${r.n} review events</title>
+        <ellipse cx="0" cy="2" rx="10" ry="4" fill="rgba(0,0,0,.3)"/>
+        <g class="hero-bob" style="animation-delay:${-k * .4}s"><path d="M-9 -2 Q-10 -18 0 -20 Q10 -18 9 -2 Z" fill="${hue(r.who)}" stroke="#2c1b10" stroke-width="2"/>
+        <circle cx="0" cy="-25" r="7" fill="#f2c79b" stroke="#2c1b10" stroke-width="2"/>
+        <text x="0" y="-9" text-anchor="middle" font-family="Lilita One, sans-serif" font-size="8.5" fill="#fff">${esc(initials(r.who))}</text></g></g>`);
+    });
+  }
+  trees.filter(t => t[1] >= 285).forEach(t => parts.push(tree(t[0], t[1])));
+  // clouds
+  parts.push(`<g class="cloud" opacity=".22"><ellipse cx="0" cy="110" rx="90" ry="26" fill="#fff"/><ellipse cx="50" cy="96" rx="60" ry="24" fill="#fff"/></g>
+    <g class="cloud c2" opacity=".16"><ellipse cx="0" cy="390" rx="110" ry="30" fill="#fff"/><ellipse cx="-50" cy="376" rx="60" ry="22" fill="#fff"/></g>`);
+  parts.push(`<rect width="1000" height="570" fill="url(#vign)" pointer-events="none"/>`);
+  svg.innerHTML = parts.join("");
+  svg.querySelectorAll(".bld").forEach(g => {
+    const id = g.dataset.agent;
+    g.addEventListener("mouseenter", () => { showTip(id); if (!pinned) select(id, false); });
+    g.addEventListener("mouseleave", hideTip);
+    g.addEventListener("click", () => { pinned = (selected !== id) || !pinned; select(id, true); showTip(id); });
+    g.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); pinned = true; select(id, true); } });
+    g.addEventListener("focus", () => { if (!pinned) select(id, false); });
+  });
+}
+function tree(x, y){
+  return `<g transform="translate(${x},${y})"><ellipse cx="0" cy="18" rx="22" ry="8" fill="rgba(0,0,0,.25)"/>
+    <rect x="-3" y="4" width="6" height="14" fill="#5e3c25"/>
+    <circle cx="0" cy="-6" r="18" fill="#2f6b34" stroke="#1b3d1e" stroke-width="2"/><circle cx="-7" cy="-12" r="9" fill="#3f8a42"/><circle cx="6" cy="-16" r="6" fill="#4d9c4d"/></g>`;
+}
+function building(a, p){
+  const s = SNAP ? stats[a.id] : null;
+  const open = s ? s.open.length : 0, won = s ? s.merged.length : 0, lvl = s ? s.level : 1;
+  const sel = a.id === selected;
+  return `<g class="bld${sel ? " sel" : ""}" data-agent="${a.id}" tabindex="0" role="button" aria-label="${esc(a.name)}: ${open} open, ${won} landed">
+    <ellipse class="glow" cx="${p.x}" cy="${p.y}" rx="86" ry="46" fill="url(#glow)"/>
+    <ellipse class="glow selring" cx="${p.x}" cy="${p.y + 4}" rx="66" ry="33" fill="none" stroke="#fff3b0" stroke-width="3"/>
+    <g class="lift">
+      <polygon points="${pt(p.x - 58, p.y)} ${pt(p.x, p.y + 29)} ${pt(p.x + 58, p.y)} ${pt(p.x, p.y - 29)}" fill="#8b95a1" stroke="#2c1b10" stroke-width="2"/>
+      <polygon points="${pt(p.x - 58, p.y)} ${pt(p.x, p.y + 29)} ${pt(p.x, p.y + 35)} ${pt(p.x - 58, p.y + 6)}" fill="#646e7a" stroke="#2c1b10" stroke-width="2"/>
+      <polygon points="${pt(p.x, p.y + 29)} ${pt(p.x + 58, p.y)} ${pt(p.x + 58, p.y + 6)} ${pt(p.x, p.y + 35)}" fill="#737e8b" stroke="#2c1b10" stroke-width="2"/>
+      ${isoBox(p.x, p.y - 2, 42, 34, "#e9d3a6", a.color, 34)}
+      <polygon points="${pt(p.x - 30, p.y + 4)} ${pt(p.x - 18, p.y + 10)} ${pt(p.x - 18, p.y - 12)} ${pt(p.x - 30, p.y - 18)}" fill="#5e3c25" stroke="#2c1b10" stroke-width="2"/>
+      <polygon points="${pt(p.x + 12, p.y + 5)} ${pt(p.x + 26, p.y - 2)} ${pt(p.x + 26, p.y - 16)} ${pt(p.x + 12, p.y - 9)}" fill="#fff0b8" stroke="#2c1b10" stroke-width="2"/>
+      <circle cx="${p.x + 22}" cy="${p.y - 58}" r="12" fill="#f4e6c4" stroke="#2c1b10" stroke-width="2"/>
+      ${itemIcon(a.item, p.x + 22, p.y - 57, .8)}
+      <g transform="translate(${p.x - 52},${p.y - 34})"><path d="M-10 -12 H10 V2 Q10 10 0 14 Q-10 10 -10 2 Z" fill="${a.dark}" stroke="#2c1b10" stroke-width="2"/>
+        <text x="0" y="5" text-anchor="middle" font-family="Lilita One, sans-serif" font-size="13" fill="#fff">${lvl}</text><title>Level ${lvl}</title></g>
+      ${pill(p.x - 6, p.y - 86, open, "#b65ae3", "#7d2fb0", open + " open PRs")}
+      ${won ? pill(p.x + 30, p.y - 86, won, "#f3bb2d", "#b98410", won + " landed (merged or salvaged)") : ""}
+    </g>
+    ${hero(a, p.x - 8, p.y + 42, 1)}
+    <text x="${p.x}" y="${p.y + 64}" text-anchor="middle" font-family="Lilita One, sans-serif" font-size="14" fill="#fff" stroke="#2c1b10" stroke-width="3.5" paint-order="stroke">${esc(a.name)}</text>
+  </g>`;
+}
+function townHall(){
+  const t = SNAP ? SNAP.totals : { merged: 0 };
+  const landed = SNAP ? AGENTS.reduce((n, a) => n + stats[a.id].merged.length, 0) : 0;
+  const coins = Math.min(12, landed);
+  let pile = "";
+  for (let k = 0; k < coins; k++){
+    const x = CX + 62 + (k % 4) * 9 - Math.floor(k / 4) * 4, y = CY + 22 - Math.floor(k / 4) * 5 + (k % 2) * 2;
+    pile += `<g class="coin" style="animation-delay:${-k * .25}s"><ellipse cx="${x}" cy="${y}" rx="7" ry="3.5" fill="#b98410" stroke="#2c1b10" stroke-width="1.5"/><ellipse cx="${x}" cy="${y - 2}" rx="7" ry="3.5" fill="#f3bb2d" stroke="#2c1b10" stroke-width="1.5"/></g>`;
+  }
+  return `<g aria-label="Town hall: main branch">
+    <polygon points="${pt(CX - 88, CY)} ${pt(CX, CY + 44)} ${pt(CX + 88, CY)} ${pt(CX, CY - 44)}" fill="#8b95a1" stroke="#2c1b10" stroke-width="2"/>
+    <polygon points="${pt(CX - 88, CY)} ${pt(CX, CY + 44)} ${pt(CX, CY + 52)} ${pt(CX - 88, CY + 8)}" fill="#646e7a" stroke="#2c1b10" stroke-width="2"/>
+    <polygon points="${pt(CX, CY + 44)} ${pt(CX + 88, CY)} ${pt(CX + 88, CY + 8)} ${pt(CX, CY + 52)}" fill="#737e8b" stroke="#2c1b10" stroke-width="2"/>
+    ${isoBox(CX, CY - 4, 62, 52, "#d9c08e", "#f3bb2d", 46)}
+    ${isoBox(CX, CY - 4 - 52 - 10, 26, 22, "#e9d3a6", "#b65ae3", 26)}
+    <polygon points="${pt(CX - 20, CY + 8)} ${pt(CX - 4, CY + 16)} ${pt(CX - 4, CY - 16)} ${pt(CX - 20, CY - 24)}" fill="#5e3c25" stroke="#2c1b10" stroke-width="2"/>
+    <line x1="${CX}" y1="${CY - 150}" x2="${CX}" y2="${CY - 112}" stroke="#2c1b10" stroke-width="3"/>
+    <g class="flag-wave"><path d="M${CX} ${CY - 150} h30 l-6 8 l6 8 h-30 Z" fill="#b65ae3" stroke="#2c1b10" stroke-width="2"/></g>
+    <text x="${CX + 14}" y="${CY - 138}" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9" fill="#fff" pointer-events="none">main</text>
+    ${pile}
+    <circle class="sparkle" cx="${CX + 74}" cy="${CY + 2}" r="3" fill="#fff"/>
+    <circle class="sparkle" cx="${CX + 90}" cy="${CY + 14}" r="2.4" fill="#fff" style="animation-delay:-1.1s"/>
+    <text x="${CX}" y="${CY + 74}" text-anchor="middle" font-family="Lilita One, sans-serif" font-size="16" fill="#fff" stroke="#2c1b10" stroke-width="4" paint-order="stroke">Town Hall · main</text>
+    <text x="${CX}" y="${CY + 92}" text-anchor="middle" font-family="Nunito, sans-serif" font-weight="800" font-size="12" fill="#fff6e2" stroke="#2c1b10" stroke-width="3" paint-order="stroke">${landed} landed of ${SNAP ? SNAP.totals.all : "…"} launched</text>
+  </g>`;
+}
+
+/* ---------- tooltip ---------- */
+function showTip(id){
+  if (!SNAP) return;
+  const a = AG[id], s = stats[id], i = AGENTS.indexOf(a);
+  const svg = $("scene"), wrap = $("sceneWrap"), tip = $("tip");
+  const r = svg.getBoundingClientRect(), wr = wrap.getBoundingClientRect();
+  const k = r.width / 1000;
+  tip.innerHTML = `<b>${esc(a.name)}</b><div class="row">
+    <span><i class="dot" style="background:#b65ae3"></i>${s.open.length} open</span>
+    <span><i class="dot" style="background:#f3bb2d"></i>${s.merged.length} landed</span>
+    <span><i class="dot" style="background:#8a8f98"></i>${s.closed.length} closed</span></div>`;
+  tip.style.left = (r.left - wr.left + POS[i].x * k) + "px";
+  tip.style.top = (r.top - wr.top + (POS[i].y - 100) * k) + "px";
+  tip.hidden = false;
+}
+function hideTip(){ $("tip").hidden = true; }
+
+/* ---------- dossier ---------- */
+function select(id, fromClick){
+  selected = id;
+  document.querySelectorAll(".bld").forEach(g => g.classList.toggle("sel", g.dataset.agent === id));
+  renderDossier();
+}
+function prRow(pr, opts = {}){
+  const o = pr._out;
+  const risk = (pr.labels || []).filter(l => l.startsWith("sweeper:risk-")).map(l => l.replace("sweeper:risk-", "").replace(/-/g, " "));
+  const decide = (pr.labels || []).includes("needs-decision");
+  const meta = [
+    tag(o),
+    pr.n ? `<span class="mono">#${pr.n}</span>` : "",
+    pr.issue ? `<span>fixes <a href="${GH}/issues/${pr.issue}" target="_blank" rel="noopener" style="font-weight:700;font-size:12px">#${pr.issue}</a></span>` : "",
+    pr.state === "open" ? `<span>${pr._age}d old</span>` : `<span>${fmtDate(pr.closed || pr.created)}</span>`,
+    (pr.comments ? `<span>${pr.comments} in thread</span>` : ""),
+    decide ? `<span class="tag t-decide">needs decision</span>` : "",
+    risk.length && opts.risk ? `<span class="tag t-risk">${esc(risk[0])}</span>` : ""
+  ].filter(Boolean).join("");
+  let quote = "";
+  if (opts.quote && pr._last){
+    quote = `<div class="quote"><b>${esc(pr._last.who === SNAP.author ? "Autoresolver" : pr._last.who)}</b> · ${fmtDate(pr._last.at)}: ${esc(pr._last.text)}</div>`;
+  } else if (pr.note){
+    quote = `<div class="quote">${esc(pr.note)}</div>`;
+  }
+  return `<div class="pr"><i class="pin" style="background:${OUT_COLOR[o]}"></i>
+    <a href="${prUrl(pr)}" target="_blank" rel="noopener">${esc(pr.title)}</a>
+    <div class="meta">${meta}</div>${quote}</div>`;
+}
+function renderDossier(){
+  const a = AG[selected], el = $("dossier");
+  if (!SNAP){
+    el.innerHTML = `<div class="dz-head"><div class="port" style="background:${a.color}"></div><div><h3>${esc(a.name)}</h3><div class="spec">Scouting the battlefield…</div></div></div>`;
+    return;
+  }
+  const s = stats[selected];
+  const portrait = `<svg viewBox="-30 -58 60 64" width="70" height="70" aria-hidden="true">${hero(a, 0, 0, 1)}</svg>`;
+  const lim = (arr, n) => arr.slice(0, n);
+  el.innerHTML = `
+    <div class="dz-head">
+      <div class="port" style="background:radial-gradient(circle at 50% 30%, ${shade(a.color, .45)}, ${a.color})">${portrait}</div>
+      <div>
+        <h3>${esc(a.name)}</h3>
+        <div class="spec">${esc(a.spec)}${pinned ? " · pinned" : ""}</div>
+        <div class="lvl"><span class="shield">LVL ${s.level}</span><span class="xp" title="${s.all.length % 5} of 5 PRs to next level"><i style="width:${Math.round(s.xp * 100)}%"></i></span></div>
+      </div>
+    </div>
+    <div class="dz-stats">
+      <div><b>${s.all.length}</b><span>Launched</span></div>
+      <div><b style="color:#7d2fb0">${s.open.length}</b><span>Open</span></div>
+      <div><b style="color:#b98410">${s.merged.length}</b><span>Landed</span></div>
+      <div><b style="color:#1d8a7d">${s.review.length}</b><span>In review</span></div>
+      <div><b style="color:#6b6f76">${s.closed.length}</b><span>Closed</span></div>
+    </div>
+    <div class="dz-body">
+      <div class="dz-sec"><h4>In review now <span class="count">${s.review.length}</span></h4>
+        ${s.review.length ? lim(s.review, 5).map(p => prRow(p, { quote: true, risk: true })).join("") : `<p class="empty">No open PR has reviewer traffic yet.</p>`}
+      </div>
+      <div class="dz-sec"><h4>Addressing <span class="count">${s.open.length}</span></h4>
+        ${s.open.length ? lim(s.open.filter(p => !s.review.includes(p)), 6).map(p => prRow(p, { risk: true })).join("") || `<p class="empty">Every open PR here is already in review.</p>` : `<p class="empty">Nothing open right now.</p>`}
+      </div>
+      <div class="dz-sec"><h4>Worked on <span class="count">${s.merged.length + s.closed.length}</span></h4>
+        ${(s.merged.length + s.closed.length) ? lim([...s.merged, ...s.closed], 8).map(p => prRow(p)).join("") : `<p class="empty">No finished PRs in this snapshot.</p>`}
+      </div>
+      ${s.open.length + s.merged.length + s.closed.length > 0 ? `<button class="btn" id="dzAll" style="justify-self:start">Show all ${s.all.length} in the ledger</button>` : ""}
+    </div>`;
+  const b = $("dzAll");
+  if (b) b.onclick = () => { ledgerQuery = "agent:" + selected; $("ledgerSearch").value = "agent:" + selected; renderLedger(); $("ledger").scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" }); };
+}
+
+/* ---------- header ---------- */
+function renderHeader(){
+  const t = SNAP.totals;
+  const salv = SNAP.prs.filter(p => p.closeKind === "salvaged").length;
+  const landed = t.merged + salv;
+  const res = [
+    { cls:"gold", n:landed, lbl:`Landed · ${t.merged} merged + ${salv} salvaged` },
+    { cls:"elixir", n:t.open, lbl:"Open in the field" },
+    { cls:"stone", n:t.closed - salv, lbl:"Closed without landing" },
+  ];
+  const icon = { gold:`<svg width="26" height="26" viewBox="0 0 26 26"><ellipse cx="13" cy="16" rx="10" ry="5" fill="#b98410" stroke="#2c1b10" stroke-width="2"/><ellipse cx="13" cy="12" rx="10" ry="5" fill="#f3bb2d" stroke="#2c1b10" stroke-width="2"/></svg>`,
+    elixir:`<svg width="26" height="26" viewBox="0 0 26 26"><path d="M13 2 C19 10 21 13 21 17 A8 8 0 0 1 5 17 C5 13 7 10 13 2 Z" fill="#b65ae3" stroke="#2c1b10" stroke-width="2"/><circle cx="10" cy="15" r="2" fill="#f2d6ff"/></svg>`,
+    stone:`<svg width="26" height="26" viewBox="0 0 26 26"><path d="M4 18 L7 8 L15 5 L22 10 L21 19 L12 22 Z" fill="#8b95a1" stroke="#2c1b10" stroke-width="2"/><path d="M7 8 L13 12 L22 10 M13 12 L12 22" stroke="#646e7a" stroke-width="1.5" fill="none"/></svg>` };
+  $("resources").innerHTML = res.map(r => `<div class="res ${r.cls}">${icon[r.cls]}<div class="bar"><div class="fill" style="width:${Math.max(6, r.n / t.all * 100)}%"></div><div class="num">${r.n}</div></div><div class="lbl">${esc(r.lbl)}</div></div>`).join("");
+  $("subline").innerHTML = `${t.all} PRs by <b>${esc(SNAP.author)}</b> on <b>${esc(SNAP.repo)}</b> · snapshot ${fmtStamp(SNAP.generatedAt)}`;
+}
+
+/* ---------- reviewers ---------- */
+function reviewerList(){
+  const m = {};
+  (SNAP.feed || []).forEach(e => { if (e.who !== SNAP.author){ m[e.who] = (m[e.who] || 0) + 1; } });
+  return Object.entries(m).map(([who, n]) => ({ who, n })).sort((a, b) => b.n - a.n);
+}
+function renderGate(){
+  const r = reviewerList();
+  $("gate").innerHTML = `<span class="lbl">Reviewers at the gate</span>` + (r.length ? r.map(x =>
+    `<span class="chip"><span class="av" style="background:${hue(x.who)}">${esc(initials(x.who))}</span>${esc(x.who)} <span class="n">${x.n}</span></span>`).join("") : `<span class="chip">No review activity in this snapshot</span>`);
+}
+
+/* ---------- battle log ---------- */
+const KIND = {
+  merge:   { label:"merged", bg:"#f3bb2d", ico:`<svg width="18" height="18" viewBox="0 0 18 18"><path d="M3 9 L7 13 L15 4" stroke="#2c1b10" stroke-width="3" fill="none" stroke-linecap="round"/></svg>` },
+  salvage: { label:"salvaged", bg:"#2bb3a3", ico:`<svg width="18" height="18" viewBox="0 0 18 18"><path d="M4 3 V9 A4 4 0 0 0 8 13 H14 M11 10 L14 13 L11 16" stroke="#2c1b10" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
+  approve: { label:"approved", bg:"#57b04a", ico:`<svg width="18" height="18" viewBox="0 0 18 18"><path d="M9 2 L16 5 V9 C16 13 13 15.5 9 17 C5 15.5 2 13 2 9 V5 Z" fill="#dff5d6" stroke="#2c1b10" stroke-width="2"/><path d="M6 9 L8.5 11.5 L12.5 6.5" stroke="#2c1b10" stroke-width="2" fill="none"/></svg>` },
+  review:  { label:"reviewed", bg:"#e07a4f", ico:`<svg width="18" height="18" viewBox="0 0 18 18"><circle cx="8" cy="8" r="5" fill="#ffe7da" stroke="#2c1b10" stroke-width="2"/><line x1="12" y1="12" x2="16" y2="16" stroke="#2c1b10" stroke-width="2.6" stroke-linecap="round"/></svg>` },
+  comment: { label:"commented", bg:"#3b82c4", ico:`<svg width="18" height="18" viewBox="0 0 18 18"><path d="M2 4 Q2 2 4 2 H14 Q16 2 16 4 V10 Q16 12 14 12 H8 L4 16 V12 Q2 12 2 10 Z" fill="#dbeafe" stroke="#2c1b10" stroke-width="2"/></svg>` },
+  push:    { label:"pushed a fix", bg:"#b65ae3", ico:`<svg width="18" height="18" viewBox="0 0 18 18"><path d="M9 16 V4 M4 8 L9 3 L14 8" stroke="#2c1b10" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
+  close:   { label:"closed", bg:"#8a8f98", ico:`<svg width="18" height="18" viewBox="0 0 18 18"><path d="M4 4 L14 14 M14 4 L4 14" stroke="#2c1b10" stroke-width="2.8" stroke-linecap="round"/></svg>` },
+};
+const LOG_FILTERS = [["all","All"],["people","Reviewer comments"],["wins","Merges & salvages"],["close","Closures"],["bot","Autoresolver moves"]];
+function renderLogFilters(){
+  $("logFilters").innerHTML = LOG_FILTERS.map(([k, l]) => `<button class="btn" data-f="${k}" aria-pressed="${logFilter === k}">${l}</button>`).join("");
+  $("logFilters").querySelectorAll("button").forEach(b => b.onclick = () => { logFilter = b.dataset.f; renderLogFilters(); renderLog(); });
+}
+function renderLog(){
+  const titleOf = {}; SNAP.prs.forEach(p => { if (p.n) titleOf[p.n] = p; });
+  let ev = [...(SNAP.feed || [])].sort((a, b) => b.at.localeCompare(a.at));
+  const isBot = e => e.who === SNAP.author;
+  if (logFilter === "people") ev = ev.filter(e => !isBot(e) && (e.kind === "review" || e.kind === "comment" || e.kind === "approve"));
+  if (logFilter === "wins") ev = ev.filter(e => e.kind === "merge" || e.kind === "salvage");
+  if (logFilter === "close") ev = ev.filter(e => e.kind === "close" || e.kind === "salvage");
+  if (logFilter === "bot") ev = ev.filter(isBot);
+  const dayOnly = SNAP.feedPrecision === "day";
+  $("logNote").textContent = `${(SNAP.feed || []).length} events`;
+  $("log").innerHTML = ev.length ? ev.map(e => {
+    const k = KIND[e.kind] || KIND.comment, pr = titleOf[e.pr];
+    const a = pr ? AG[agentOf(pr)] : null;
+    return `<article class="ev"><div class="ico" style="background:${k.bg}">${k.ico}</div><div>
+      <div class="top"><span class="who">${isBot(e) ? "Autoresolver" : esc(e.who)}</span>${isBot(e) ? `<span class="bot">bot</span>` : ""}<span>${k.label}</span><span>· ${dayOnly ? fmtDate(e.at) : fmtStamp(e.at)}</span></div>
+      <div class="txt">${esc(e.text)}</div>
+      <div class="on">on <a href="${GH}/pull/${e.pr}" target="_blank" rel="noopener">#${e.pr}</a>${pr ? " " + esc(pr.title) : ""}${a ? ` · <span class="agentchip"><i class="dot" style="background:${a.color}"></i>${esc(a.name)}</span>` : ""}</div>
+    </div></article>`;
+  }).join("") : `<p class="foot" style="text-align:left">No events match this filter.</p>`;
+}
+
+/* ---------- war report ---------- */
+function renderReport(){
+  const t = SNAP.totals, prs = SNAP.prs, today = SNAP.generatedAt;
+  const salv = prs.filter(p => p.closeKind === "salvaged");
+  const sup = prs.filter(p => p.closeKind === "superseded" || p.closeKind === "duplicate");
+  const unknownClosed = t.closed - prs.filter(p => p.state === "closed" && p.closeKind).length;
+  const open = prs.filter(p => p.state === "open");
+  const stale = open.filter(p => p._age > 30);
+  const oldest = open.reduce((m, p) => (!m || p.created < m.created) ? p : m, null);
+  const decide = open.filter(p => (p.labels || []).includes("needs-decision"));
+  const risky = open.filter(p => (p.labels || []).some(l => l === "sweeper:risk-security-boundary"));
+  const quiet = open.filter(p => (p.comments || 0) <= 1);
+  const revs = reviewerList();
+  const busiest = AGENTS.map(a => ({ a, n: stats[a.id].open.length })).sort((x, y) => y.n - x.n)[0];
+  const directRate = (t.merged / t.all * 100).toFixed(1);
+  const intel = [
+    { cls:"warn", badge: directRate + "%", h:"Few PRs merge directly",
+      p:`<b>${t.merged}</b> of <b>${t.all}</b> PRs were merged as-is. Maintainers often land the fix by cherry-picking it into their own PR, with authorship kept. That happened on <b>${salv.length}</b> of the closed PRs checked so far (${salv.map(p => "#" + p.n).join(", ") || "none"}). Count those as wins; ${unknownClosed} closed PRs haven't been classified yet.` },
+    { cls:"bad", badge: sup.length, h:"Racing fixes that already exist",
+      p:`${sup.map(p => `<b>#${p.n}</b> was ${p.closeKind === "duplicate" ? "a duplicate" : "superseded by a fix on main"}`).join("; ")}. Have the autoresolver search open PRs and recent main commits for the issue number before it branches.` },
+    { cls: stale.length > 20 ? "bad" : "warn", badge: stale.length, h:"Open backlog is aging",
+      p:`<b>${stale.length}</b> of ${open.length} open PRs in this snapshot are over 30 days old. The oldest, opened ${fmtDate(oldest && oldest.created)}, has waited <b>${oldest ? oldest._age : 0} days</b>. Closing or rebasing stale ones keeps reviewers focused on fresh work.` },
+    { cls:"warn", badge: decide.length, h:"Waiting on a maintainer decision",
+      p:`${decide.length} open PRs carry <b>needs-decision</b>${decide.length ? ": " + decide.slice(0, 3).map(p => esc(p.title.replace(/^\w+\([^)]*\):\s*/, ""))).join("; ") : ""}. More pushes won't move these; a short question on the issue might.` },
+    (() => {
+      const last = {};
+      [...(SNAP.feed || [])].sort((a, b) => a.at.localeCompare(b.at)).forEach(e => last[e.pr] = e);
+      const waiting = Object.values(last).filter(e => e.who !== SNAP.author && ["review","comment"].includes(e.kind) && prs.find(p => p.n === e.pr && p.state === "open"));
+      const threads = Object.keys(last).length;
+      return { cls: waiting.length ? "bad" : "good", badge: waiting.length, h: waiting.length ? "Reviewers waiting on a reply" : "Every reviewer has a reply",
+        p: `${revs.length} reviewers commented across ${threads} threads${revs.length ? `, led by <b>${esc(revs[0].who)}</b>` : ""}. ` +
+          (waiting.length ? `A reviewer spoke last on ${waiting.map(e => `<b>#${e.pr}</b> (${esc(e.who)})`).join(", ")}; the autoresolver should answer or push.` : `On every open thread the autoresolver has the last word, with a pushed fix or a reasoned reply.`) };
+    })(),
+    (() => {
+      const top = [...risky].sort((a, b) => (b.comments || 0) - (a.comments || 0))[0];
+      return { cls:"warn", badge: risky.length, h:"Security-boundary changes in flight",
+        p:`${risky.length} open PRs are tagged <b>risk: security boundary</b>.${top ? ` They draw the longest reviews: ${top.n ? "#" + top.n : esc(top.title)} has ${top.comments} thread entries.` : ""} Keep them small and link the exact reproduction.` };
+    })(),
+    { cls:"good", badge: quiet.length, h:"Untouched PRs",
+      p:`${quiet.length} open PRs have one or no thread entries. <b>${esc(busiest.a.name)}</b> holds the most open work (${busiest.n}); that is where reviewer attention is thinnest.` },
+  ];
+  $("report").innerHTML = weeklyChart() + intel.map(i => `<div class="intel ${i.cls}"><div class="badge">${i.badge}</div><div><h5>${i.h}</h5><p>${i.p}</p></div></div>`).join("");
+}
+function weeklyChart(){
+  const prs = SNAP.prs; if (!prs.length) return "";
+  const wk = d => { const x = new Date(d + "T12:00:00Z"); const day = (x.getUTCDay() + 6) % 7; x.setUTCDate(x.getUTCDate() - day); return x.toISOString().slice(0, 10); };
+  const weeks = {};
+  prs.forEach(p => { const k = wk(p.created.slice(0, 10)); (weeks[k] = weeks[k] || { open:0, landed:0, closed:0 }); const o = p._out; if (o === "open") weeks[k].open++; else if (o === "merged" || o === "salvaged") weeks[k].landed++; else weeks[k].closed++; });
+  const keys = Object.keys(weeks).sort();
+  const first = new Date(keys[0] + "T12:00:00Z"), last = new Date(keys[keys.length - 1] + "T12:00:00Z");
+  const all = []; for (let d = new Date(first); d <= last; d.setUTCDate(d.getUTCDate() + 7)) all.push(d.toISOString().slice(0, 10));
+  const max = Math.max(...all.map(k => weeks[k] ? weeks[k].open + weeks[k].landed + weeks[k].closed : 0));
+  const top = Math.ceil(max / 5) * 5 || 5;
+  const W = 520, H = 170, pl = 28, pr = 8, pt_ = 10, pb = 26;
+  const bw = (W - pl - pr) / all.length;
+  const y = v => pt_ + (H - pt_ - pb) * (1 - v / top);
+  let g = "";
+  for (let v = 0; v <= top; v += top / 5 >= 1 ? Math.round(top / 5) : 1){
+    g += `<line x1="${pl}" x2="${W - pr}" y1="${y(v)}" y2="${y(v)}" stroke="rgba(255,246,226,.12)"/><text x="${pl - 6}" y="${y(v) + 4}" text-anchor="end" font-size="10" fill="#e7d6b4" font-family="IBM Plex Mono, monospace">${v}</text>`;
+  }
+  all.forEach((k, i) => {
+    const w = weeks[k] || { open:0, landed:0, closed:0 };
+    let acc = 0; const x = pl + i * bw + bw * .15, bwi = bw * .7;
+    [["landed","#f3bb2d"],["closed","#8a8f98"],["open","#b65ae3"]].forEach(([f, c]) => {
+      if (!w[f]) return;
+      g += `<rect x="${x.toFixed(1)}" y="${y(acc + w[f]).toFixed(1)}" width="${bwi.toFixed(1)}" height="${(y(acc) - y(acc + w[f])).toFixed(1)}" fill="${c}" stroke="#2c1b10" stroke-width="1"><title>Week of ${fmtDate(k)}: ${w[f]} ${f}</title></rect>`;
+      acc += w[f];
+    });
+    if (i % 2 === 0 || all.length < 9) g += `<text x="${(x + bwi / 2).toFixed(1)}" y="${H - 8}" text-anchor="middle" font-size="10" fill="#e7d6b4" font-family="IBM Plex Mono, monospace">${fmtDate(k)}</text>`;
+  });
+  return `<div class="chart"><h5>PRs launched per week</h5><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Stacked bars of PRs opened per week by outcome">${g}</svg>
+    <div class="legend"><span><i class="dot" style="background:#f3bb2d"></i>Landed</span><span><i class="dot" style="background:#b65ae3"></i>Still open</span><span><i class="dot" style="background:#8a8f98"></i>Closed</span><span>${prs.length} of ${SNAP.totals.all} PRs in this snapshot</span></div></div>`;
+}
+
+/* ---------- ledger ---------- */
+const LEDGER_F = [["all","All"],["open","Open"],["landed","Landed"],["closed","Closed"]];
+function renderLedgerFilters(){
+  $("ledgerFilters").innerHTML = LEDGER_F.map(([k, l]) => `<button class="btn" data-f="${k}" aria-pressed="${ledgerFilter === k}">${l}</button>`).join("");
+  $("ledgerFilters").querySelectorAll("button").forEach(b => b.onclick = () => { ledgerFilter = b.dataset.f; renderLedgerFilters(); renderLedger(); });
+}
+function renderLedger(){
+  let rows = [...SNAP.prs].sort((a, b) => b.created.localeCompare(a.created));
+  if (ledgerFilter === "open") rows = rows.filter(p => p._out === "open");
+  if (ledgerFilter === "landed") rows = rows.filter(p => p._out === "merged" || p._out === "salvaged");
+  if (ledgerFilter === "closed") rows = rows.filter(p => !["open","merged","salvaged"].includes(p._out));
+  const q = ledgerQuery.trim().toLowerCase();
+  if (q.startsWith("agent:")) rows = rows.filter(p => p._agent === q.slice(6));
+  else if (q) rows = rows.filter(p => (p.title + " " + (p.issue || "") + " " + (p.n || "") + " " + (p.labels || []).join(" ")).toLowerCase().includes(q));
+  $("ledgerNote").textContent = `${rows.length} shown · ${SNAP.prs.length} of ${SNAP.totals.all} in snapshot`;
+  $("ledger").innerHTML = `<thead><tr><th>PR</th><th>Title</th><th>Agent</th><th>Opened</th><th>Thread</th><th>Status</th></tr></thead><tbody>` +
+    rows.map(p => { const a = AG[p._agent]; return `<tr>
+      <td class="num">${p.n ? "#" + p.n : "—"}</td>
+      <td><a href="${prUrl(p)}" target="_blank" rel="noopener">${esc(p.title)}</a>${p.issue ? ` <span class="mono" style="color:var(--ink-2)">· issue #${p.issue}</span>` : ""}</td>
+      <td><span class="agentchip"><i class="dot" style="background:${a.color}"></i>${esc(a.name)}</span></td>
+      <td class="num">${fmtDate(p.created)}</td>
+      <td class="num">${p.comments ?? 0}</td>
+      <td>${tag(p._out)}</td></tr>`; }).join("") + `</tbody>`;
+}
+$("ledgerSearch").addEventListener("input", e => { ledgerQuery = e.target.value; renderLedger(); });
+
+/* ---------- boot ---------- */
+function renderAll(){
+  computeStats();
+  if (!pinned){
+    const best = AGENTS.map(a => ({ id: a.id, n: stats[a.id].review.length * 3 + stats[a.id].open.length })).sort((x, y) => y.n - x.n)[0];
+    selected = best.id;
+  }
+  renderHeader(); drawScene(); renderDossier(); renderGate(); renderLogFilters(); renderLog(); renderReport(); renderLedgerFilters(); renderLedger();
+  $("foot").innerHTML = SNAP.complete ? `Snapshot ${fmtStamp(SNAP.generatedAt)} from ${esc(SNAP.source)}.`
+    : `Snapshot ${fmtStamp(SNAP.generatedAt)} from ${esc(SNAP.source)}. Totals are exact; the lists hold ${SNAP.prs.length} of ${SNAP.totals.all} PRs and the review threads read so far. Run <code>refresh_snapshot.py</code> to load everything.`;
+}
+function showBanner(msg){ const b = $("banner"); b.textContent = msg; b.hidden = false; }
+
+drawScene(); renderDossier();
+const use = window.claude && window.claude.use ? window.claude.use("db") : Promise.resolve(null);
+use.then(db => {
+  if (!db){ showBanner("Live data isn't available in this view. Open the page on claude.ai while signed in to load the snapshot."); return; }
+  db.doc("snapshot/latest").onSnapshot(snap => {
+    if (!snap.exists){ showBanner("No snapshot stored yet. Run refresh_snapshot.py and upload its output to fill the base."); return; }
+    $("banner").hidden = true;
+    SNAP = snap.data();
+    renderAll();
+  }, err => showBanner("Couldn't load the snapshot: " + (err && err.message ? err.message : "unknown error") + ". Reload to try again."));
+}).catch(() => showBanner("Live data isn't available in this view."));
+})();
+</script>
