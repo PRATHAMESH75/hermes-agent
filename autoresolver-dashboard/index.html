@@ -136,7 +136,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, [tabindex]:focus-vis
 .t-salvaged{background:#c7efe9; color:#0f5a52}
 .t-superseded{background:#dfe3ea; color:#374151}
 .t-duplicate{background:#f6d6cf; color:#8a2c19}
-.t-closed{background:#e4e1dc; color:#4b4540}
+.t-closed, .t-withdrawn{background:#e4e1dc; color:#4b4540}
+.t-notplanned{background:#e6dcf2; color:#4a2f6b}
 .t-risk{background:#fde2d9; color:#8a2c19}
 .t-decide{background:#fff0bf; color:#6e4b00}
 .mono{font-family:var(--mono); font-size:11.5px}
@@ -311,8 +312,8 @@ function outcome(pr){
   if (pr.state === "merged") return "merged";
   return pr.closeKind || "closed";
 }
-const OUT_LABEL = { open:"Open", merged:"Merged", salvaged:"Salvaged", superseded:"Superseded", duplicate:"Duplicate", closed:"Closed" };
-const OUT_COLOR = { open:"#b65ae3", merged:"#f3bb2d", salvaged:"#2bb3a3", superseded:"#8a8f98", duplicate:"#d9533b", closed:"#8a8f98" };
+const OUT_LABEL = { open:"Open", merged:"Merged", salvaged:"Salvaged", superseded:"Superseded", duplicate:"Duplicate", withdrawn:"Withdrawn", notplanned:"Not planned", closed:"Closed" };
+const OUT_COLOR = { open:"#b65ae3", merged:"#f3bb2d", salvaged:"#2bb3a3", superseded:"#8a8f98", duplicate:"#d9533b", withdrawn:"#8a8f98", notplanned:"#6b4f8a", closed:"#8a8f98" };
 const tag = o => `<span class="tag t-${o}">${OUT_LABEL[o]}</span>`;
 function initials(n){ const p = n.replace(/[^A-Za-z0-9]+/g, " ").trim().split(" "); return (p[0][0] + (p[1] ? p[1][0] : (p[0][1] || ""))).toUpperCase(); }
 function hue(n){ let h = 0; for (const c of n) h = (h * 31 + c.charCodeAt(0)) % 360; return `hsl(${h} 45% 42%)`; }
@@ -356,8 +357,8 @@ function computeStats(){
 /* ---------- scene drawing ---------- */
 const CX = 500, CY = 285;
 const POS = AGENTS.map((a, i) => {
-  const ang = (-90 + i * 60) * Math.PI / 180;
-  return { x: CX + 290 * Math.cos(ang), y: CY + 145 * Math.sin(ang) };
+  const ang = (-120 + i * 60) * Math.PI / 180;
+  return { x: CX + 300 * Math.cos(ang), y: CY + 140 * Math.sin(ang) };
 });
 function pt(x, y){ return x.toFixed(1) + "," + y.toFixed(1); }
 function shade(hex, f){
@@ -488,6 +489,7 @@ function drawScene(){
     });
   }
   trees.filter(t => t[1] >= 285).forEach(t => parts.push(tree(t[0], t[1])));
+  AGENTS.forEach((a, i) => parts.push(buildingLabels(a, POS[i])));
   // clouds
   parts.push(`<g class="cloud" opacity=".22"><ellipse cx="0" cy="110" rx="90" ry="26" fill="#fff"/><ellipse cx="50" cy="96" rx="60" ry="24" fill="#fff"/></g>
     <g class="cloud c2" opacity=".16"><ellipse cx="0" cy="390" rx="110" ry="30" fill="#fff"/><ellipse cx="-50" cy="376" rx="60" ry="22" fill="#fff"/></g>`);
@@ -525,10 +527,16 @@ function building(a, p){
       ${itemIcon(a.item, p.x + 22, p.y - 57, .8)}
       <g transform="translate(${p.x - 52},${p.y - 34})"><path d="M-10 -12 H10 V2 Q10 10 0 14 Q-10 10 -10 2 Z" fill="${a.dark}" stroke="#2c1b10" stroke-width="2"/>
         <text x="0" y="5" text-anchor="middle" font-family="Lilita One, sans-serif" font-size="13" fill="#fff">${lvl}</text><title>Level ${lvl}</title></g>
-      ${pill(p.x - 6, p.y - 86, open, "#b65ae3", "#7d2fb0", open + " open PRs")}
-      ${won ? pill(p.x + 30, p.y - 86, won, "#f3bb2d", "#b98410", won + " landed (merged or salvaged)") : ""}
     </g>
     ${hero(a, p.x - 8, p.y + 42, 1)}
+  </g>`;
+}
+function buildingLabels(a, p){
+  const s = SNAP ? stats[a.id] : null;
+  const open = s ? s.open.length : 0, won = s ? s.merged.length : 0;
+  return `<g pointer-events="none">
+    ${pill(p.x + 62, p.y - 50, open, "#b65ae3", "#7d2fb0", open + " open PRs")}
+    ${won ? pill(p.x + 62, p.y - 26, won, "#f3bb2d", "#b98410", won + " landed (merged or salvaged)") : ""}
     <text x="${p.x}" y="${p.y + 64}" text-anchor="middle" font-family="Lilita One, sans-serif" font-size="14" fill="#fff" stroke="#2c1b10" stroke-width="3.5" paint-order="stroke">${esc(a.name)}</text>
   </g>`;
 }
@@ -571,7 +579,7 @@ function showTip(id){
     <span><i class="dot" style="background:#f3bb2d"></i>${s.merged.length} landed</span>
     <span><i class="dot" style="background:#8a8f98"></i>${s.closed.length} closed</span></div>`;
   tip.style.left = (r.left - wr.left + POS[i].x * k) + "px";
-  tip.style.top = (r.top - wr.top + (POS[i].y - 100) * k) + "px";
+  tip.style.top = (r.top - wr.top + (POS[i].y - 80) * k) + "px";
   tip.hidden = false;
 }
 function hideTip(){ $("tip").hidden = true; }
@@ -715,8 +723,13 @@ function renderLog(){
 function renderReport(){
   const t = SNAP.totals, prs = SNAP.prs, today = SNAP.generatedAt;
   const salv = prs.filter(p => p.closeKind === "salvaged");
-  const sup = prs.filter(p => p.closeKind === "superseded" || p.closeKind === "duplicate");
+  const sup = prs.filter(p => p.closeKind === "superseded");
+  const dup = prs.filter(p => p.closeKind === "duplicate");
+  const selfClosed = sup.filter(p => p.via === SNAP.author);
   const unknownClosed = t.closed - prs.filter(p => p.state === "closed" && p.closeKind).length;
+  const landers = {}; salv.forEach(p => { if (p.via) landers[p.via] = (landers[p.via] || 0) + 1; });
+  const topLanders = Object.entries(landers).sort((a, b) => b[1] - a[1]).slice(0, 3);
+  const recentOf = arr => [...arr].sort((a, b) => (b.closed || "").localeCompare(a.closed || "")).slice(0, 2);
   const open = prs.filter(p => p.state === "open");
   const stale = open.filter(p => p._age > 30);
   const oldest = open.reduce((m, p) => (!m || p.created < m.created) ? p : m, null);
@@ -725,12 +738,13 @@ function renderReport(){
   const quiet = open.filter(p => (p.comments || 0) <= 1);
   const revs = reviewerList();
   const busiest = AGENTS.map(a => ({ a, n: stats[a.id].open.length })).sort((x, y) => y.n - x.n)[0];
-  const directRate = (t.merged / t.all * 100).toFixed(1);
+  const landed = t.merged + salv.length, finished = t.merged + t.closed;
+  const landRate = Math.round(landed / Math.max(1, finished) * 100);
   const intel = [
-    { cls:"warn", badge: directRate + "%", h:"Few PRs merge directly",
-      p:`<b>${t.merged}</b> of <b>${t.all}</b> PRs were merged as-is. Maintainers often land the fix by cherry-picking it into their own PR, with authorship kept. That happened on <b>${salv.length}</b> of the closed PRs checked so far (${salv.map(p => "#" + p.n).join(", ") || "none"}). Count those as wins; ${unknownClosed} closed PRs haven't been classified yet.` },
-    { cls:"bad", badge: sup.length, h:"Racing fixes that already exist",
-      p:`${sup.map(p => `<b>#${p.n}</b> was ${p.closeKind === "duplicate" ? "a duplicate" : "superseded by a fix on main"}`).join("; ")}. Have the autoresolver search open PRs and recent main commits for the issue number before it branches.` },
+    { cls: landRate >= 40 ? "good" : "warn", badge: landRate + "%", h:"Most wins arrive as salvage",
+      p:`<b>${landed}</b> of the <b>${finished}</b> finished PRs landed on main. Only <b>${t.merged}</b> merged as-is; <b>${salv.length}</b> were cherry-picked or carried over by a maintainer${topLanders.length ? ` (${topLanders.map(([w, n]) => `${esc(w)} ${n}`).join(", ")})` : ""}. Maintainers here prefer to land fixes in their own PRs, so salvage is the normal path to main.${unknownClosed ? ` ${unknownClosed} closed PRs have no recorded reason.` : ""}` },
+    { cls:"bad", badge: sup.length + dup.length, h:"Beaten to the fix",
+      p:`<b>${sup.length}</b> closed PRs were overtaken by a different fix on main, and the autoresolver itself noticed and closed <b>${selfClosed.length}</b> of them. Another <b>${dup.length}</b> duplicated a PR that already existed${recentOf([...sup, ...dup]).length ? `, most recently ${recentOf([...sup, ...dup]).map(p => `#${p.n}`).join(" and ")}` : ""}. Before branching, have it check open PRs and the last few days of main for the issue number.` },
     { cls: stale.length > 20 ? "bad" : "warn", badge: stale.length, h:"Open backlog is aging",
       p:`<b>${stale.length}</b> of ${open.length} open PRs in this snapshot are over 30 days old. The oldest, opened ${fmtDate(oldest && oldest.created)}, has waited <b>${oldest ? oldest._age : 0} days</b>. Closing or rebasing stale ones keeps reviewers focused on fresh work.` },
     { cls:"warn", badge: decide.length, h:"Waiting on a maintainer decision",
@@ -749,7 +763,7 @@ function renderReport(){
       return { cls:"warn", badge: risky.length, h:"Security-boundary changes in flight",
         p:`${risky.length} open PRs are tagged <b>risk: security boundary</b>.${top ? ` They draw the longest reviews: ${top.n ? "#" + top.n : esc(top.title)} has ${top.comments} thread entries.` : ""} Keep them small and link the exact reproduction.` };
     })(),
-    { cls:"good", badge: quiet.length, h:"Untouched PRs",
+    { cls:"warn", badge: quiet.length, h:"Untouched PRs",
       p:`${quiet.length} open PRs have one or no thread entries. <b>${esc(busiest.a.name)}</b> holds the most open work (${busiest.n}); that is where reviewer attention is thinnest.` },
   ];
   $("report").innerHTML = weeklyChart() + intel.map(i => `<div class="intel ${i.cls}"><div class="badge">${i.badge}</div><div><h5>${i.h}</h5><p>${i.p}</p></div></div>`).join("");
