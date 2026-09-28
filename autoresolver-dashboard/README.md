@@ -9,7 +9,7 @@ Live page: https://claude.ai/artifact/Ub9jptDU1wDUmpyWtemrdf
 
 | File | Purpose |
 |---|---|
-| `index.html` | The published page. It reads one document, `snapshot/latest`, from the artifact's database. |
+| `index.html` | The published page. It reads `snapshot/latest` and the monthly `feed/*` history from the artifact's database. |
 | `refresh_snapshot.py` | Builds that document from GitHub with the `gh` CLI (stdlib only). |
 | `seed-snapshot.json` | The snapshot currently loaded: all 212 PRs as of Sep 27, 2026, with every closure classified. |
 | `history/*.json` | The battle-log archive, one file per month from May 31, stored in the page's `feed` collection. |
