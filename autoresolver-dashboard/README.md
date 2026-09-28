@@ -34,11 +34,19 @@ On a machine where `gh auth status` succeeds:
 python3 autoresolver-dashboard/refresh_snapshot.py --out snapshot.json
 ```
 
-Then ask Claude to upload it, or add this step to the autoresolver's routine prompt:
+Then ask Claude to upload it, or paste this step at the end of the autoresolver's prompt. It
+fetches the script from this branch, so it works whichever branch the run has checked out:
 
-> Run `python3 autoresolver-dashboard/refresh_snapshot.py --out /tmp/snapshot.json`, then use
-> the ArtifactData tool with `action: "set"`, `url: "https://claude.ai/artifact/Ub9jptDU1wDUmpyWtemrdf"`,
-> `collection: "snapshot"`, `doc_id: "latest"`, `file_path: "/tmp/snapshot.json"`.
+```text
+Final step, after the issue work is done: refresh the Hermes Base dashboard.
+1. Run:
+   git fetch -q origin claude/fervent-darwin-lxs0ds && git show origin/claude/fervent-darwin-lxs0ds:autoresolver-dashboard/refresh_snapshot.py > /tmp/hermes_refresh_snapshot.py && python3 /tmp/hermes_refresh_snapshot.py --out /tmp/hermes_snapshot.json
+2. If that succeeds, load the ArtifactData tool (use ToolSearch if it isn't loaded yet) and call it with
+   action "set", url "https://claude.ai/artifact/Ub9jptDU1wDUmpyWtemrdf", collection "snapshot",
+   doc_id "latest", file_path "/tmp/hermes_snapshot.json".
+3. If either step fails, report the error in one line and finish normally. Never let the dashboard
+   refresh block or undo the issue work.
+```
 
 Open pages update as soon as the document changes. The page itself never needs republishing
 for new data.
