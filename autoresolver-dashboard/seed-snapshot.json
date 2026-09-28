@@ -1197,9 +1197,9 @@
    ],
    "state": "closed",
    "closed": "2026-09-02T14:05:00Z",
-   "closeKind": "superseded",
+   "closeKind": "salvaged",
    "via": "teknium1",
-   "note": "Fixed via #101250 on main, which covers all affected call paths."
+   "note": "Fixed via #101250 on main, with you credited as co-author."
   },
   {
    "n": 86293,
@@ -2366,7 +2366,8 @@
    "state": "closed",
    "closed": "2026-07-30T04:27:49Z",
    "closeKind": "superseded",
-   "note": "The triage sweeper found this behaviour already on main."
+   "note": "The triage sweeper closed it as already implemented on main.",
+   "via": "teknium1"
   },
   {
    "n": 68829,
@@ -3502,8 +3503,9 @@
    ],
    "state": "closed",
    "closed": "2026-07-15T16:11:24Z",
-   "closeKind": "superseded",
-   "note": "The triage sweeper found this behaviour already on main."
+   "closeKind": "duplicate",
+   "note": "Already on main; closed as a duplicate of the earlier #54887.",
+   "via": "teknium1"
   },
   {
    "n": 58201,
@@ -3702,7 +3704,8 @@
    "state": "closed",
    "closed": "2026-07-15T07:04:36Z",
    "closeKind": "notplanned",
-   "note": "Closed under a standing maintainer design decision (not planned)."
+   "note": "Closed per policy: this setting belongs in config.yaml, not an environment variable.",
+   "via": "teknium1"
   },
   {
    "n": 54367,
@@ -3738,7 +3741,8 @@
    "state": "closed",
    "closed": "2026-07-15T02:01:38Z",
    "closeKind": "superseded",
-   "note": "The triage sweeper found this behaviour already on main."
+   "note": "Already implemented on main through the exclusion model.",
+   "via": "teknium1"
   },
   {
    "n": 51856,
@@ -3836,454 +3840,6 @@
    "note": "Closed by the autoresolver: upstream main now implements the same mechanism."
   }
  ],
- "feed": [
-  {
-   "at": "2026-09-27T17:59",
-   "who": "OutThisLife",
-   "pr": 123378,
-   "kind": "merge",
-   "text": "Merged into main with 30 checks passing."
-  },
-  {
-   "at": "2026-09-27T17:58",
-   "who": "OutThisLife",
-   "pr": 123378,
-   "kind": "approve",
-   "text": "Approved after confirming the \"behavioural test red on base and green with the fix.\""
-  },
-  {
-   "at": "2026-09-27T16:00",
-   "who": "PRATHAMESH75",
-   "pr": 123378,
-   "kind": "push",
-   "text": "Fixed lint: braced conditionals and reordered imports."
-  },
-  {
-   "at": "2026-09-27T10:00",
-   "who": "PRATHAMESH75",
-   "pr": 123950,
-   "kind": "push",
-   "text": "Rebased after upstream refactored the prune passes; the head shield now guards only the Pass 2 demote loop."
-  },
-  {
-   "at": "2026-09-27T09:00:00Z",
-   "who": "PRATHAMESH75",
-   "pr": 107163,
-   "kind": "push",
-   "text": "Force-pushed with a refined commit message."
-  },
-  {
-   "at": "2026-09-27T08:00:00Z",
-   "who": "PRATHAMESH75",
-   "pr": 123952,
-   "kind": "push",
-   "text": "Force-pushed with a clearer commit message explaining the fix."
-  },
-  {
-   "at": "2026-09-27T07:00:00Z",
-   "who": "PRATHAMESH75",
-   "pr": 123791,
-   "kind": "push",
-   "text": "Added a _decode_task_xml helper that handles UTF-16 BOM and console code-page payloads."
-  },
-  {
-   "at": "2026-09-26T22:00",
-   "who": "Enough1122",
-   "pr": 120332,
-   "kind": "comment",
-   "text": "Withdrew the gate concern: the production-mount test covers the seam and no blocking issues remain."
-  },
-  {
-   "at": "2026-09-26T21:00",
-   "who": "PRATHAMESH75",
-   "pr": 120332,
-   "kind": "comment",
-   "text": "Explained the multiplex gate is a deliberate no-op when multiplexing is off, point by point."
-  },
-  {
-   "at": "2026-09-26T20:00",
-   "who": "Enough1122",
-   "pr": 120332,
-   "kind": "review",
-   "text": "Three findings: the multiplex gate discards ?profile=, the test doesn't pin gate behavior, and sync profile-scope work blocks the event loop."
-  },
-  {
-   "at": "2026-09-26T19:00",
-   "who": "PRATHAMESH75",
-   "pr": 123378,
-   "kind": "push",
-   "text": "Folded personality names with str(name).strip().lower() to match the runtime and filtered neutral names."
-  },
-  {
-   "at": "2026-09-26T18:00:00Z",
-   "who": "triplemc97",
-   "pr": 123791,
-   "kind": "comment",
-   "text": "Verified on Windows 11 and found a UTF-16 BOM handling gap that needs another fix."
-  },
-  {
-   "at": "2026-09-26T18:00",
-   "who": "Enough1122",
-   "pr": 123378,
-   "kind": "review",
-   "text": "Names are listed verbatim but the runtime folds case and whitespace, so some dropdown rows are unreachable."
-  },
-  {
-   "at": "2026-09-26T17:00",
-   "who": "PRATHAMESH75",
-   "pr": 120332,
-   "kind": "push",
-   "text": "Added a production-mount test that exercises the real discovery, mount and request path."
-  },
-  {
-   "at": "2026-09-26T16:30:00Z",
-   "who": "PRATHAMESH75",
-   "pr": 124028,
-   "kind": "push",
-   "text": "Kept the discovery boundary from gating text-only main by threading a main_vision_capable flag."
-  },
-  {
-   "at": "2026-09-26T16:00",
-   "who": "andrexibiza",
-   "pr": 120332,
-   "kind": "review",
-   "text": "New blocker: #123384 would overwrite the request profile scope if both land unchanged."
-  },
-  {
-   "at": "2026-09-26T15:30:00Z",
-   "who": "kokhlo",
-   "pr": 124028,
-   "kind": "comment",
-   "text": "Boundary tests pass, but the new gate breaks the text-only main fall-through."
-  },
-  {
-   "at": "2026-09-26T15:00",
-   "who": "PRATHAMESH75",
-   "pr": 123378,
-   "kind": "push",
-   "text": "Added enumOptionsFor tests for the root personalities block and switched to direct array equality."
-  },
-  {
-   "at": "2026-09-26T14:00",
-   "who": "DavidMetcalfe",
-   "pr": 123378,
-   "kind": "review",
-   "text": "Requested tests for the new root-block read and direct array equality: \"Position matters here.\""
-  },
-  {
-   "at": "2026-09-26T13:30:00Z",
-   "who": "kiramakes",
-   "pr": 123952,
-   "kind": "approve",
-   "text": "Automated review: \"ready to merge\"; switching --locked to --frozen fixes the pip-mirror abort without weakening integrity."
-  },
-  {
-   "at": "2026-09-26T13:00",
-   "who": "kiramakes",
-   "pr": 123950,
-   "kind": "review",
-   "text": "Automated review: ready to merge. Root cause is correct and the head bound decays to zero after the first compression, as intended."
-  },
-  {
-   "at": "2026-09-26T12:00",
-   "who": "PRATHAMESH75",
-   "pr": 123749,
-   "kind": "comment",
-   "text": "All list variants are covered: _cmd_list is the single entry point and the guard wraps its one recompute_ready call."
-  },
-  {
-   "at": "2026-09-26T11:00",
-   "who": "kiramakes",
-   "pr": 123749,
-   "kind": "review",
-   "text": "Automated review: \"a clean fix\", ready to merge. Asked whether --json with --assignee should also skip recompute_ready."
-  },
-  {
-   "at": "2026-09-26T02:56:06Z",
-   "who": "OutThisLife",
-   "pr": 62239,
-   "kind": "salvage",
-   "text": "Cherry-picked onto main by OutThisLife on Sep 25, with you kept as the commit author."
-  },
-  {
-   "at": "2026-09-25T18:00",
-   "who": "PRATHAMESH75",
-   "pr": 120332,
-   "kind": "comment",
-   "text": "Acknowledged the gaps and offered a follow-up test harness rather than more coverage in this PR."
-  },
-  {
-   "at": "2026-09-25T16:00",
-   "who": "andrexibiza",
-   "pr": 120332,
-   "kind": "review",
-   "text": "Core fix is correct, but blocked on test state leaks, an unverified production mount, a competing implementation, missing attribution and red CI."
-  },
-  {
-   "at": "2026-09-25T15:00",
-   "who": "PRATHAMESH75",
-   "pr": 122652,
-   "kind": "close",
-   "text": "Closed as a duplicate of #122646, which was opened 6 minutes earlier with the same change."
-  },
-  {
-   "at": "2026-09-25T14:30",
-   "who": "alt-glitch",
-   "pr": 122652,
-   "kind": "comment",
-   "text": "Flagged as a duplicate of #122646: identical exclusion-set change and regression test."
-  },
-  {
-   "at": "2026-09-25T14:00:00Z",
-   "who": "MwC-Trexx",
-   "pr": 122636,
-   "kind": "comment",
-   "text": "The Python layer needs matching macOS metadata exclusions to keep the two sets in parity."
-  },
-  {
-   "at": "2026-09-25T13:40:00Z",
-   "who": "PRATHAMESH75",
-   "pr": 122636,
-   "kind": "push",
-   "text": "Seeded the assets/ input before the junk-write assertion, as kokhlo suggested."
-  },
-  {
-   "at": "2026-09-25T13:10:00Z",
-   "who": "kokhlo",
-   "pr": 122636,
-   "kind": "comment",
-   "text": "Blocker: the junk-write test assertion fails; suggested seeding assets/ before buildWeb."
-  },
-  {
-   "at": "2026-09-25T10:00",
-   "who": "PRATHAMESH75",
-   "pr": 120332,
-   "kind": "push",
-   "text": "Routed the dependency through the canonical profile scope so env-only launch credentials work."
-  },
-  {
-   "at": "2026-09-25T09:00:00Z",
-   "who": "gwyntel-git",
-   "pr": 107163,
-   "kind": "review",
-   "text": "Verified the fix against the field reproduction from #107156; the full targeted suite passes."
-  },
-  {
-   "at": "2026-09-24T12:00",
-   "who": "adevwithpurpose",
-   "pr": 120332,
-   "kind": "review",
-   "text": "Asked to delegate to _config_profile_scope instead of hand-building the scope."
-  },
-  {
-   "at": "2026-09-23T23:24:40Z",
-   "who": "OutThisLife",
-   "pr": 87589,
-   "kind": "salvage",
-   "text": "Superseded by #120696, now merged; it keeps both of your production substitutions."
-  },
-  {
-   "at": "2026-09-23T18:49:00Z",
-   "who": "PRATHAMESH75",
-   "pr": 74207,
-   "kind": "close",
-   "text": "Closed by the autoresolver: a model-cache redesign on main fixed the headline bug."
-  },
-  {
-   "at": "2026-09-22T17:35:53Z",
-   "who": "PRATHAMESH75",
-   "pr": 87571,
-   "kind": "close",
-   "text": "Closed by the autoresolver: main fixed it in 92e6cc189b by removing stash@{N} selectors."
-  },
-  {
-   "at": "2026-09-22T17:31:33Z",
-   "who": "teknium1",
-   "pr": 105891,
-   "kind": "salvage",
-   "text": "Cherry-picked onto main by teknium1 on Sep 20, with you kept as the commit author."
-  },
-  {
-   "at": "2026-09-22T12:00",
-   "who": "PRATHAMESH75",
-   "pr": 117517,
-   "kind": "close",
-   "text": "Closed: main already fixed #116221 via #116875 with a pattern-level carve-out."
-  },
-  {
-   "at": "2026-09-22T07:59:05Z",
-   "who": "teknium1",
-   "pr": 72026,
-   "kind": "salvage",
-   "text": "Cherry-picked onto main by teknium1 on Sep 22, with you kept as the commit author."
-  },
-  {
-   "at": "2026-09-22T06:39:43Z",
-   "who": "teknium1",
-   "pr": 67611,
-   "kind": "salvage",
-   "text": "Landed on main as a slim redo that re-applied the mechanism at the current seam (#118842)."
-  },
-  {
-   "at": "2026-09-22T06:33:48Z",
-   "who": "teknium1",
-   "pr": 88465,
-   "kind": "close",
-   "text": "Main surfaces the quoted providers mapping in doctor and startup via #118843 instead."
-  },
-  {
-   "at": "2026-09-19T21:45:09Z",
-   "who": "teknium1",
-   "pr": 67593,
-   "kind": "salvage",
-   "text": "The work in this PR landed on main via #115903."
-  },
-  {
-   "at": "2026-09-19T21:44:56Z",
-   "who": "teknium1",
-   "pr": 67336,
-   "kind": "salvage",
-   "text": "Landed on main via the Codex reasoning-only stall fix (656eb283)."
-  },
-  {
-   "at": "2026-09-19T16:46:01Z",
-   "who": "PRATHAMESH75",
-   "pr": 35983,
-   "kind": "close",
-   "text": "Closed by the autoresolver: upstream main now implements the same mechanism."
-  },
-  {
-   "at": "2026-09-19T09:46:23Z",
-   "who": "teknium1",
-   "pr": 67373,
-   "kind": "salvage",
-   "text": "Landed on main via #115671 with Co-authored-by credit."
-  },
-  {
-   "at": "2026-09-18T19:40:21Z",
-   "who": "kshitijk4poor",
-   "pr": 68407,
-   "kind": "close",
-   "text": "Memory providers are moving out of core; provider behaviour belongs in the provider's own repo."
-  },
-  {
-   "at": "2026-09-18T18:48:23Z",
-   "who": "teknium1",
-   "pr": 114273,
-   "kind": "salvage",
-   "text": "Cherry-picked onto main by teknium1 on Sep 18, with you kept as the commit author."
-  },
-  {
-   "at": "2026-09-18T12:00",
-   "who": "teknium1",
-   "pr": 114250,
-   "kind": "salvage",
-   "text": "Salvaged into #114943 (cherry-picked, authorship preserved) and merged."
-  },
-  {
-   "at": "2026-09-17T18:10:55Z",
-   "who": "kshitijk4poor",
-   "pr": 71947,
-   "kind": "salvage",
-   "text": "Salvaged into #114312 with co-author credit; the marker exclusion landed on main."
-  },
-  {
-   "at": "2026-09-17T15:00",
-   "who": "PRATHAMESH75",
-   "pr": 114250,
-   "kind": "push",
-   "text": "Added a fourth test pinning the focused-dropdown exemption as intended behavior."
-  },
-  {
-   "at": "2026-09-17T13:00",
-   "who": "KeyArgo",
-   "pr": 114250,
-   "kind": "review",
-   "text": "Verified independently: tests fail on base and pass with the fix, and all 489 nearby tests still pass."
-  },
-  {
-   "at": "2026-09-16T14:38:31Z",
-   "who": "PRATHAMESH75",
-   "pr": 105882,
-   "kind": "close",
-   "text": "Closed by the autoresolver in favour of #109310: the fix belongs at the ownership-check source."
-  },
-  {
-   "at": "2026-09-16T13:55:44Z",
-   "who": "PRATHAMESH75",
-   "pr": 69088,
-   "kind": "close",
-   "text": "Closed by the autoresolver: the update-check refactor on main handles this (6dfcf15685)."
-  },
-  {
-   "at": "2026-09-16T13:52:11Z",
-   "who": "PRATHAMESH75",
-   "pr": 68796,
-   "kind": "close",
-   "text": "Closed by the autoresolver: main fixed the staging gap (0b8daf30aa)."
-  },
-  {
-   "at": "2026-09-16T13:38:30Z",
-   "who": "PRATHAMESH75",
-   "pr": 78588,
-   "kind": "close",
-   "text": "Closed by the autoresolver: main already de-flakes this exact test (a70ea87)."
-  },
-  {
-   "at": "2026-09-16T13:20:20Z",
-   "who": "PRATHAMESH75",
-   "pr": 87588,
-   "kind": "close",
-   "text": "Closed by the autoresolver: main already translates the Voice Echo Transcripts field."
-  },
-  {
-   "at": "2026-09-11T12:00",
-   "who": "teknium1",
-   "pr": 107335,
-   "kind": "salvage",
-   "text": "Landed on main via #108440 with both commits cherry-picked, authorship preserved."
-  },
-  {
-   "at": "2026-09-10T16:00",
-   "who": "PRATHAMESH75",
-   "pr": 107335,
-   "kind": "push",
-   "text": "Bound the fallback to the active profile and added regression tests that force resolver failures."
-  },
-  {
-   "at": "2026-09-10T14:00",
-   "who": "andrexibiza",
-   "pr": 107335,
-   "kind": "review",
-   "text": "\"The fallback reintroduces the same cross-profile authority bug on the exception path.\""
-  },
-  {
-   "at": "2026-09-09T19:24:10Z",
-   "who": "teknium1",
-   "pr": 106111,
-   "kind": "salvage",
-   "text": "Cherry-picked onto main by teknium1 on Sep 9, with you kept as the commit author."
-  },
-  {
-   "at": "2026-09-09T18:57:15Z",
-   "who": "teknium1",
-   "pr": 67011,
-   "kind": "salvage",
-   "text": "Cherry-picked onto main by teknium1 on Aug 25, with you kept as the commit author."
-  },
-  {
-   "at": "2026-09-08T15:39:53Z",
-   "who": "teknium1",
-   "pr": 104546,
-   "kind": "salvage",
-   "text": "Landed as a slim redo of #104546 and #104551 (b94edfe)."
-  },
-  {
-   "at": "2026-08-30T03:39:59Z",
-   "who": "teknium1",
-   "pr": 66828,
-   "kind": "salvage",
-   "text": "Cherry-picked onto main by teknium1 on Aug 29, with you kept as the commit author."
-  }
- ]
+ "feed": [],
+ "feedArchive": true
 }

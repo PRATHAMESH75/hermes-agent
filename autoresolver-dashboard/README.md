@@ -12,6 +12,7 @@ Live page: https://claude.ai/artifact/Ub9jptDU1wDUmpyWtemrdf
 | `index.html` | The published page. It reads one document, `snapshot/latest`, from the artifact's database. |
 | `refresh_snapshot.py` | Builds that document from GitHub with the `gh` CLI (stdlib only). |
 | `seed-snapshot.json` | The snapshot currently loaded: all 212 PRs as of Sep 27, 2026, with every closure classified. |
+| `history/*.json` | The battle-log archive, one file per month from May 31, stored in the page's `feed` collection. |
 
 ## How the base maps to the data
 
@@ -47,6 +48,11 @@ Final step, after the issue work is done: refresh the Hermes Base dashboard.
 3. If either step fails, report the error in one line and finish normally. Never let the dashboard
    refresh block or undo the issue work.
 ```
+
+The refresh only rewrites `snapshot/latest`; the monthly `feed/<YYYY-MM>` documents keep the
+older history. The page merges both, preferring the refresh's exact-time events over the
+archive's day-level entries for the same person, PR and day. To restore the archive, `set`
+each `history/<YYYY-MM>.json` file as `feed/<YYYY-MM>`.
 
 Open pages update as soon as the document changes. The page itself never needs republishing
 for new data.

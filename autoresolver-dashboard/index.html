@@ -320,6 +320,7 @@ function hue(n){ let h = 0; for (const c of n) h = (h * 31 + c.charCodeAt(0)) % 
 
 /* ---------- state ---------- */
 let SNAP = null;
+let ARCHIVE = [], FEED = [], logLimit = 120;
 let stats = {};
 let selected = "core", pinned = false, logFilter = "all", ledgerFilter = "all", ledgerQuery = "";
 
@@ -327,15 +328,14 @@ function computeStats(){
   const today = SNAP.generatedAt || new Date().toISOString();
   stats = {};
   AGENTS.forEach(a => stats[a.id] = { open:[], merged:[], closed:[], review:[], all:[] });
-  const lastByPr = {};
-  (SNAP.feed || []).forEach(e => { if (!lastByPr[e.pr] || e.at > lastByPr[e.pr].at) lastByPr[e.pr] = e; });
+  const REVIEW_KINDS = ["comment", "review", "approve", "changes"];
   const nonAuthorByPr = {};
-  (SNAP.feed || []).forEach(e => { if (e.who !== SNAP.author && (!nonAuthorByPr[e.pr] || e.at > nonAuthorByPr[e.pr].at)) nonAuthorByPr[e.pr] = e; });
+  FEED.forEach(e => { if (e.who !== SNAP.author && REVIEW_KINDS.includes(e.kind) && (!nonAuthorByPr[e.pr] || e.at > nonAuthorByPr[e.pr].at)) nonAuthorByPr[e.pr] = e; });
   for (const pr of SNAP.prs){
     pr._agent = agentOf(pr);
     pr._out = outcome(pr);
     pr._age = daysBetween(pr.created, today);
-    pr._last = pr.n ? (nonAuthorByPr[pr.n] || lastByPr[pr.n]) : null;
+    pr._last = pr.n ? (nonAuthorByPr[pr.n] || null) : null;
     const s = stats[pr._agent];
     s.all.push(pr);
     if (pr.state === "open"){
@@ -674,13 +674,14 @@ function renderHeader(){
 /* ---------- reviewers ---------- */
 function reviewerList(){
   const m = {};
-  (SNAP.feed || []).forEach(e => { if (e.who !== SNAP.author){ m[e.who] = (m[e.who] || 0) + 1; } });
+  FEED.forEach(e => { if (e.who !== SNAP.author && e.who !== "maintainer"){ m[e.who] = (m[e.who] || 0) + 1; } });
   return Object.entries(m).map(([who, n]) => ({ who, n })).sort((a, b) => b.n - a.n);
 }
 function renderGate(){
   const r = reviewerList();
-  $("gate").innerHTML = `<span class="lbl">Reviewers at the gate</span>` + (r.length ? r.map(x =>
-    `<span class="chip"><span class="av" style="background:${hue(x.who)}">${esc(initials(x.who))}</span>${esc(x.who)} <span class="n">${x.n}</span></span>`).join("") : `<span class="chip">No review activity in this snapshot</span>`);
+  const top = r.slice(0, 18), rest = r.length - top.length;
+  $("gate").innerHTML = `<span class="lbl">Reviewers at the gate</span>` + (r.length ? top.map(x =>
+    `<span class="chip"><span class="av" style="background:${hue(x.who)}">${esc(initials(x.who))}</span>${esc(x.who)} <span class="n">${x.n}</span></span>`).join("") + (rest > 0 ? `<span class="chip" style="padding-left:10px">+${rest} more</span>` : "") : `<span class="chip">No review activity in this snapshot</span>`);
 }
 
 /* ---------- battle log ---------- */
@@ -691,32 +692,53 @@ const KIND = {
   review:  { label:"reviewed", bg:"#e07a4f", ico:`<svg width="18" height="18" viewBox="0 0 18 18"><circle cx="8" cy="8" r="5" fill="#ffe7da" stroke="#2c1b10" stroke-width="2"/><line x1="12" y1="12" x2="16" y2="16" stroke="#2c1b10" stroke-width="2.6" stroke-linecap="round"/></svg>` },
   comment: { label:"commented", bg:"#3b82c4", ico:`<svg width="18" height="18" viewBox="0 0 18 18"><path d="M2 4 Q2 2 4 2 H14 Q16 2 16 4 V10 Q16 12 14 12 H8 L4 16 V12 Q2 12 2 10 Z" fill="#dbeafe" stroke="#2c1b10" stroke-width="2"/></svg>` },
   push:    { label:"pushed a fix", bg:"#b65ae3", ico:`<svg width="18" height="18" viewBox="0 0 18 18"><path d="M9 16 V4 M4 8 L9 3 L14 8" stroke="#2c1b10" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
+  changes: { label:"requested changes", bg:"#d9533b", ico:`<svg width="18" height="18" viewBox="0 0 18 18"><path d="M9 2 L16 15 H2 Z" fill="#ffe0d6" stroke="#2c1b10" stroke-width="2" stroke-linejoin="round"/><line x1="9" y1="7" x2="9" y2="10.5" stroke="#2c1b10" stroke-width="2.2" stroke-linecap="round"/><circle cx="9" cy="13" r="1.2" fill="#2c1b10"/></svg>` },
+  open:    { label:"opened a PR", bg:"#f3e3bf", ico:`<svg width="18" height="18" viewBox="0 0 18 18"><path d="M3 15 V5 L9 2 L15 5 V15" fill="none" stroke="#2c1b10" stroke-width="2.2" stroke-linejoin="round"/><path d="M9 7 V13 M6 10 H12" stroke="#2c1b10" stroke-width="2.2" stroke-linecap="round"/></svg>` },
   close:   { label:"closed", bg:"#8a8f98", ico:`<svg width="18" height="18" viewBox="0 0 18 18"><path d="M4 4 L14 14 M14 4 L4 14" stroke="#2c1b10" stroke-width="2.8" stroke-linecap="round"/></svg>` },
 };
-const LOG_FILTERS = [["all","All"],["people","Reviewer comments"],["wins","Merges & salvages"],["close","Closures"],["bot","Autoresolver moves"]];
+const LOG_FILTERS = [["all","All"],["people","Reviewer comments"],["changes","Changes requested"],["wins","Merges & salvages"],["close","Closures"],["bot","Autoresolver moves"]];
 function renderLogFilters(){
   $("logFilters").innerHTML = LOG_FILTERS.map(([k, l]) => `<button class="btn" data-f="${k}" aria-pressed="${logFilter === k}">${l}</button>`).join("");
-  $("logFilters").querySelectorAll("button").forEach(b => b.onclick = () => { logFilter = b.dataset.f; renderLogFilters(); renderLog(); });
+  $("logFilters").querySelectorAll("button").forEach(b => b.onclick = () => { logFilter = b.dataset.f; logLimit = 120; renderLogFilters(); renderLog(); });
 }
 function renderLog(){
   const titleOf = {}; SNAP.prs.forEach(p => { if (p.n) titleOf[p.n] = p; });
-  let ev = [...(SNAP.feed || [])].sort((a, b) => b.at.localeCompare(a.at));
+  let ev = [...FEED].sort((a, b) => b.at.localeCompare(a.at));
   const isBot = e => e.who === SNAP.author;
-  if (logFilter === "people") ev = ev.filter(e => !isBot(e) && (e.kind === "review" || e.kind === "comment" || e.kind === "approve"));
+  if (logFilter === "people") ev = ev.filter(e => !isBot(e) && ["review","comment","approve","changes"].includes(e.kind));
+  if (logFilter === "changes") ev = ev.filter(e => e.kind === "changes");
   if (logFilter === "wins") ev = ev.filter(e => e.kind === "merge" || e.kind === "salvage");
   if (logFilter === "close") ev = ev.filter(e => e.kind === "close" || e.kind === "salvage");
   if (logFilter === "bot") ev = ev.filter(isBot);
-  const dayOnly = SNAP.feedPrecision === "day";
-  $("logNote").textContent = `${(SNAP.feed || []).length} events`;
-  $("log").innerHTML = ev.length ? ev.map(e => {
+  const dayOnly = e => e.day || (e.day === undefined && SNAP.feedPrecision === "day");
+  const first = FEED.length ? FEED.reduce((m, e) => e.at < m ? e.at : m, FEED[0].at) : null;
+  $("logNote").textContent = `${FEED.length} events${first ? " since " + fmtDate(first) : ""}`;
+  const shown = ev.slice(0, logLimit);
+  $("log").innerHTML = ev.length ? shown.map(e => {
     const k = KIND[e.kind] || KIND.comment, pr = titleOf[e.pr];
     const a = pr ? AG[agentOf(pr)] : null;
     return `<article class="ev"><div class="ico" style="background:${k.bg}">${k.ico}</div><div>
-      <div class="top"><span class="who">${isBot(e) ? "Autoresolver" : esc(e.who)}</span>${isBot(e) ? `<span class="bot">bot</span>` : ""}<span>${k.label}</span><span>· ${dayOnly ? fmtDate(e.at) : fmtStamp(e.at)}</span></div>
+      <div class="top"><span class="who">${isBot(e) ? "Autoresolver" : esc(e.who)}</span>${isBot(e) ? `<span class="bot">bot</span>` : ""}<span>${k.label}</span><span>· ${dayOnly(e) ? fmtDate(e.at) : fmtStamp(e.at)}</span></div>
       <div class="txt">${esc(e.text)}</div>
       <div class="on">on <a href="${GH}/pull/${e.pr}" target="_blank" rel="noopener">#${e.pr}</a>${pr ? " " + esc(pr.title) : ""}${a ? ` · <span class="agentchip"><i class="dot" style="background:${a.color}"></i>${esc(a.name)}</span>` : ""}</div>
     </div></article>`;
-  }).join("") : `<p class="foot" style="text-align:left">No events match this filter.</p>`;
+  }).join("") + (ev.length > shown.length ? `<button class="btn" id="logMore" style="justify-self:center">Show ${Math.min(120, ev.length - shown.length)} older of ${ev.length - shown.length} remaining</button>` : "")
+    : `<p class="foot" style="text-align:left">No events match this filter.</p>`;
+  const more = $("logMore");
+  if (more) more.onclick = () => { logLimit += 120; renderLog(); };
+}
+function mergeFeed(){
+  const latest = SNAP ? (SNAP.feed || []) : [];
+  const exactKeys = new Set(latest.filter(e => !e.day).map(e => [e.pr, e.who, e.kind, e.at.slice(0, 10)].join("|")));
+  const seen = new Set(), out = [];
+  for (const e of [...latest, ...ARCHIVE]){
+    const k = [e.pr, e.who, e.kind, e.at.slice(0, 10)].join("|");
+    if (e.day && exactKeys.has(k)) continue;
+    const id = k + "|" + e.at + "|" + (e.text || "").slice(0, 40);
+    if (seen.has(id)) continue;
+    seen.add(id); out.push(e);
+  }
+  FEED = out;
 }
 
 /* ---------- war report ---------- */
@@ -751,9 +773,9 @@ function renderReport(){
       p:`${decide.length} open PRs carry <b>needs-decision</b>${decide.length ? ": " + decide.slice(0, 3).map(p => esc(p.title.replace(/^\w+\([^)]*\):\s*/, ""))).join("; ") : ""}. More pushes won't move these; a short question on the issue might.` },
     (() => {
       const last = {};
-      [...(SNAP.feed || [])].sort((a, b) => a.at.localeCompare(b.at)).forEach(e => last[e.pr] = e);
-      const waiting = Object.values(last).filter(e => e.who !== SNAP.author && ["review","comment"].includes(e.kind) && prs.find(p => p.n === e.pr && p.state === "open"));
-      const threads = Object.keys(last).length;
+      [...FEED].sort((a, b) => a.at.localeCompare(b.at)).forEach(e => last[e.pr] = e);
+      const waiting = Object.values(last).filter(e => e.who !== SNAP.author && ["review","comment","changes"].includes(e.kind) && prs.find(p => p.n === e.pr && p.state === "open"));
+      const threads = new Set(FEED.filter(e => e.who !== SNAP.author && ["comment","review","approve","changes"].includes(e.kind)).map(e => e.pr)).size;
       return { cls: waiting.length ? "bad" : "good", badge: waiting.length, h: waiting.length ? "Reviewers waiting on a reply" : "Every reviewer has a reply",
         p: `${revs.length} reviewers commented across ${threads} threads${revs.length ? `, led by <b>${esc(revs[0].who)}</b>` : ""}. ` +
           (waiting.length ? `A reviewer spoke last on ${waiting.map(e => `<b>#${e.pr}</b> (${esc(e.who)})`).join(", ")}; the autoresolver should answer or push.` : `On every open thread the autoresolver has the last word, with a pushed fix or a reasoned reply.`) };
@@ -846,8 +868,12 @@ use.then(db => {
     if (!snap.exists){ showBanner("No snapshot stored yet. Run refresh_snapshot.py and upload its output to fill the base."); return; }
     $("banner").hidden = true;
     SNAP = snap.data();
-    renderAll();
+    mergeFeed(); renderAll();
   }, err => showBanner("Couldn't load the snapshot: " + (err && err.message ? err.message : "unknown error") + ". Reload to try again."));
+  db.collection("feed").onSnapshot(q => {
+    ARCHIVE = q.docs.flatMap(d => (d.data() || {}).events || []);
+    if (SNAP){ mergeFeed(); renderAll(); }
+  }, () => {});
 }).catch(() => showBanner("Live data isn't available in this view."));
 })();
 </script>
