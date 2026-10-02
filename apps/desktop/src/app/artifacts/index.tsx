@@ -139,11 +139,19 @@ export function ArtifactsView({ setStatusbarItemGroup: _setStatusbarItemGroup, .
       const sessions = (await listAllProfileSessions(30, 1)).sessions
 
       const { artifacts: nextArtifacts, failures } = await loadArtifactsForSessions(sessions, (session, page) =>
-        getSessionMessages(session.id, session.profile, {
-          ...page,
-          includeCompacted: true,
-          order: 'oldest'
-        })
+        // Read a registry-merged session through its owning connection. A bare
+        // profile string routes to the local backend, which 404s an id a
+        // registered remote connection owns (#131657); rows without a
+        // connection_id keep the previous bare-profile call unchanged.
+        getSessionMessages(
+          session.id,
+          session.connection_id ? { connectionId: session.connection_id, profile: session.profile } : session.profile,
+          {
+            ...page,
+            includeCompacted: true,
+            order: 'oldest'
+          }
+        )
       )
 
       if (failures.length > 0) {
