@@ -214,15 +214,23 @@ def detect_hardline_command(command: str) -> tuple:
 
 
 # ---- Dangerous command patterns -----------------------------------------------------------
+# `rm` as an actual command, not the `--rm`/`-rm` option token of docker/podman/etc. A bare
+# `\brm` matches the "rm" inside "--rm" — the `\b` sits between the dash and the `r` — so
+# `docker run --rm --network=none ...` was misread as a recursive delete (#132313: the `r` in
+# `--network` supplied the trailing recursive-flag char). The negative lookbehind requires the
+# char before `rm` not be a dash, which still admits every real invocation (`rm`, `/bin/rm`,
+# `&& rm`, `sudo rm`, leading `rm`) while rejecting `--rm` / `-rm` flags.
+_RM_CMD = r'(?<!-)\brm'
+
 DANGEROUS_PATTERNS = [
-    (r'\brm\s+(-[^\s]*\s+)*/', "delete in root path"),
-    (r'\brm\s+-[^\s]*r', "recursive delete"),
-    (r'\brm\s+--recursive\b', "recursive delete (long flag)"),
+    (_RM_CMD + r'\s+(-[^\s]*\s+)*/', "delete in root path"),
+    (_RM_CMD + r'\s+-[^\s]*r', "recursive delete"),
+    (_RM_CMD + r'\s+--recursive\b', "recursive delete (long flag)"),
     # GNU rm permutes options, so flags may FOLLOW operands (`rm build/ -rf`). The operand run
     # cannot cross a command separator (so `rm foo | grep -r` is not attributed to rm), a quote,
     # or a bare ` -- ` end-of-options (after which `-rf` is a literal filename). The flag token
     # must follow whitespace so the `r` in long options like `--registry` does not count.
-    (r'\brm\s+(?!--(?:\s|$))(?:(?!\s--(?:\s|$))[^\n"\';|&])*\s' r'(?:-[a-z]*r[a-z]*\b|--recursive\b)',
+    (_RM_CMD + r'\s+(?!--(?:\s|$))(?:(?!\s--(?:\s|$))[^\n"\';|&])*\s' r'(?:-[a-z]*r[a-z]*\b|--recursive\b)',
      # GNU rm permutes options, so a recursive flag group may legally FOLLOW the operands: `rm build/ -rf`,
      # `rm build/ -r -f`, and `rm build/ --recursive --force` are all equivalent to the flags-first
      # spellings the two patterns above catch — without this rule they run with no approval prompt at all.

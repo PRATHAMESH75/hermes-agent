@@ -44,6 +44,26 @@ for prefix in ("rclone lsf $HOME/.hermes --recursive --files-only", "hermes", "d
 ''')
 
 
+def test_rm_option_token_is_not_a_recursive_delete():
+    # `--rm` is a docker/podman option, not the rm command (#132313). A bare `\brm` matched the
+    # "rm" inside "--rm" and the `r` in a following `--network`/`--mount` completed the
+    # recursive-flag match, so `docker run --rm --network=none ...` hit recursive-delete
+    # approval. Silencing that must not weaken real rm detection, so both sides are asserted.
+    _run('''
+from tools.approval_detection import detect_dangerous_command
+for command in (
+    "docker run --rm --network=none alpine true",
+    "docker run --network=none --rm alpine true",
+    "docker run --rm --mount=type=bind,src=/x img",
+    "podman run --rm -it img sh",
+):
+    assert detect_dangerous_command(command) == (False, None, None), command
+for command in ("rm -rf foo", "rm --recursive dir", "rm build/ -rf", "/bin/rm -rf foo",
+                "git commit && rm -rf dist", "sudo rm -rf /var/log/x"):
+    assert detect_dangerous_command(command)[0] is True, command
+''')
+
+
 def test_value_whitespace_decisions_are_unchanged():
     # The fix must not move any approval decision: docker/podman values follow exactly one
     # whitespace character, as before, while hermes values may follow a whitespace run.
