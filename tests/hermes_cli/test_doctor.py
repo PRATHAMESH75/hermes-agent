@@ -125,6 +125,33 @@ class TestProviderEnvDetection:
         assert not _has_provider_env_config(content)
 
 
+class TestConfigProviderCredential:
+    """A user-defined provider's config-side credential satisfies the .env check (#132666)."""
+
+    @staticmethod
+    def _run(monkeypatch, provider_block: str, env_text: str = "TERMINAL_ENV=local\n"):
+        from hermes_constants import get_hermes_home
+        home = get_hermes_home()
+        home.mkdir(parents=True, exist_ok=True)
+        (home / ".env").write_text(env_text, encoding="utf-8")
+        (home / "config.yaml").write_text(
+            "model:\n  default: my-model\n  provider: custom:mylocal\n"
+            "providers:\n  mylocal:\n    base_url: https://llm.example.test/v1\n" + provider_block,
+            encoding="utf-8")
+        monkeypatch.setattr(doctor_mod, "HERMES_HOME", home)
+        return doctor_config._check_env_file(False)
+
+    def test_inline_api_key_and_set_key_env_pass(self, monkeypatch):
+        assert self._run(monkeypatch, "    api_key: sk-inline-credential\n").issues == []
+        monkeypatch.setenv("MYLOCAL_TOKEN", "tok-from-env-1234")
+        assert self._run(monkeypatch, "    key_env: MYLOCAL_TOKEN\n").issues == []
+
+    def test_unset_key_env_and_keyless_provider_still_warn(self, monkeypatch):
+        monkeypatch.delenv("MYLOCAL_TOKEN", raising=False)
+        assert self._run(monkeypatch, "    key_env: MYLOCAL_TOKEN\n").issues
+        assert self._run(monkeypatch, "").issues
+
+
 class TestDoctorToolAvailabilitySummary:
     def test_missing_api_key_summary_ignores_disabled_toolsets(self, monkeypatch):
         unavailable = [

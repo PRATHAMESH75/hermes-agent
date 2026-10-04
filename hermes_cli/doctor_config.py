@@ -16,6 +16,19 @@ def _has_provider_env_config(content: str) -> bool:
     return any(key in content for key in _PROVIDER_ENV_HINTS)
 
 
+def _has_config_provider_credential(cfg: dict) -> bool:
+    """Return True when a user-defined provider in config.yaml carries a usable credential — an inline
+    ``api_key``, or a ``key_env``/``api_key_env`` naming a variable that is actually set. The .env hint scan
+    cannot see these: user-defined providers keep inline keys in config and name arbitrary key variables."""
+    from hermes_cli.auth import has_usable_secret
+    from hermes_cli.config import get_compatible_custom_providers, get_env_value
+    for entry in get_compatible_custom_providers(cfg):
+        key_env = entry.get("key_env") or ""
+        if has_usable_secret(entry.get("api_key")) or (key_env and has_usable_secret(get_env_value(key_env))):
+            return True
+    return False
+
+
 # Legacy config keys still read for back-compat: warn-only with the modern replacement, never auto-migrated
 # (migrations live in config.py). (section, key, replacement)
 _DEPRECATED_CONFIG_KEYS: tuple[tuple[str, str, str], ...] = (
@@ -180,7 +193,12 @@ def _check_env_file(should_fix: bool, f: Finding) -> None:
             content = env_path.read_text(encoding="utf-8-sig")
         except UnicodeDecodeError:
             content = env_path.read_text(encoding="latin-1")
-        if not check_bool(_has_provider_env_config(content), "API key or custom endpoint configured", f"No API key found in {_DHH}/.env"):
+        configured = _has_provider_env_config(content)
+        if not configured:
+            from hermes_cli.config import load_config_readonly
+            with warn_on_error(""):
+                configured = _has_config_provider_credential(load_config_readonly())
+        if not check_bool(configured, "API key or custom endpoint configured", f"No API key found in {_DHH}/.env"):
             f.issues.append("Run 'hermes setup' to configure API keys")
     elif (PROJECT_ROOT / '.env').exists():  # project root as fallback
         check_ok(".env file exists (in project directory)")
