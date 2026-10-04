@@ -113,7 +113,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, [tabindex]:focus-vis
 .lvl .shield{font-family:var(--display); font-size:13px; color:#fff; background:var(--wood-3); border:2px solid var(--wood-edge); border-radius:7px 7px 12px 12px; padding:1px 7px}
 .lvl .xp{flex:1; height:10px; border-radius:6px; background:rgba(58,38,22,.18); overflow:hidden; border:1.5px solid rgba(58,38,22,.35)}
 .lvl .xp i{display:block; height:100%; background:linear-gradient(90deg, #8fd16b, var(--ok))}
-.dz-stats{display:grid; grid-template-columns:repeat(5,1fr); gap:0; border-bottom:2px dashed rgba(58,38,22,.3)}
+.dz-stats{display:grid; grid-template-columns:repeat(4,1fr); gap:0; border-bottom:2px dashed rgba(58,38,22,.3)}
 .dz-stats div{padding:8px 4px; text-align:center}
 .dz-stats b{display:block; font-family:var(--display); font-weight:400; font-size:22px; line-height:1; font-variant-numeric:tabular-nums}
 .dz-stats span{font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-2); font-weight:800}
@@ -130,6 +130,28 @@ a:focus-visible, button:focus-visible, input:focus-visible, [tabindex]:focus-vis
 .pr .meta{grid-column:2; display:flex; flex-wrap:wrap; gap:4px 8px; font-size:12px; color:var(--ink-2); align-items:center}
 .pr .quote{grid-column:2; font-size:12.5px; color:var(--ink); background:rgba(58,38,22,.08); border-left:3px solid var(--wood-3); padding:5px 8px; border-radius:0 8px 8px 0; margin-top:2px}
 .pr .quote b{font-weight:800}
+details.quote > summary{cursor:pointer; list-style:none}
+details.quote > summary::-webkit-details-marker{display:none}
+details.quote > summary::after{content:"Show evidence"; margin-left:6px; font-size:11px; font-weight:800; color:var(--wood-3); text-decoration:underline}
+details.quote[open] > summary::after{content:"Hide"}
+details.quote .full{margin-top:5px; padding-top:5px; border-top:1px dashed rgba(58,38,22,.25); color:var(--ink-2); overflow-wrap:anywhere}
+.lede{margin:-4px 4px 10px; font-size:13.5px; color:var(--text-dim); max-width:75ch}
+.lede b{color:var(--text)}
+.actions{display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:14px}
+@media (max-width:860px){ .actions{grid-template-columns:minmax(0,1fr)} }
+.act-col h3{font-family:var(--display); font-weight:400; font-size:17px; margin:0 4px 8px; display:flex; align-items:center; gap:8px}
+.act-col h3 .count{font-family:var(--mono); font-size:12px; background:var(--parch); color:var(--ink); border-radius:999px; padding:0 8px}
+.act-col .why{font-size:12.5px; color:var(--text-dim); margin:-4px 4px 8px}
+.act{background:var(--parch); color:var(--ink); border:2px solid var(--wood-edge); border-left:6px solid var(--danger); border-radius:12px; padding:9px 12px; display:grid; gap:4px}
+.act + .act{margin-top:8px}
+.act.decide{border-left-color:var(--gold-2)}
+.act a.t{font-weight:800; font-size:13.5px; color:var(--ink); text-decoration:none}
+.act a.t:hover{text-decoration:underline}
+.act .meta{display:flex; flex-wrap:wrap; gap:4px 8px; font-size:12px; color:var(--ink-2); align-items:center}
+.act .quote{font-size:12.5px; background:rgba(58,38,22,.08); border-left:3px solid var(--wood-3); padding:5px 8px; border-radius:0 8px 8px 0}
+.act .next{font-size:12.5px; font-weight:800}
+.act-empty{background:rgba(0,0,0,.22); border:2px dashed rgba(255,246,226,.25); border-radius:12px; padding:12px; font-size:13.5px; color:var(--text-dim)}
+.dz-stats div small{display:block; font-size:10.5px; color:var(--ink-2); font-weight:700; margin-top:2px; text-transform:none; letter-spacing:0}
 .tag{display:inline-block; font-size:10.5px; font-weight:800; letter-spacing:.03em; padding:1px 7px; border-radius:999px; text-transform:uppercase; white-space:nowrap}
 .t-open{background:#ecd6f8; color:#5d1f86}
 .t-merged{background:#fbe6a6; color:#6e4b00}
@@ -219,6 +241,7 @@ td a:hover{text-decoration:underline}
   <section class="board">
     <div class="panel">
       <h2>The base <small>Hover or tap an agent to open its dossier</small></h2>
+      <p class="lede">There is <b>one autoresolver</b>. The six "agents" are workstreams, not separate bots: each building groups its PRs by the part of Hermes they touch, from the commit scope or the <code>comp/</code> label.</p>
       <div class="scene-wrap" id="sceneWrap">
         <svg id="scene" viewBox="0 0 1000 570" role="img" aria-label="Isometric base: six autoresolver agents around the main-branch town hall"></svg>
         <div class="tip" id="tip" hidden></div>
@@ -228,6 +251,11 @@ td a:hover{text-decoration:underline}
     </div>
 
     <aside class="dossier" id="dossier" aria-live="polite"></aside>
+  </section>
+
+  <section class="panel" id="actionsPanel">
+    <h2>Needs you now <small id="actionsNote">threads a push alone won't move</small></h2>
+    <div class="actions" id="actions"></div>
   </section>
 
   <section class="lower">
@@ -330,7 +358,7 @@ function computeStats(){
   AGENTS.forEach(a => stats[a.id] = { open:[], merged:[], closed:[], review:[], all:[] });
   const REVIEW_KINDS = ["comment", "review", "approve", "changes"];
   const nonAuthorByPr = {};
-  FEED.forEach(e => { if (e.who !== SNAP.author && REVIEW_KINDS.includes(e.kind) && (!nonAuthorByPr[e.pr] || e.at > nonAuthorByPr[e.pr].at)) nonAuthorByPr[e.pr] = e; });
+  FEED.forEach(e => { if (e.who !== SNAP.author && REVIEW_KINDS.includes(e.kind) && !isNoise(e) && (!nonAuthorByPr[e.pr] || e.at > nonAuthorByPr[e.pr].at)) nonAuthorByPr[e.pr] = e; });
   for (const pr of SNAP.prs){
     pr._agent = agentOf(pr);
     pr._out = outcome(pr);
@@ -575,7 +603,7 @@ function showTip(id){
   const r = svg.getBoundingClientRect(), wr = wrap.getBoundingClientRect();
   const k = r.width / 1000;
   tip.innerHTML = `<b>${esc(a.name)}</b><div class="row">
-    <span><i class="dot" style="background:#b65ae3"></i>${s.open.length} open</span>
+    <span><i class="dot" style="background:#b65ae3"></i>${s.open.length} open (${s.review.length} in review)</span>
     <span><i class="dot" style="background:#f3bb2d"></i>${s.merged.length} landed</span>
     <span><i class="dot" style="background:#8a8f98"></i>${s.closed.length} closed</span></div>`;
   tip.style.left = (r.left - wr.left + POS[i].x * k) + "px";
@@ -605,14 +633,33 @@ function prRow(pr, opts = {}){
   ].filter(Boolean).join("");
   let quote = "";
   if (opts.quote && pr._last){
-    quote = `<div class="quote"><b>${esc(pr._last.who === SNAP.author ? "Autoresolver" : pr._last.who)}</b> · ${fmtDate(pr._last.at)}: ${esc(pr._last.text)}</div>`;
+    quote = evidence(pr._last.text, `<b>${esc(pr._last.who === SNAP.author ? "Autoresolver" : pr._last.who)}</b> · ${fmtDate(pr._last.at)}: `);
   } else if (pr.note){
-    quote = `<div class="quote">${esc(pr.note)}</div>`;
+    quote = evidence(pr.note, "");
   }
   return `<div class="pr"><i class="pin" style="background:${OUT_COLOR[o]}"></i>
     <a href="${prUrl(pr)}" target="_blank" rel="noopener">${esc(pr.title)}</a>
     <div class="meta">${meta}</div>${quote}</div>`;
 }
+// The finding first: drop commit hashes, links and parentheticals, keep the first sentence.
+function shortText(text, max = 110){
+  let t = String(text || "")
+    .replace(/https?:\/\/\S+/g, "")
+    .replace(/\(\s*\b[0-9a-f]{7,40}\b[^)]*\)/g, "")
+    .replace(/\b[0-9a-f]{7,40}\b/g, "")
+    .replace(/`[^`]*`/g, m => m.length > 28 ? "" : m.slice(1, -1))
+    .replace(/\s+([,.;:])/g, "$1").replace(/\s{2,}/g, " ")
+    .replace(/\s+(?:at|in|via|by|from|of|on)([.,;:])/g, "$1").trim();
+  const first = t.split(/(?<=[.!?])\s+(?=[A-Z"(])/)[0] || t;
+  t = first.length <= max ? first : first.slice(0, max).replace(/\s+\S*$/, "") + "…";
+  return t;
+}
+function evidence(text, lead){
+  const full = String(text || ""), short = shortText(full);
+  if (short === full.trim()) return `<div class="quote">${lead}${esc(full)}</div>`;
+  return `<details class="quote"><summary>${lead}${esc(short)}</summary><div class="full">${esc(full)}</div></details>`;
+}
+
 function renderDossier(){
   const a = AG[selected], el = $("dossier");
   if (!SNAP){
@@ -631,18 +678,17 @@ function renderDossier(){
         <div class="lvl"><span class="shield">LVL ${s.level}</span><span class="xp" title="${s.all.length % 5} of 5 PRs to next level"><i style="width:${Math.round(s.xp * 100)}%"></i></span></div>
       </div>
     </div>
-    <div class="dz-stats">
+    <div class="dz-stats" title="Launched = open + landed + closed. In review is part of open.">
       <div><b>${s.all.length}</b><span>Launched</span></div>
-      <div><b style="color:#7d2fb0">${s.open.length}</b><span>Open</span></div>
+      <div><b style="color:#7d2fb0">${s.open.length}</b><span>Open</span><small>${s.review.length} in review</small></div>
       <div><b style="color:#b98410">${s.merged.length}</b><span>Landed</span></div>
-      <div><b style="color:#1d8a7d">${s.review.length}</b><span>In review</span></div>
       <div><b style="color:#6b6f76">${s.closed.length}</b><span>Closed</span></div>
     </div>
     <div class="dz-body">
-      <div class="dz-sec"><h4>In review now <span class="count">${s.review.length}</span></h4>
+      <div class="dz-sec"><h4>In review <span class="count">${s.review.length} of ${s.open.length} open</span></h4>
         ${s.review.length ? lim(s.review, 5).map(p => prRow(p, { quote: true, risk: true })).join("") : `<p class="empty">No open PR has reviewer traffic yet.</p>`}
       </div>
-      <div class="dz-sec"><h4>Addressing <span class="count">${s.open.length}</span></h4>
+      <div class="dz-sec"><h4>Not yet reviewed <span class="count">${s.open.length - s.review.length} of ${s.open.length} open</span></h4>
         ${s.open.length ? lim(s.open.filter(p => !s.review.includes(p)), 6).map(p => prRow(p, { risk: true })).join("") || `<p class="empty">Every open PR here is already in review.</p>` : `<p class="empty">Nothing open right now.</p>`}
       </div>
       <div class="dz-sec"><h4>Worked on <span class="count">${s.merged.length + s.closed.length}</span></h4>
@@ -742,6 +788,48 @@ function mergeFeed(){
   FEED = out;
 }
 
+/* ---------- needs you now ---------- */
+// Bots and automated triage summaries don't ask the autoresolver anything.
+function isNoise(e){
+  return /(\[bot\]|-bot)$/i.test(e.who || "") || ["coderabbitai", "github-actions"].includes(e.who) ||
+    /generated by AI during triage/i.test(e.text || "");
+}
+function urgentItems(){
+  const open = SNAP.prs.filter(p => p.state === "open");
+  const byN = Object.fromEntries(open.filter(p => p.n).map(p => [p.n, p]));
+  const last = {};
+  [...FEED].sort((a, b) => a.at.localeCompare(b.at)).forEach(e => { if (byN[e.pr] && !isNoise(e)) last[e.pr] = e; });
+  const waiting = Object.values(last)
+    .filter(e => e.who !== SNAP.author && e.who !== "maintainer" && ["review", "comment", "changes"].includes(e.kind))
+    .sort((a, b) => a.at.localeCompare(b.at))
+    .map(e => ({ pr: byN[e.pr], e }));
+  const decide = open.filter(p => (p.labels || []).includes("needs-decision")).sort((a, b) => b._age - a._age);
+  return { waiting, decide };
+}
+function renderActions(){
+  const { waiting, decide } = urgentItems();
+  const chip = pr => { const a = AG[pr._agent]; return `<span class="agentchip"><i class="dot" style="background:${a.color}"></i>${esc(a.name)}</span>`; };
+  const link = pr => `<a class="t" href="${prUrl(pr)}" target="_blank" rel="noopener">${esc(pr.title)}</a>`;
+  const waitRows = waiting.map(({ pr, e }) => `<div class="act">
+      ${link(pr)}
+      <div class="meta"><span class="mono">#${pr.n}</span>${chip(pr)}<span>${(d => d < 1 ? "since today" : d + "d unanswered")(daysBetween(e.at, SNAP.generatedAt))}</span></div>
+      ${evidence(e.text, `<b>${esc(e.who)}</b> ${e.kind === "changes" ? "requested changes" : e.kind === "review" ? "reviewed" : "commented"} · ${fmtDate(e.at)}: `)}
+    </div>`).join("");
+  const decideRows = decide.map(pr => `<div class="act decide">
+      ${link(pr)}
+      <div class="meta"><span class="mono">#${pr.n}</span>${chip(pr)}<span>${pr._age}d open</span><span class="tag t-decide">needs decision</span></div>
+      ${pr.issue ? `<div class="next">Ask on <a href="${GH}/issues/${pr.issue}" target="_blank" rel="noopener">issue #${pr.issue}</a></div>` : ""}
+    </div>`).join("");
+  $("actionsNote").textContent = waiting.length + decide.length ? `${waiting.length + decide.length} threads a push alone won't move` : "nothing waiting on you";
+  $("actions").innerHTML = `
+    <div class="act-col"><h3>Reviewers waiting on a reply <span class="count">${waiting.length}</span></h3>
+      <p class="why">A reviewer spoke last on these open PRs, oldest first. Next step: reply on the thread or push a fix.</p>
+      ${waitRows || `<div class="act-empty">Every open thread has a reply from the autoresolver.</div>`}</div>
+    <div class="act-col"><h3>Waiting on a maintainer decision <span class="count">${decide.length}</span></h3>
+      <p class="why">Labelled <b>needs-decision</b>: a design call only maintainers can make, longest-waiting first. More pushes won't move these; a short question on the issue might.</p>
+      ${decideRows || `<div class="act-empty">No open PR is waiting on a maintainer decision.</div>`}</div>`;
+}
+
 /* ---------- war report ---------- */
 function renderReport(){
   const t = SNAP.totals, prs = SNAP.prs, today = SNAP.generatedAt;
@@ -770,17 +858,6 @@ function renderReport(){
       p:`<b>${sup.length}</b> closed PRs were overtaken by a different fix on main, and the autoresolver itself noticed and closed <b>${selfClosed.length}</b> of them. Another <b>${dup.length}</b> duplicated a PR that already existed${recentOf([...sup, ...dup]).length ? `, most recently ${recentOf([...sup, ...dup]).map(p => `#${p.n}`).join(" and ")}` : ""}. Before branching, have it check open PRs and the last few days of main for the issue number.` },
     { cls: stale.length > 20 ? "bad" : "warn", badge: stale.length, h:"Open backlog is aging",
       p:`<b>${stale.length}</b> of ${open.length} open PRs in this snapshot are over 30 days old. The oldest, opened ${fmtDate(oldest && oldest.created)}, has waited <b>${oldest ? oldest._age : 0} days</b>. Closing or rebasing stale ones keeps reviewers focused on fresh work.` },
-    { cls:"warn", badge: decide.length, h:"Waiting on a maintainer decision",
-      p:`${decide.length} open PRs carry <b>needs-decision</b>${decide.length ? ": " + decide.slice(0, 3).map(p => esc(p.title.replace(/^\w+\([^)]*\):\s*/, ""))).join("; ") : ""}. More pushes won't move these; a short question on the issue might.` },
-    (() => {
-      const last = {};
-      [...FEED].sort((a, b) => a.at.localeCompare(b.at)).forEach(e => last[e.pr] = e);
-      const waiting = Object.values(last).filter(e => e.who !== SNAP.author && ["review","comment","changes"].includes(e.kind) && prs.find(p => p.n === e.pr && p.state === "open"));
-      const threads = new Set(FEED.filter(e => e.who !== SNAP.author && ["comment","review","approve","changes"].includes(e.kind)).map(e => e.pr)).size;
-      return { cls: waiting.length ? "bad" : "good", badge: waiting.length, h: waiting.length ? "Reviewers waiting on a reply" : "Every reviewer has a reply",
-        p: `${revs.length} reviewers commented across ${threads} threads${revs.length ? `, led by <b>${esc(revs[0].who)}</b>` : ""}. ` +
-          (waiting.length ? `A reviewer spoke last on ${waiting.map(e => `<b>#${e.pr}</b> (${esc(e.who)})`).join(", ")}; the autoresolver should answer or push.` : `On every open thread the autoresolver has the last word, with a pushed fix or a reasoned reply.`) };
-    })(),
     (() => {
       const top = [...risky].sort((a, b) => (b.comments || 0) - (a.comments || 0))[0];
       return { cls:"warn", badge: risky.length, h:"Security-boundary changes in flight",
@@ -855,7 +932,7 @@ function renderAll(){
     const best = AGENTS.map(a => ({ id: a.id, n: stats[a.id].review.length * 3 + stats[a.id].open.length })).sort((x, y) => y.n - x.n)[0];
     selected = best.id;
   }
-  renderHeader(); drawScene(); renderDossier(); renderGate(); renderLogFilters(); renderLog(); renderReport(); renderLedgerFilters(); renderLedger();
+  renderHeader(); drawScene(); renderDossier(); renderGate(); renderActions(); renderLogFilters(); renderLog(); renderReport(); renderLedgerFilters(); renderLedger();
   $("foot").innerHTML = SNAP.complete ? `Snapshot ${fmtStamp(SNAP.generatedAt)} from ${esc(SNAP.source)}.`
     : `Snapshot ${fmtStamp(SNAP.generatedAt)} from ${esc(SNAP.source)}. Totals are exact; the lists hold ${SNAP.prs.length} of ${SNAP.totals.all} PRs and the review threads read so far. Run <code>refresh_snapshot.py</code> to load everything.`;
 }
