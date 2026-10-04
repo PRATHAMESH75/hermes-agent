@@ -729,11 +729,12 @@ function renderLog(){
 }
 function mergeFeed(){
   const latest = SNAP ? (SNAP.feed || []) : [];
-  const exactKeys = new Set(latest.filter(e => !e.day).map(e => [e.pr, e.who, e.kind, e.at.slice(0, 10)].join("|")));
+  const isDay = e => e.day || (e.day === undefined && SNAP && SNAP.feedPrecision === "day" && latest.includes(e));
+  const exactKeys = new Set([...latest, ...ARCHIVE].filter(e => !isDay(e)).map(e => [e.pr, e.who, e.kind, e.at.slice(0, 10)].join("|")));
   const seen = new Set(), out = [];
   for (const e of [...latest, ...ARCHIVE]){
     const k = [e.pr, e.who, e.kind, e.at.slice(0, 10)].join("|");
-    if (e.day && exactKeys.has(k)) continue;
+    if (isDay(e) && exactKeys.has(k)) continue;
     const id = k + "|" + e.at + "|" + (e.text || "").slice(0, 40);
     if (seen.has(id)) continue;
     seen.add(id); out.push(e);
