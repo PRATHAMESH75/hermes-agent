@@ -314,8 +314,26 @@ _ALLOC_LOCK = Path(os.environ.get("XDG_RUNTIME_DIR") or Path.home() / ".cache") 
 
 @contextlib.contextmanager
 def _flocked(path: Path):
-    import fcntl  # windows-footgun: ok — Linux-only runtime (is_supported_host gates start)
-    with open(path, "a+", encoding="utf-8") as fh:  # windows-footgun: ok — Linux-only runtime
+    """Blocking exclusive lock on ``path``. Not Linux-only: a ``terminal`` placement (docker/ssh/singularity)
+    takes the per-profile start.lock on whatever host the gateway runs on, Windows included (#132759)."""
+    with open(path, "a+", encoding="utf-8") as fh:
+        if os.name == "nt":
+            import msvcrt
+            # LK_LOCK gives up after ~10 s; a sandbox start holds this lock longer, so wait like flock does.
+            fh.seek(0)
+            while True:
+                try:
+                    msvcrt.locking(fh.fileno(), msvcrt.LK_NBLCK, 1)
+                    break
+                except OSError:
+                    time.sleep(0.1)
+            try:
+                yield fh
+            finally:
+                fh.seek(0)
+                msvcrt.locking(fh.fileno(), msvcrt.LK_UNLCK, 1)
+            return
+        import fcntl  # windows-footgun: ok — POSIX branch (os.name != "nt" above)
         fcntl.flock(fh.fileno(), fcntl.LOCK_EX)
         try:
             yield fh

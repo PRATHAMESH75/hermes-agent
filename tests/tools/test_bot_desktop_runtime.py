@@ -28,7 +28,7 @@ def test_the_image_bakes_the_same_apt_packages_the_runtime_would_install() -> No
     """The image layer is the only delivery path on a hosted instance, so a package added here but not
     there stalls the screen with no error until someone presses Start."""
     dockerfile = Path(__file__).resolve().parents[2] / "Dockerfile"
-    text = dockerfile.read_text()
+    text = dockerfile.read_text(encoding="utf-8-sig")
     assert "ARG HERMES_BOT_DESKTOP" in text, "the Bot Screen apt layer is gone from the Dockerfile"
     body = text.split("ARG HERMES_BOT_DESKTOP", 1)[1].split("--no-install-recommends", 1)[1].split("rm -rf", 1)[0]
     baked = {tok for tok in re.split(r"[\s\\&]+", body) if tok and not tok.startswith("-")}
@@ -481,3 +481,37 @@ def test_a_comfortable_start_is_not_logged(tmp_path, monkeypatch, caplog):
     with caplog.at_level("WARNING", logger="tools.bot_desktop.runtime"):
         runtime.start()
     assert not [m for m in (r.getMessage() for r in caplog.records) if "available" in m]
+
+
+@pytest.mark.platforms("linux", "macos", "windows")
+def test_start_lock_serializes_holders_on_every_gateway_host(tmp_path) -> None:
+    """A ``terminal`` placement takes the per-profile start.lock on whatever host the gateway runs on —
+    Windows included (#132759: every browser_exec died on ``import fcntl``). A second holder must wait for
+    the first to release, not fail and not share it."""
+    lock = tmp_path / "start.lock"
+    first_in = threading.Event()
+    release_first = threading.Event()
+    order: list[str] = []
+
+    def first() -> None:
+        with runtime._flocked(lock):
+            order.append("first-acquired")
+            first_in.set()
+            release_first.wait(10)
+            order.append("first-released")
+
+    def second() -> None:
+        with runtime._flocked(lock):
+            order.append("second-acquired")
+
+    t1 = threading.Thread(target=first)
+    t1.start()
+    assert first_in.wait(10)
+    t2 = threading.Thread(target=second)
+    t2.start()
+    time.sleep(0.5)
+    assert order == ["first-acquired"], "the second holder got the lock while the first still held it"
+    release_first.set()
+    t1.join(10)
+    t2.join(10)
+    assert order == ["first-acquired", "first-released", "second-acquired"]
