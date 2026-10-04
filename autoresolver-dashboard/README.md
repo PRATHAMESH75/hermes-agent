@@ -11,7 +11,7 @@ Live page: https://claude.ai/artifact/Ub9jptDU1wDUmpyWtemrdf
 |---|---|
 | `index.html` | The published page. It reads `snapshot/latest` and the monthly `feed/*` history from the artifact's database. |
 | `refresh_snapshot.py` | Builds that document from GitHub with the `gh` CLI (stdlib only). |
-| `seed-snapshot.json` | The snapshot currently loaded: all 212 PRs as of Sep 27, 2026, with every closure classified. |
+| `seed-snapshot.json` | Verified PR outcomes the refresh keeps: all 218 PRs as of Oct 4, 2026, with every closure classified. |
 | `history/*.json` | The battle-log archive, one file per month from May 31, stored in the page's `feed` collection. |
 
 ## How the base maps to the data
@@ -65,10 +65,13 @@ Closures in `seed-snapshot.json` were verified by hand against their comments an
 Every run also checks each closed, unmerged PR for a silent cherry-pick: it lists upstream `main`
 commits authored by you (`repos/.../commits?author=`), then compares each PR's own commits
 (authored by you, dated no earlier than three hours before the PR opened, so commits a stacked
-branch inherited don't count) by author timestamp and subject. A match marks the PR salvaged,
+branch inherited don't count) by `cherry picked from commit` origin, author timestamp or
+subject. A commit you authored that names the PR number (a maintainer's "salvage #N" or
+"Mechanism from #N") counts on its own, which catches reworded salvages. A match marks the PR salvaged,
 even a hand-verified one closed as superseded, because a maintainer can salvage a PR weeks after
-it closed. Run against the real upstream history, it found exactly the 32 cherry-picks verified
-by hand, with no misses and no false matches. If you also commit under an email that isn't
+it closed. Run against the real upstream history, it found all 32 cherry-picks verified by hand plus
+three the comments had hidden, including #86344, which the autoresolver had closed as
+superseded by what turned out to be its own work. If you also commit under an email that isn't
 linked to your GitHub account, pass it with `--author-email`.
 
 New closures with no cherry-pick are classified from the closing comments

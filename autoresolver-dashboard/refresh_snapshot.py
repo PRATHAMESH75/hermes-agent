@@ -136,21 +136,35 @@ def main_commits_by(repo: str, author: str, since: str) -> list[dict]:
         page += 1
 
 
-def cherry_pick_index(commits: list[dict]) -> tuple[dict, dict]:
-    by_date, by_subject = {}, {}
+PICKED_FROM_RE = re.compile(r"cherry picked from commit ([0-9a-f]{7,40})")
+PR_REF_RE = re.compile(r"#(\d+)")
+
+
+def cherry_pick_index(commits: list[dict]) -> tuple[dict, dict, dict, dict]:
+    """Upstream commits by author date, subject, referenced PR number, and `-x` origin sha."""
+    by_date, by_subject, by_ref, by_origin = {}, {}, {}, {}
     for c in reversed(commits):  # oldest first, so the latest landing wins
+        message = c["commit"].get("message") or ""
         by_date[c["commit"]["author"]["date"]] = c
-        by_subject[norm_subject(c["commit"].get("message"))] = c
-    return by_date, by_subject
+        by_subject[norm_subject(message)] = c
+        for n in PR_REF_RE.findall(message):
+            by_ref[int(n)] = c
+        for sha in PICKED_FROM_RE.findall(message):
+            by_origin[sha] = c
+    return by_date, by_subject, by_ref, by_origin
 
 
-def find_cherry_pick(repo: str, author_ids: set[str], pr: dict, index: tuple[dict, dict]) -> dict | None:
+def find_cherry_pick(repo: str, author_ids: set[str], pr: dict, index: tuple[dict, dict, dict, dict]) -> dict | None:
     """The upstream commit that carries this PR's own work, if any.
 
-    Only the PR's own commits count: authored by the autoresolver and dated no more than
-    three hours before the PR opened, which skips commits a stacked branch inherited.
+    A commit you authored that names this PR number (a maintainer's "salvage #N") counts on
+    its own. Otherwise only the PR's own commits are compared: authored by the autoresolver
+    and dated no more than three hours before the PR opened, which skips commits a stacked
+    branch inherited. They match by `cherry picked from` origin, author date or subject.
     """
-    by_date, by_subject = index
+    by_date, by_subject, by_ref, by_origin = index
+    if pr["n"] in by_ref:
+        return by_ref[pr["n"]]
     opened = datetime.fromisoformat(pr["created"].replace("Z", "+00:00")) - timedelta(hours=3)
     for c in gh(f"repos/{repo}/pulls/{pr['n']}/commits", per_page=100) or []:
         info = c.get("commit") or {}
@@ -160,7 +174,9 @@ def find_cherry_pick(repo: str, author_ids: set[str], pr: dict, index: tuple[dic
         date = info.get("author", {}).get("date") or ""
         if not date or datetime.fromisoformat(date.replace("Z", "+00:00")) < opened:
             continue
-        hit = by_date.get(date) or by_subject.get(norm_subject(info.get("message")))
+        sha = c.get("sha") or ""
+        hit = (next((v for k, v in by_origin.items() if sha.startswith(k) or k.startswith(sha)), None) if sha else None) \
+            or by_date.get(date) or by_subject.get(norm_subject(info.get("message")))
         if hit:
             return hit
     return None

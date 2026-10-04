@@ -2,22 +2,114 @@
  "repo": "NousResearch/hermes-agent",
  "author": "PRATHAMESH75",
  "feedPrecision": "day",
- "generatedAt": "2026-09-27T19:40:00Z",
+ "generatedAt": "2026-10-04T17:40:58Z",
  "source": "GitHub search, upstream git history and PR pages, read by Claude",
  "complete": true,
  "totals": {
-  "all": 212,
-  "open": 81,
-  "merged": 8,
-  "closed": 123
+  "all": 218,
+  "open": 73,
+  "merged": 9,
+  "closed": 136
  },
  "prs": [
+  {
+   "n": 131635,
+   "title": "fix(doctor): claim installs by facts.json, not the never-written install.json",
+   "issue": 131630,
+   "state": "open",
+   "created": "2026-10-02T15:58:50Z",
+   "comments": 0,
+   "labels": [
+    "type/bug",
+    "comp/cli",
+    "P2",
+    "sweeper:risk-compatibility",
+    "area/install-update"
+   ]
+  },
+  {
+   "n": 126640,
+   "title": "fix(gateway): stop the Windows uninstall UAC prompt from hanging an unattended update",
+   "issue": 126624,
+   "state": "open",
+   "created": "2026-09-28T15:49:41Z",
+   "comments": 2,
+   "labels": [
+    "type/bug",
+    "comp/cli",
+    "P2",
+    "sweeper:risk-compatibility",
+    "sweeper:risk-platform-windows",
+    "platform/windows",
+    "area/install-update"
+   ]
+  },
+  {
+   "n": 125977,
+   "title": "fix(desktop): scope approval-mode reads/writes to the viewed profile",
+   "issue": 125969,
+   "state": "closed",
+   "created": "2026-09-28T03:56:13Z",
+   "comments": 1,
+   "labels": [
+    "type/bug",
+    "area/config",
+    "P2",
+    "comp/desktop",
+    "area/profiles"
+   ],
+   "closed": "2026-09-28T15:30:19Z",
+   "closeKind": "salvaged",
+   "via": "teknium1",
+   "note": "Cherry-picked onto main by teknium1 on Sep 28 (ef6039cc77), with you kept as the commit author."
+  },
+  {
+   "n": 125957,
+   "title": "fix(deps): raise pillow-heif floor to 1.8.0 for the libheif CVE fix",
+   "issue": 125940,
+   "state": "open",
+   "created": "2026-09-28T03:21:59Z",
+   "comments": 3,
+   "labels": [
+    "type/security",
+    "tool/vision",
+    "P3"
+   ]
+  },
+  {
+   "n": 125943,
+   "title": "fix(plugins): let `plugins update --force` accept a caution scan verdict",
+   "issue": 125928,
+   "state": "open",
+   "created": "2026-09-28T02:58:46Z",
+   "comments": 1,
+   "labels": [
+    "type/bug",
+    "comp/cli",
+    "comp/plugins",
+    "P3"
+   ]
+  },
+  {
+   "n": 125594,
+   "title": "fix(cli): keep an explicit custom-provider pin over an inferred vendor prefix at startup",
+   "issue": 125578,
+   "state": "open",
+   "created": "2026-09-27T18:50:41Z",
+   "comments": 1,
+   "labels": [
+    "type/bug",
+    "comp/cli",
+    "P2"
+   ]
+  },
   {
    "n": 125331,
    "title": "fix(agent): decode sentinel-encoded multimodal turns before the alternation repair",
    "issue": 125299,
+   "state": "closed",
    "created": "2026-09-27T14:15:52Z",
-   "comments": 0,
+   "comments": 4,
    "labels": [
     "type/bug",
     "comp/agent",
@@ -25,12 +117,16 @@
     "sweeper:risk-session-state",
     "area/sessions"
    ],
-   "state": "open"
+   "closed": "2026-10-03T23:07:28Z",
+   "closeKind": "salvaged",
+   "via": "kshitijk4poor",
+   "note": "Cherry-picked onto main by kshitijk4poor on Oct 3 (790d6eaf39), with you kept as the commit author."
   },
   {
    "n": 125246,
    "title": "fix(backup): exclude the win-arm64 build-tools vcpkg cache from HERMES_HOME backups",
    "issue": 125237,
+   "state": "open",
    "created": "2026-09-27T12:49:50Z",
    "comments": 0,
    "labels": [
@@ -39,39 +135,39 @@
     "P2",
     "sweeper:risk-platform-windows",
     "platform/windows"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 124891,
    "title": "fix(agent): log the native cause before a refusal/invalid-response fallback",
    "issue": 124874,
+   "state": "open",
    "created": "2026-09-27T06:52:03Z",
-   "comments": 0,
+   "comments": 2,
    "labels": [
     "type/bug",
     "comp/agent",
     "P2"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 124855,
    "title": "fix(cron): stop an adopted external worker from re-exec'ing and losing its payload",
    "issue": 124827,
+   "state": "open",
    "created": "2026-09-27T06:04:25Z",
-   "comments": 0,
+   "comments": 1,
    "labels": [
     "type/bug",
     "comp/cron",
     "P2"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 124851,
    "title": "fix(copilot-acp): reap the launcher's native descendant on teardown",
    "issue": 124835,
+   "state": "open",
    "created": "2026-09-27T05:59:56Z",
    "comments": 0,
    "labels": [
@@ -80,13 +176,13 @@
     "comp/acp",
     "provider/copilot",
     "P2"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 124028,
    "title": "fix(vision): apply the discovery-chain boundary to the aux vision auto-route",
    "issue": 123998,
+   "state": "open",
    "created": "2026-09-26T14:58:21Z",
    "comments": 2,
    "labels": [
@@ -94,15 +190,15 @@
     "comp/agent",
     "tool/vision",
     "P2"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 123952,
    "title": "fix(pm): stage the PM runtime with --frozen so a pip mirror doesn't abort the install",
    "issue": 123943,
+   "state": "open",
    "created": "2026-09-26T12:56:16Z",
-   "comments": 2,
+   "comments": 3,
    "labels": [
     "type/bug",
     "comp/cli",
@@ -112,30 +208,30 @@
     "needs-decision",
     "sweeper:risk-compatibility",
     "area/install-update"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 123950,
    "title": "fix(agent): shield the protect_first_n head from the Phase-1 tool-result prune",
    "issue": 123935,
+   "state": "open",
    "created": "2026-09-26T12:51:17Z",
-   "comments": 3,
+   "comments": 7,
    "labels": [
     "type/bug",
     "comp/agent",
     "P2",
     "sweeper:risk-session-state",
     "area/compression"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 123791,
    "title": "fix(computer-use): fix Windows cua-driver autostart readiness false-negative",
    "issue": 123774,
+   "state": "open",
    "created": "2026-09-26T09:55:20Z",
-   "comments": 2,
+   "comments": 4,
    "labels": [
     "type/bug",
     "comp/cli",
@@ -144,27 +240,27 @@
     "sweeper:risk-platform-windows",
     "platform/windows",
     "area/install-update"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 123749,
    "title": "fix(kanban): degrade `kanban list` to a plain read in fenced child contexts",
    "issue": null,
+   "state": "open",
    "created": "2026-09-26T08:56:29Z",
-   "comments": 3,
+   "comments": 5,
    "labels": [
     "type/bug",
     "comp/cli",
     "tool/delegate",
     "P3"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 123378,
    "title": "fix(desktop): list root-level personalities in the Settings dropdown",
    "issue": 123297,
+   "state": "merged",
    "created": "2026-09-26T03:05:33Z",
    "comments": 4,
    "labels": [
@@ -174,14 +270,14 @@
     "sweeper:risk-compatibility",
     "comp/desktop"
    ],
-   "state": "merged",
    "closed": "2026-09-27T17:59:35Z",
-   "via": "OutThisLife"
+   "via": "maintainer"
   },
   {
    "n": 122704,
    "title": "fix(acp): archive dropped rows on non-owning-agent persist instead of hard-deleting",
    "issue": 122699,
+   "state": "open",
    "created": "2026-09-25T14:10:16Z",
    "comments": 0,
    "labels": [
@@ -190,13 +286,13 @@
     "P2",
     "sweeper:risk-session-state",
     "area/sessions"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 122652,
    "title": "feat(skills): exclude .stversions and _archive from skill discovery",
    "issue": 122613,
+   "state": "closed",
    "created": "2026-09-25T13:12:53Z",
    "comments": 2,
    "labels": [
@@ -206,7 +302,6 @@
     "tool/skills",
     "P3"
    ],
-   "state": "closed",
    "closed": "2026-09-25T14:53:42Z",
    "closeKind": "duplicate",
    "note": "Labelled duplicate on GitHub: another PR already covered this issue."
@@ -215,8 +310,9 @@
    "n": 122636,
    "title": "fix(build): skip macOS Finder metadata in build freshness hashing",
    "issue": 122632,
+   "state": "closed",
    "created": "2026-09-25T12:58:13Z",
-   "comments": 4,
+   "comments": 5,
    "labels": [
     "type/bug",
     "P3",
@@ -224,14 +320,18 @@
     "comp/desktop",
     "area/install-update"
    ],
-   "state": "open"
+   "closed": "2026-10-02T14:14:33Z",
+   "closeKind": "salvaged",
+   "via": "OutThisLife",
+   "note": "Cherry-picked onto main by OutThisLife on Oct 1 (64eca050ec), with you kept as the commit author."
   },
   {
    "n": 120332,
    "title": "fix(dashboard): run plugin API routes in the profile secret scope",
    "issue": 120310,
+   "state": "closed",
    "created": "2026-09-23T14:46:56Z",
-   "comments": 7,
+   "comments": 8,
    "labels": [
     "type/bug",
     "comp/cli",
@@ -242,12 +342,16 @@
     "comp/dashboard",
     "area/profiles"
    ],
-   "state": "open"
+   "closed": "2026-09-28T15:36:45Z",
+   "closeKind": "salvaged",
+   "via": "teknium1",
+   "note": "Cherry-picked onto main by teknium1 on Sep 28 (5c6ff927f5), with you kept as the commit author."
   },
   {
    "n": 120311,
    "title": "fix(tools): coerce a blank string to {} for object-typed tool args",
    "issue": 120269,
+   "state": "open",
    "created": "2026-09-23T14:28:38Z",
    "comments": 0,
    "labels": [
@@ -255,13 +359,13 @@
     "comp/tools",
     "tool/mcp",
     "P3"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 119402,
    "title": "fix(streaming): retry unrepairable tool args on a terminal finish_reason",
    "issue": 119389,
+   "state": "open",
    "created": "2026-09-22T18:25:11Z",
    "comments": 1,
    "labels": [
@@ -270,13 +374,13 @@
     "tool/file",
     "P2",
     "area/streaming"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 117517,
    "title": "fix(plugin-guard): treat an env-var NAME literal as public, not a hardcoded secret",
    "issue": 116221,
+   "state": "closed",
    "created": "2026-09-20T20:36:19Z",
    "comments": 1,
    "labels": [
@@ -284,16 +388,16 @@
     "comp/plugins",
     "P3"
    ],
-   "state": "closed",
    "closed": "2026-09-22T17:34:22Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver: main fixed #116221 first via #116875 with a pattern-level carve-out."
+   "note": "Closed by the autoresolver: main fixed #116221 first via #116875 with a pattern-level carve-out.",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 114273,
    "title": "docs(portal): shared token store refreshes a login, it does not seed one",
    "issue": 114259,
+   "state": "closed",
    "created": "2026-09-17T16:43:59Z",
    "comments": 1,
    "labels": [
@@ -302,16 +406,16 @@
     "comp/portal",
     "area/profiles"
    ],
-   "state": "closed",
    "closed": "2026-09-18T18:48:23Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "Cherry-picked onto main by teknium1 on Sep 18, with you kept as the commit author."
+   "note": "Cherry-picked onto main by teknium1 on Sep 18, with you kept as the commit author.",
+   "via": "teknium1"
   },
   {
    "n": 114250,
    "title": "fix(desktop): keep the caret in a focused clarify/text field when the pointer moves",
    "issue": 114245,
+   "state": "closed",
    "created": "2026-09-17T16:04:36Z",
    "comments": 3,
    "labels": [
@@ -319,16 +423,16 @@
     "P3",
     "comp/desktop"
    ],
-   "state": "closed",
    "closed": "2026-09-18T18:52:18Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "Cherry-picked onto main by teknium1 on Sep 18, with you kept as the commit author."
+   "note": "Cherry-picked onto main by teknium1 on Sep 18, with you kept as the commit author.",
+   "via": "teknium1"
   },
   {
    "n": 107592,
    "title": "fix(desktop): flag a rebuild when the installed app's commit is behind HEAD",
    "issue": 107542,
+   "state": "closed",
    "created": "2026-09-10T18:26:21Z",
    "comments": 2,
    "labels": [
@@ -339,7 +443,6 @@
     "comp/desktop",
     "area/install-update"
    ],
-   "state": "closed",
    "closed": "2026-09-11T17:04:13Z",
    "closeKind": "duplicate",
    "note": "Labelled duplicate on GitHub: another PR already covered this issue."
@@ -348,6 +451,7 @@
    "n": 107584,
    "title": "fix(update): reuse the parent's pre-update backup in the Windows exe hand-off child",
    "issue": 107543,
+   "state": "closed",
    "created": "2026-09-10T18:20:09Z",
    "comments": 2,
    "labels": [
@@ -359,7 +463,6 @@
     "platform/windows",
     "area/install-update"
    ],
-   "state": "closed",
    "closed": "2026-09-10T18:43:53Z",
    "closeKind": "duplicate",
    "note": "Labelled duplicate on GitHub: another PR already covered this issue."
@@ -368,6 +471,7 @@
    "n": 107335,
    "title": "fix(file-safety): resolve HERMES_HOME/config per call so multiplex profiles don't poison the write guards",
    "issue": 107327,
+   "state": "closed",
    "created": "2026-09-10T12:10:25Z",
    "comments": 2,
    "labels": [
@@ -378,16 +482,16 @@
     "P2",
     "area/profiles"
    ],
-   "state": "closed",
    "closed": "2026-09-11T23:10:16Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "Cherry-picked onto main by teknium1 on Sep 11, with you kept as the commit author."
+   "note": "Cherry-picked onto main by teknium1 on Sep 11, with you kept as the commit author.",
+   "via": "teknium1"
   },
   {
    "n": 107284,
    "title": "fix(agent): don't attach a pre-API steer to a prior turn's tool result",
    "issue": 107272,
+   "state": "closed",
    "created": "2026-09-10T10:46:19Z",
    "comments": 2,
    "labels": [
@@ -397,7 +501,6 @@
     "P2",
     "sweeper:risk-session-state"
    ],
-   "state": "closed",
    "closed": "2026-09-10T18:43:50Z",
    "closeKind": "duplicate",
    "note": "Labelled duplicate on GitHub: another PR already covered this issue."
@@ -406,6 +509,7 @@
    "n": 107280,
    "title": "fix(memory): bound the external-drift refusal and stop duplicate .bak clutter",
    "issue": 107270,
+   "state": "closed",
    "created": "2026-09-10T10:41:49Z",
    "comments": 2,
    "labels": [
@@ -415,16 +519,16 @@
     "P2",
     "area/memory"
    ],
-   "state": "closed",
    "closed": "2026-09-10T18:43:46Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver in favour of #107278, which fixes the root cause."
+   "note": "Closed by the autoresolver in favour of #107278, which fixes the root cause.",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 107163,
    "title": "fix(tools): heal a stale local session-cwd record instead of bricking the terminal",
    "issue": 107156,
+   "state": "open",
    "created": "2026-09-10T07:31:03Z",
    "comments": 3,
    "labels": [
@@ -436,13 +540,13 @@
     "P2",
     "sweeper:risk-session-state",
     "area/sessions"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 106111,
    "title": "ci(lint): bound the advisory public-surface step so it can't time out the blocking footguns job",
    "issue": 106103,
+   "state": "closed",
    "created": "2026-09-08T22:42:48Z",
    "comments": 2,
    "labels": [
@@ -450,16 +554,16 @@
     "P2",
     "sweeper:risk-automation"
    ],
-   "state": "closed",
    "closed": "2026-09-09T19:24:10Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "Cherry-picked onto main by teknium1 on Sep 9, with you kept as the commit author."
+   "note": "Cherry-picked onto main by teknium1 on Sep 9, with you kept as the commit author.",
+   "via": "teknium1"
   },
   {
    "n": 106088,
    "title": "fix(tui): run quick-command skill aliases via command.dispatch on desktop/TUI",
    "issue": null,
+   "state": "open",
    "created": "2026-09-08T21:59:11Z",
    "comments": 3,
    "labels": [
@@ -469,13 +573,13 @@
     "area/config",
     "P2",
     "comp/desktop"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 106082,
    "title": "fix(whatsapp): unwrap ephemeral/view-once envelopes when reading quoted text",
    "issue": null,
+   "state": "closed",
    "created": "2026-09-08T21:50:47Z",
    "comments": 2,
    "labels": [
@@ -486,7 +590,6 @@
     "P2",
     "sweeper:risk-message-delivery"
    ],
-   "state": "closed",
    "closed": "2026-09-08T23:38:24Z",
    "closeKind": "duplicate",
    "note": "Labelled duplicate on GitHub: another PR already covered this issue."
@@ -495,8 +598,9 @@
    "n": 106034,
    "title": "fix(gateway): treat a configured local terminal.cwd as a context workspace, not a launch artifact",
    "issue": 106012,
+   "state": "closed",
    "created": "2026-09-08T21:11:21Z",
-   "comments": 6,
+   "comments": 7,
    "labels": [
     "type/bug",
     "comp/tui",
@@ -506,12 +610,16 @@
     "comp/desktop",
     "area/profiles"
    ],
-   "state": "open"
+   "closed": "2026-09-28T21:46:35Z",
+   "closeKind": "superseded",
+   "via": "OutThisLife",
+   "note": "Superseded by c6f964f6d4: context discovery now reads the profile-scoped terminal.cwd for launch-artifact sessions."
   },
   {
    "n": 106029,
    "title": "fix(desktop): keep the active gateway default reachable in the fleet condensed profile dropdown",
    "issue": 106017,
+   "state": "closed",
    "created": "2026-09-08T21:05:17Z",
    "comments": 2,
    "labels": [
@@ -520,7 +628,6 @@
     "P3",
     "comp/desktop"
    ],
-   "state": "closed",
    "closed": "2026-09-08T23:38:20Z",
    "closeKind": "duplicate",
    "note": "Labelled duplicate on GitHub: another PR already covered this issue."
@@ -529,6 +636,7 @@
    "n": 106028,
    "title": "fix(cli): bind --create-if-missing sessions to the launch cwd",
    "issue": 106016,
+   "state": "open",
    "created": "2026-09-08T20:55:03Z",
    "comments": 1,
    "labels": [
@@ -537,13 +645,13 @@
     "P2",
     "sweeper:risk-session-state",
     "area/sessions"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 105933,
    "title": "fix(wecom): give media uploads a generous, tunable timeout",
    "issue": 105900,
+   "state": "open",
    "created": "2026-09-08T17:53:12Z",
    "comments": 2,
    "labels": [
@@ -552,13 +660,13 @@
     "platform/wecom",
     "P3",
     "sweeper:risk-message-delivery"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 105926,
    "title": "test(agent): isolate runtime-main state in auxiliary vision tests",
    "issue": 105888,
+   "state": "open",
    "created": "2026-09-08T17:46:52Z",
    "comments": 1,
    "labels": [
@@ -566,13 +674,13 @@
     "comp/agent",
     "tool/vision",
     "P3"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 105891,
    "title": "fix(desktop): roster age reflects the last worker run, not only the last chat",
    "issue": 105874,
+   "state": "closed",
    "created": "2026-09-08T17:03:42Z",
    "comments": 2,
    "labels": [
@@ -582,16 +690,16 @@
     "comp/desktop",
     "area/sessions"
    ],
-   "state": "closed",
    "closed": "2026-09-22T17:31:33Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "Cherry-picked onto main by teknium1 on Sep 20, with you kept as the commit author."
+   "note": "Cherry-picked onto main by teknium1 on Sep 20, with you kept as the commit author.",
+   "via": "teknium1"
   },
   {
    "n": 105882,
    "title": "fix(cron): keep a delivered run's success through a transient post-delivery claim blip",
    "issue": 105861,
+   "state": "closed",
    "created": "2026-09-08T16:55:51Z",
    "comments": 3,
    "labels": [
@@ -600,31 +708,31 @@
     "P2",
     "sweeper:risk-message-delivery"
    ],
-   "state": "closed",
    "closed": "2026-09-16T14:38:31Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver in favour of #109310: the fix belongs at the ownership-check source."
+   "note": "Closed by the autoresolver in favour of #109310: the fix belongs at the ownership-check source.",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 105864,
    "title": "fix(update): degrade past repo-scoped HTTP 429 with bounded retry",
    "issue": 105857,
+   "state": "open",
    "created": "2026-09-08T15:56:18Z",
-   "comments": 2,
+   "comments": 9,
    "labels": [
     "type/bug",
     "comp/cli",
     "P2",
     "sweeper:risk-compatibility",
     "area/install-update"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 104554,
    "title": "fix(cron): persist the full traceback in a failed run's output doc",
    "issue": 104538,
+   "state": "closed",
    "created": "2026-09-06T19:46:53Z",
    "comments": 2,
    "labels": [
@@ -633,7 +741,6 @@
     "comp/cron",
     "P3"
    ],
-   "state": "closed",
    "closed": "2026-09-08T15:38:48Z",
    "closeKind": "duplicate",
    "note": "Labelled duplicate on GitHub: another PR already covered this issue."
@@ -642,6 +749,7 @@
    "n": 104546,
    "title": "fix(cron): skip short-circuit status stubs when selecting context_from output",
    "issue": 104541,
+   "state": "closed",
    "created": "2026-09-06T19:40:14Z",
    "comments": 2,
    "labels": [
@@ -651,18 +759,18 @@
     "sweeper:risk-session-state",
     "area/sessions"
    ],
-   "state": "closed",
    "closed": "2026-09-08T15:39:53Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "Landed as a slim redo of #104546 and #104551 (b94edfe)."
+   "note": "Landed as a slim redo of #104546 and #104551 (b94edfe).",
+   "via": "teknium1"
   },
   {
    "n": 104459,
    "title": "fix(gateway): carry an active /goal across idle/daily session reset",
    "issue": 104445,
+   "state": "closed",
    "created": "2026-09-06T17:16:22Z",
-   "comments": 1,
+   "comments": 2,
    "labels": [
     "type/bug",
     "comp/cli",
@@ -671,12 +779,16 @@
     "sweeper:risk-session-state",
     "area/sessions"
    ],
-   "state": "open"
+   "closed": "2026-10-04T14:44:53Z",
+   "closeKind": "superseded",
+   "via": "PRATHAMESH75",
+   "note": "Closed by the autoresolver: main removed automatic idle/daily resets instead (#105021), so carrying /goal across isn't needed."
   },
   {
    "n": 103480,
    "title": "fix(desktop): pass HERMES_HOME for named-profile SSH serves so DB isolation holds",
    "issue": 103467,
+   "state": "closed",
    "created": "2026-09-05T06:59:09Z",
    "comments": 2,
    "labels": [
@@ -688,16 +800,16 @@
     "area/sessions",
     "area/profiles"
    ],
-   "state": "closed",
    "closed": "2026-09-11T13:45:23Z",
    "closeKind": "superseded",
-   "via": "teknium1",
-   "note": "--profile already re-homes the child before hermes_state is imported, so the export is redundant."
+   "note": "--profile already re-homes the child before hermes_state is imported, so the export is redundant.",
+   "via": "teknium1"
   },
   {
    "n": 103422,
    "title": "fix(local-models): resume ranged model downloads per-worker instead of restarting from zero",
    "issue": 103416,
+   "state": "open",
    "created": "2026-09-05T04:48:48Z",
    "comments": 1,
    "labels": [
@@ -706,31 +818,30 @@
     "P2",
     "comp/desktop",
     "area/local-models"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 99445,
    "title": "fix(desktop): deliver kanban review-lifecycle events to TUI/desktop sessions",
    "issue": 99436,
+   "state": "open",
    "created": "2026-08-31T14:23:03Z",
-   "comments": 2,
+   "comments": 5,
    "labels": [
     "type/bug",
-    "duplicate",
     "comp/tui",
     "comp/cron",
     "P3",
     "sweeper:risk-session-state",
     "sweeper:risk-message-delivery",
     "area/sessions"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 95330,
    "title": "fix(cli): reference in-scope desktop-presence flag in macOS update TCC notice",
    "issue": 95309,
+   "state": "closed",
    "created": "2026-08-26T06:50:26Z",
    "comments": 0,
    "labels": [
@@ -740,16 +851,16 @@
     "sweeper:risk-compatibility",
     "area/install-update"
    ],
-   "state": "closed",
    "closed": "2026-08-26T07:24:29Z",
    "closeKind": "superseded",
-   "via": "ethernet8023",
-   "note": "An alternative fix, #95353, was merged instead."
+   "note": "An alternative fix, #95353, was merged instead.",
+   "via": "ethernet8023"
   },
   {
    "n": 94965,
    "title": "docs(windows): correct gateway Scheduled Task name and launch mechanism",
    "issue": 94941,
+   "state": "open",
    "created": "2026-08-25T18:53:47Z",
    "comments": 3,
    "labels": [
@@ -757,13 +868,13 @@
     "comp/cli",
     "P3",
     "platform/windows"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 94957,
    "title": "fix(install): ship pre_update_backup: quick in the config template",
    "issue": 94944,
+   "state": "closed",
    "created": "2026-08-25T18:40:39Z",
    "comments": 2,
    "labels": [
@@ -774,7 +885,6 @@
     "sweeper:risk-compatibility",
     "area/install-update"
    ],
-   "state": "closed",
    "closed": "2026-08-25T20:45:30Z",
    "closeKind": "duplicate",
    "note": "Labelled duplicate on GitHub: another PR already covered this issue."
@@ -783,6 +893,7 @@
    "n": 94955,
    "title": "fix(time): resolve the timezone per profile instead of freezing one per process",
    "issue": 94945,
+   "state": "closed",
    "created": "2026-08-25T18:33:49Z",
    "comments": 2,
    "labels": [
@@ -792,7 +903,6 @@
     "P2",
     "area/profiles"
    ],
-   "state": "closed",
    "closed": "2026-08-25T18:47:53Z",
    "closeKind": "duplicate",
    "note": "Labelled duplicate on GitHub: another PR already covered this issue."
@@ -801,6 +911,7 @@
    "n": 94939,
    "title": "fix(terminal): drain stdout with poll() so output survives pipe fds &gt;= FD_SETSIZE",
    "issue": 94928,
+   "state": "closed",
    "created": "2026-08-25T18:06:22Z",
    "comments": 2,
    "labels": [
@@ -811,16 +922,16 @@
     "backend/local",
     "P2"
    ],
-   "state": "closed",
    "closed": "2026-08-25T20:45:33Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver in favour of #94937, a more complete fix for the same defect."
+   "note": "Closed by the autoresolver in favour of #94937, a more complete fix for the same defect.",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 89148,
    "title": "fix(gateway): allow persisted DM /resume across a flipped user_id namespace",
    "issue": 89123,
+   "state": "open",
    "created": "2026-08-18T12:00:13Z",
    "comments": 1,
    "labels": [
@@ -830,26 +941,26 @@
     "P2",
     "sweeper:risk-session-state",
     "area/sessions"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 89142,
    "title": "fix(doctor): show install command for not-installed optional packages",
    "issue": 89121,
+   "state": "open",
    "created": "2026-08-18T11:47:42Z",
    "comments": 7,
    "labels": [
     "type/bug",
     "comp/cli",
     "P3"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 89140,
    "title": "fix(cli): accept singular 'plugin' as an alias for the plugins command",
    "issue": 89120,
+   "state": "closed",
    "created": "2026-08-18T11:42:08Z",
    "comments": 3,
    "labels": [
@@ -858,7 +969,6 @@
     "comp/cli",
     "P3"
    ],
-   "state": "closed",
    "closed": "2026-08-19T02:52:03Z",
    "closeKind": "duplicate",
    "note": "Labelled duplicate on GitHub: another PR already covered this issue."
@@ -867,6 +977,7 @@
    "n": 88894,
    "title": "fix(desktop): stop the composite scope key leaking into remote --profile",
    "issue": 88625,
+   "state": "closed",
    "created": "2026-08-18T03:54:10Z",
    "comments": 1,
    "labels": [
@@ -877,16 +988,16 @@
     "comp/desktop",
     "area/profiles"
    ],
-   "state": "closed",
    "closed": "2026-08-18T11:35:58Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver: main resolves remote --profile via resolveRemoteSshDashboardProfile."
+   "note": "Closed by the autoresolver: main resolves remote --profile via resolveRemoteSshDashboardProfile.",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 88526,
    "title": "fix(compression): disable Codex 85% autoraise above the verified window",
    "issue": 88511,
+   "state": "closed",
    "created": "2026-08-17T16:52:17Z",
    "comments": 2,
    "labels": [
@@ -896,16 +1007,16 @@
     "P2",
     "area/compression"
    ],
-   "state": "closed",
    "closed": "2026-08-24T16:47:00Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver: the bug can no longer occur on main (057dcdf236)."
+   "note": "Closed by the autoresolver: the bug can no longer occur on main (057dcdf236).",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 88465,
    "title": "fix(config): decode JSON-string-typed providers at load time",
    "issue": 88451,
+   "state": "closed",
    "created": "2026-08-17T14:47:23Z",
    "comments": 5,
    "labels": [
@@ -915,16 +1026,16 @@
     "P2",
     "sweeper:risk-compatibility"
    ],
-   "state": "closed",
    "closed": "2026-09-22T06:33:48Z",
    "closeKind": "superseded",
-   "via": "teknium1",
-   "note": "Main surfaces the quoted providers mapping in doctor and startup via #118843 instead."
+   "note": "Main surfaces the quoted providers mapping in doctor and startup via #118843 instead.",
+   "via": "teknium1"
   },
   {
    "n": 87871,
    "title": "fix(desktop): dedupe duplicate toolCallId parts at the runtime boundary",
    "issue": 87857,
+   "state": "closed",
    "created": "2026-08-16T17:52:24Z",
    "comments": 2,
    "labels": [
@@ -932,16 +1043,16 @@
     "P2",
     "comp/desktop"
    ],
-   "state": "closed",
    "closed": "2026-08-22T17:31:32Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "Cherry-picked onto main by teknium1 on Aug 22, with you kept as the commit author."
+   "note": "Cherry-picked onto main by teknium1 on Aug 22, with you kept as the commit author.",
+   "via": "teknium1"
   },
   {
    "n": 87864,
    "title": "fix(gateway): honor API_SERVER_ENABLED=false as an off switch",
    "issue": 87856,
+   "state": "open",
    "created": "2026-08-16T17:45:16Z",
    "comments": 1,
    "labels": [
@@ -951,13 +1062,13 @@
     "area/docker",
     "P2",
     "sweeper:risk-compatibility"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 87714,
    "title": "fix(cli): resolve bracket-style list indices in config set/get/unset",
    "issue": 87689,
+   "state": "open",
    "created": "2026-08-16T13:34:28Z",
    "comments": 2,
    "labels": [
@@ -966,13 +1077,13 @@
     "area/config",
     "P2",
     "sweeper:risk-compatibility"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 87589,
    "title": "fix(desktop): localize the Kanban sidebar nav and \"Open board\" labels",
    "issue": 87577,
+   "state": "closed",
    "created": "2026-08-16T09:16:37Z",
    "comments": 2,
    "labels": [
@@ -982,16 +1093,16 @@
     "comp/desktop",
     "area/i18n"
    ],
-   "state": "closed",
    "closed": "2026-09-23T23:24:40Z",
    "closeKind": "salvaged",
-   "via": "OutThisLife",
-   "note": "Superseded by #120696, now merged; it keeps both of your production substitutions."
+   "note": "Superseded by #120696, now merged; it keeps both of your production substitutions.",
+   "via": "OutThisLife"
   },
   {
    "n": 87588,
    "title": "fix(desktop): translate the Voice \"Echo Transcripts\" field into zh-CN",
    "issue": 87580,
+   "state": "closed",
    "created": "2026-08-16T09:14:26Z",
    "comments": 2,
    "labels": [
@@ -1000,16 +1111,16 @@
     "comp/desktop",
     "area/i18n"
    ],
-   "state": "closed",
    "closed": "2026-09-16T13:20:20Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver: main already translates the Voice Echo Transcripts field."
+   "note": "Closed by the autoresolver: main already translates the Voice Echo Transcripts field.",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 87573,
    "title": "fix(plugins): clearer bare-name install error when the community index is unreachable",
    "issue": 87565,
+   "state": "closed",
    "created": "2026-08-16T08:57:40Z",
    "comments": 2,
    "labels": [
@@ -1018,16 +1129,16 @@
     "comp/plugins",
     "P3"
    ],
-   "state": "closed",
    "closed": "2026-09-09T18:10:38Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver: main removed the parallel community plugin index entirely."
+   "note": "Closed by the autoresolver: main removed the parallel community plugin index entirely.",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 87571,
    "title": "fix(update,plugins): stop MSYS stripping braces from stash@{N} selectors on Windows",
    "issue": 87542,
+   "state": "closed",
    "created": "2026-08-16T08:54:24Z",
    "comments": 5,
    "labels": [
@@ -1039,16 +1150,16 @@
     "platform/windows",
     "area/install-update"
    ],
-   "state": "closed",
    "closed": "2026-09-22T17:35:53Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver: main fixed it in 92e6cc189b by removing stash@{N} selectors."
+   "note": "Closed by the autoresolver: main fixed it in 92e6cc189b by removing stash@{N} selectors.",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 87570,
    "title": "fix(agent): canonicalize ALIASES providers in credential-pool mismatch guard",
    "issue": 87526,
+   "state": "open",
    "created": "2026-08-16T08:47:44Z",
    "comments": 3,
    "labels": [
@@ -1056,13 +1167,13 @@
     "comp/agent",
     "P2",
     "area/usage-cost"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 87275,
    "title": "fix(install): fail hard on an unfetchable --commit pin instead of silently installing unpinned main",
    "issue": 87268,
+   "state": "closed",
    "created": "2026-08-15T21:17:54Z",
    "comments": 1,
    "labels": [
@@ -1072,16 +1183,16 @@
     "sweeper:risk-compatibility",
     "area/install-update"
    ],
-   "state": "closed",
    "closed": "2026-08-16T09:04:44Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver: an upstream fix on main already fixes this exact bug (eac1f6534)."
+   "note": "Closed by the autoresolver: an upstream fix on main already fixes this exact bug (eac1f6534).",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 87263,
    "title": "fix(providers): fail closed on malformed base URL in get_hostname",
    "issue": null,
+   "state": "open",
    "created": "2026-08-15T21:01:07Z",
    "comments": 2,
    "labels": [
@@ -1090,13 +1201,13 @@
     "area/config",
     "P2",
     "sweeper:risk-compatibility"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 87143,
    "title": "fix(telegram): honor group_allowed_chats in early auth under multiplex profiles",
    "issue": 87132,
+   "state": "merged",
    "created": "2026-08-15T17:06:42Z",
    "comments": 1,
    "labels": [
@@ -1107,13 +1218,13 @@
     "P2",
     "sweeper:risk-message-delivery"
    ],
-   "state": "merged",
    "closed": "2026-08-16T09:03:02Z"
   },
   {
    "n": 87135,
    "title": "fix(mcp): prefer server-native tool over generated utility on name collision",
    "issue": 87112,
+   "state": "merged",
    "created": "2026-08-15T17:00:16Z",
    "comments": 2,
    "labels": [
@@ -1122,13 +1233,13 @@
     "tool/mcp",
     "P2"
    ],
-   "state": "merged",
    "closed": "2026-08-16T08:52:27Z"
   },
   {
    "n": 86563,
    "title": "fix(gateway): don't crash on a foreign XDG_RUNTIME_DIR in user-systemd preflight",
    "issue": 86558,
+   "state": "merged",
    "created": "2026-08-15T00:51:37Z",
    "comments": 0,
    "labels": [
@@ -1139,13 +1250,13 @@
     "P2",
     "sweeper:risk-compatibility"
    ],
-   "state": "merged",
    "closed": "2026-08-16T09:01:16Z"
   },
   {
    "n": 86456,
    "title": "fix(lsp): probe Windows wrapper suffixes before the extension-less shim",
    "issue": 86445,
+   "state": "closed",
    "created": "2026-08-14T22:58:40Z",
    "comments": 3,
    "labels": [
@@ -1156,7 +1267,6 @@
     "comp/lsp",
     "platform/windows"
    ],
-   "state": "closed",
    "closed": "2026-08-14T23:44:04Z",
    "closeKind": "duplicate",
    "note": "Labelled duplicate on GitHub: another PR already covered this issue."
@@ -1165,6 +1275,7 @@
    "n": 86344,
    "title": "fix(docker): retain container-teardown threads across registry detachment",
    "issue": 86317,
+   "state": "closed",
    "created": "2026-08-14T20:53:26Z",
    "comments": 4,
    "labels": [
@@ -1173,16 +1284,16 @@
     "backend/docker",
     "P2"
    ],
-   "state": "closed",
    "closed": "2026-09-05T18:17:12Z",
-   "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver: main landed the same mechanism (84b70e4)."
+   "closeKind": "salvaged",
+   "note": "Cherry-picked onto main by kshitijk4poor on Sep 5 (84b70e473e), with you kept as the commit author.",
+   "via": "kshitijk4poor"
   },
   {
    "n": 86308,
    "title": "fix(telegram): route inline-callback auth through the profile-aware runner path",
    "issue": 86296,
+   "state": "closed",
    "created": "2026-08-14T19:58:33Z",
    "comments": 6,
    "labels": [
@@ -1195,16 +1306,16 @@
     "sweeper:risk-message-delivery",
     "area/profiles"
    ],
-   "state": "closed",
    "closed": "2026-09-02T14:05:00Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "Fixed via #101250 on main, with you credited as co-author."
+   "note": "Fixed via #101250 on main, with you credited as co-author.",
+   "via": "teknium1"
   },
   {
    "n": 86293,
    "title": "fix(desktop): spare detached/supervised gateways from the startup orphan reap",
    "issue": 86287,
+   "state": "closed",
    "created": "2026-08-14T19:30:25Z",
    "comments": 3,
    "labels": [
@@ -1217,16 +1328,16 @@
     "comp/desktop",
     "platform/windows"
    ],
-   "state": "closed",
    "closed": "2026-08-14T19:34:21Z",
    "closeKind": "duplicate",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver as a duplicate of #86100, found after opening."
+   "note": "Closed by the autoresolver as a duplicate of #86100, found after opening.",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 86285,
    "title": "fix(slack): drop non-Slack thread ids in standalone delivery instead of failing",
    "issue": 86264,
+   "state": "open",
    "created": "2026-08-14T19:12:13Z",
    "comments": 6,
    "labels": [
@@ -1235,13 +1346,13 @@
     "platform/slack",
     "P3",
     "sweeper:risk-message-delivery"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 85996,
    "title": "feat(toolsets): add file_readonly toolset (read_file + search_files only)",
    "issue": null,
+   "state": "open",
    "created": "2026-08-14T10:02:43Z",
    "comments": 3,
    "labels": [
@@ -1249,13 +1360,13 @@
     "comp/tools",
     "tool/file",
     "P3"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 85881,
    "title": "fix(agent): skip the automatic background review inside delegation subagents",
    "issue": null,
+   "state": "closed",
    "created": "2026-08-14T06:49:00Z",
    "comments": 3,
    "labels": [
@@ -1264,16 +1375,16 @@
     "P2",
     "area/usage-cost"
    ],
-   "state": "closed",
    "closed": "2026-08-16T17:07:25Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "Cherry-picked onto main by teknium1 on Aug 15, with you kept as the commit author."
+   "note": "Cherry-picked onto main by teknium1 on Aug 15, with you kept as the commit author.",
+   "via": "teknium1"
   },
   {
    "n": 85871,
    "title": "fix(install): name the failing stage in hermes update instead of always \"Git update failed\"",
    "issue": null,
+   "state": "closed",
    "created": "2026-08-14T06:25:34Z",
    "comments": 2,
    "labels": [
@@ -1283,16 +1394,16 @@
     "sweeper:risk-compatibility",
     "area/install-update"
    ],
-   "state": "closed",
    "closed": "2026-08-24T16:53:25Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver: main landed an identical update-failure stage classifier (eac3f645ef)."
+   "note": "Closed by the autoresolver: main landed an identical update-failure stage classifier (eac3f645ef).",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 85449,
    "title": "fix(gateway): pin active-session lease to its acquire-time registry",
    "issue": 85431,
+   "state": "closed",
    "created": "2026-08-13T17:01:36Z",
    "comments": 2,
    "labels": [
@@ -1303,16 +1414,16 @@
     "sweeper:risk-session-state",
     "area/profiles"
    ],
-   "state": "closed",
    "closed": "2026-08-15T15:56:31Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver: a maintainer commit fixes the same root cause (94ce8396e)."
+   "note": "Closed by the autoresolver: a maintainer commit fixes the same root cause (94ce8396e).",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 85447,
    "title": "fix(gateway): expire same-epoch orphaned drain markers past a max-age",
    "issue": 85433,
+   "state": "closed",
    "created": "2026-08-13T16:57:55Z",
    "comments": 2,
    "labels": [
@@ -1322,7 +1433,6 @@
     "P1",
     "sweeper:risk-message-delivery"
    ],
-   "state": "closed",
    "closed": "2026-08-13T18:35:41Z",
    "closeKind": "duplicate",
    "note": "Labelled duplicate on GitHub: another PR already covered this issue."
@@ -1331,6 +1441,7 @@
    "n": 85403,
    "title": "fix(whatsapp): pair into the session dir the gateway reads, and reject empty creds",
    "issue": null,
+   "state": "open",
    "created": "2026-08-13T15:50:08Z",
    "comments": 5,
    "labels": [
@@ -1343,15 +1454,15 @@
     "sweeper:risk-session-state",
     "sweeper:risk-message-delivery",
     "sweeper:risk-compatibility"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 85398,
    "title": "fix(telegram): anchor fenced-code regex so inline triple backticks aren't mangled",
    "issue": null,
+   "state": "closed",
    "created": "2026-08-13T15:40:13Z",
-   "comments": 6,
+   "comments": 7,
    "labels": [
     "type/bug",
     "comp/plugins",
@@ -1359,12 +1470,16 @@
     "P3",
     "sweeper:risk-message-delivery"
    ],
-   "state": "open"
+   "closed": "2026-10-04T04:46:27Z",
+   "closeKind": "salvaged",
+   "via": "OutThisLife",
+   "note": "Cherry-picked onto main by OutThisLife on Oct 3 (5f7b1e2d65), with you kept as the commit author."
   },
   {
    "n": 85365,
    "title": "fix(gateway): propagate HERMES_BUNDLED_* into launchd/systemd units",
    "issue": null,
+   "state": "open",
    "created": "2026-08-13T14:46:08Z",
    "comments": 10,
    "labels": [
@@ -1374,13 +1489,13 @@
     "P2",
     "sweeper:risk-message-delivery",
     "sweeper:risk-compatibility"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 84301,
    "title": "fix(state): stop /resume from following /new /reset boundary children",
    "issue": 84284,
+   "state": "closed",
    "created": "2026-08-12T04:43:20Z",
    "comments": 2,
    "labels": [
@@ -1390,16 +1505,16 @@
     "sweeper:risk-session-state",
     "area/sessions"
    ],
-   "state": "closed",
    "closed": "2026-08-14T07:02:23Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver: main closed the session_switch legacy gap (91c7a67f4)."
+   "note": "Closed by the autoresolver: main closed the session_switch legacy gap (91c7a67f4).",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 84292,
    "title": "fix(desktop): reassert UI zoom on display-metrics-changed so RDP reconnects keep the saved level",
    "issue": 84274,
+   "state": "closed",
    "created": "2026-08-12T04:21:52Z",
    "comments": 2,
    "labels": [
@@ -1410,7 +1525,6 @@
     "comp/desktop",
     "platform/windows"
    ],
-   "state": "closed",
    "closed": "2026-08-13T16:44:52Z",
    "closeKind": "duplicate",
    "note": "Labelled duplicate on GitHub: another PR already covered this issue."
@@ -1419,6 +1533,7 @@
    "n": 84290,
    "title": "fix(desktop): drive the pet from any working session, not just the foreground one",
    "issue": 84282,
+   "state": "merged",
    "created": "2026-08-12T04:16:59Z",
    "comments": 1,
    "labels": [
@@ -1426,12 +1541,14 @@
     "P3",
     "comp/desktop"
    ],
-   "state": "open"
+   "closed": "2026-10-01T03:59:05Z",
+   "via": "OutThisLife"
   },
   {
    "n": 84286,
    "title": "fix(tools): route config credential-file mounts through the master-store deny-list",
    "issue": 84270,
+   "state": "open",
    "created": "2026-08-12T04:08:11Z",
    "comments": 11,
    "labels": [
@@ -1442,13 +1559,13 @@
     "P3",
     "sweeper:risk-compatibility",
     "area/profiles"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 78594,
    "title": "fix(agent): treat max-iteration nudge as synthetic during compaction",
    "issue": 78580,
+   "state": "closed",
    "created": "2026-08-04T15:55:38Z",
    "comments": 1,
    "labels": [
@@ -1458,16 +1575,16 @@
     "sweeper:risk-session-state",
     "area/compression"
    ],
-   "state": "closed",
    "closed": "2026-08-08T08:54:41Z",
    "closeKind": "salvaged",
-   "via": "kshitijk4poor",
-   "note": "Cherry-picked onto main by kshitijk4poor on Aug 8, with you kept as the commit author."
+   "note": "Cherry-picked onto main by kshitijk4poor on Aug 8, with you kept as the commit author.",
+   "via": "kshitijk4poor"
   },
   {
    "n": 78590,
    "title": "fix(install): surface aborted gateway restart during hermes update",
    "issue": 78574,
+   "state": "closed",
    "created": "2026-08-04T15:46:26Z",
    "comments": 5,
    "labels": [
@@ -1479,16 +1596,16 @@
     "sweeper:risk-compatibility",
     "area/install-update"
    ],
-   "state": "closed",
    "closed": "2026-08-15T05:04:09Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "Cherry-picked onto main by teknium1 on Aug 14, with you kept as the commit author."
+   "note": "Cherry-picked onto main by teknium1 on Aug 14, with you kept as the commit author.",
+   "via": "teknium1"
   },
   {
    "n": 78588,
    "title": "test(stt): de-flake command-STT idle-timeout stderr-progress test",
    "issue": null,
+   "state": "closed",
    "created": "2026-08-04T15:45:55Z",
    "comments": 1,
    "labels": [
@@ -1497,43 +1614,47 @@
     "tool/tts",
     "P3"
    ],
-   "state": "closed",
    "closed": "2026-09-16T13:38:30Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver: main already de-flakes this exact test (a70ea87)."
+   "note": "Closed by the autoresolver: main already de-flakes this exact test (a70ea87).",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 78504,
    "title": "fix(gateway): tolerate sub-2s start-time drift in PID-reuse liveness guard",
    "issue": 78498,
+   "state": "open",
    "created": "2026-08-04T13:44:24Z",
    "comments": 2,
    "labels": [
     "type/bug",
     "comp/gateway",
     "P2"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 78495,
    "title": "fix(discord): accept relay-lane kwargs in native rename_thread",
    "issue": 78487,
+   "state": "closed",
    "created": "2026-08-04T13:21:52Z",
-   "comments": 3,
+   "comments": 4,
    "labels": [
     "type/bug",
     "comp/plugins",
     "platform/discord",
     "P3"
    ],
-   "state": "open"
+   "closed": "2026-10-04T14:44:56Z",
+   "closeKind": "superseded",
+   "via": "PRATHAMESH75",
+   "note": "Closed by the autoresolver as superseded by #99484 (merged, fixes #78487)."
   },
   {
    "n": 78491,
    "title": "fix(tts): split streaming sentences on CJK terminators (\u3002\uff01\uff1f\u2026)",
    "issue": 78477,
+   "state": "open",
    "created": "2026-08-04T13:18:40Z",
    "comments": 5,
    "labels": [
@@ -1541,13 +1662,13 @@
     "tool/tts",
     "P2",
     "area/streaming"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 77729,
    "title": "fix(terminal): skip binary content on the referenced-script remote-read fallback",
    "issue": 77703,
+   "state": "closed",
    "created": "2026-08-03T13:32:00Z",
    "comments": 5,
    "labels": [
@@ -1557,16 +1678,16 @@
     "P2",
     "needs-decision"
    ],
-   "state": "closed",
    "closed": "2026-08-05T14:59:03Z",
    "closeKind": "salvaged",
-   "via": "kshitijk4poor",
-   "note": "Cherry-picked onto main by kshitijk4poor on Aug 5, with you kept as the commit author."
+   "note": "Cherry-picked onto main by kshitijk4poor on Aug 5, with you kept as the commit author.",
+   "via": "kshitijk4poor"
   },
   {
    "n": 76735,
    "title": "fix(desktop): count calendar days for the relative next-run label",
    "issue": 76725,
+   "state": "open",
    "created": "2026-08-02T11:01:40Z",
    "comments": 2,
    "labels": [
@@ -1575,13 +1696,13 @@
     "sweeper:risk-compatibility",
     "sweeper:blast-moderate",
     "comp/desktop"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 76734,
    "title": "fix(test): guard write_runtime_status against clobbering the real gateway_state.json",
    "issue": 76728,
+   "state": "closed",
    "created": "2026-08-02T10:53:35Z",
    "comments": 3,
    "labels": [
@@ -1592,16 +1713,16 @@
     "sweeper:risk-compatibility",
     "sweeper:blast-moderate"
    ],
-   "state": "closed",
    "closed": "2026-08-02T12:35:41Z",
    "closeKind": "withdrawn",
-   "via": "PRATHAMESH75",
-   "note": "Withdrawn by the autoresolver: defense-in-depth for a case it couldn't reproduce."
+   "note": "Withdrawn by the autoresolver: defense-in-depth for a case it couldn't reproduce.",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 76680,
    "title": "fix(dashboard): scope Provider Logins OAuth to the active management profile",
    "issue": 76674,
+   "state": "closed",
    "created": "2026-08-02T08:20:44Z",
    "comments": 3,
    "labels": [
@@ -1614,16 +1735,16 @@
     "comp/dashboard",
     "area/profiles"
    ],
-   "state": "closed",
    "closed": "2026-08-30T17:20:25Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver: main already scopes Provider Logins OAuth to the active profile."
+   "note": "Closed by the autoresolver: main already scopes Provider Logins OAuth to the active profile.",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 76496,
    "title": "fix(agent): drop client web_search on OpenRouter xAI :online requests",
    "issue": 76481,
+   "state": "open",
    "created": "2026-08-02T01:08:47Z",
    "comments": 3,
    "labels": [
@@ -1635,15 +1756,15 @@
     "P2",
     "sweeper:risk-compatibility",
     "sweeper:blast-moderate"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 75702,
    "title": "fix(copilot): don't warn on classic PATs in shared GitHub env vars",
    "issue": 75687,
+   "state": "open",
    "created": "2026-07-31T22:15:40Z",
-   "comments": 2,
+   "comments": 3,
    "labels": [
     "type/bug",
     "comp/cli",
@@ -1652,13 +1773,13 @@
     "P3",
     "sweeper:risk-compatibility",
     "sweeper:blast-contained"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 75549,
    "title": "fix(gateway): show the active fallback route in /status and /usage",
    "issue": 75535,
+   "state": "open",
    "created": "2026-07-31T17:13:09Z",
    "comments": 11,
    "labels": [
@@ -1667,13 +1788,13 @@
     "P2",
     "sweeper:blast-moderate",
     "area/usage-cost"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 75524,
    "title": "fix(google_chat): key /setup-files OAuth token by email, not resource name",
    "issue": 75492,
+   "state": "closed",
    "created": "2026-07-31T16:20:28Z",
    "comments": 3,
    "labels": [
@@ -1686,7 +1807,6 @@
     "sweeper:risk-compatibility",
     "sweeper:blast-moderate"
    ],
-   "state": "closed",
    "closed": "2026-08-02T00:57:29Z",
    "closeKind": "duplicate",
    "note": "Labelled duplicate on GitHub: another PR already covered this issue."
@@ -1695,6 +1815,7 @@
    "n": 74212,
    "title": "feat(web): forward custom request headers from web_extract to Firecrawl",
    "issue": 74177,
+   "state": "open",
    "created": "2026-07-29T16:35:38Z",
    "comments": 5,
    "labels": [
@@ -1704,13 +1825,13 @@
     "tool/code-exec",
     "P3",
     "sweeper:blast-moderate"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 74207,
    "title": "fix(bedrock): don't persist the discovery fallback to the model cache",
    "issue": 74151,
+   "state": "closed",
    "created": "2026-07-29T16:29:39Z",
    "comments": 2,
    "labels": [
@@ -1722,16 +1843,16 @@
     "sweeper:risk-caching",
     "sweeper:blast-moderate"
    ],
-   "state": "closed",
    "closed": "2026-09-23T18:49:00Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver: a model-cache redesign on main fixed the headline bug."
+   "note": "Closed by the autoresolver: a model-cache redesign on main fixed the headline bug.",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 74193,
    "title": "fix(stt): thread confidence thresholds into faster-whisper's own gate",
    "issue": 74178,
+   "state": "closed",
    "created": "2026-07-29T16:21:09Z",
    "comments": 3,
    "labels": [
@@ -1743,16 +1864,16 @@
     "sweeper:risk-compatibility",
     "sweeper:blast-moderate"
    ],
-   "state": "closed",
    "closed": "2026-08-03T09:00:09Z",
    "closeKind": "salvaged",
-   "via": "kshitijk4poor",
-   "note": "Cherry-picked onto main by kshitijk4poor on Aug 3, with you kept as the commit author."
+   "note": "Cherry-picked onto main by kshitijk4poor on Aug 3, with you kept as the commit author.",
+   "via": "kshitijk4poor"
   },
   {
    "n": 74184,
    "title": "fix(cli): bind alt voice.record_key as an escape sequence so startup doesn't crash",
    "issue": 74169,
+   "state": "closed",
    "created": "2026-07-29T16:08:07Z",
    "comments": 3,
    "labels": [
@@ -1762,16 +1883,16 @@
     "sweeper:risk-compatibility",
     "sweeper:blast-moderate"
    ],
-   "state": "closed",
    "closed": "2026-08-15T16:00:05Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver: a maintainer merged a fix with the same mechanism (fef9c537d)."
+   "note": "Closed by the autoresolver: a maintainer merged a fix with the same mechanism (fef9c537d).",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 73538,
    "title": "fix(codex): clamp oversized Responses call_id so MCP tools don't brick sessions",
    "issue": 73492,
+   "state": "merged",
    "created": "2026-07-28T17:56:28Z",
    "comments": 3,
    "labels": [
@@ -1780,14 +1901,13 @@
     "provider/openai",
     "P1"
    ],
-   "state": "merged",
-   "closed": "2026-07-28T19:17:55Z",
-   "via": "kshitijk4poor"
+   "closed": "2026-07-28T19:17:55Z"
   },
   {
    "n": 73533,
    "title": "fix(tts): honor tts.openai.base_url/api_key in the streaming path",
    "issue": 73530,
+   "state": "closed",
    "created": "2026-07-28T17:50:01Z",
    "comments": 1,
    "labels": [
@@ -1796,16 +1916,16 @@
     "tool/tts",
     "P3"
    ],
-   "state": "closed",
    "closed": "2026-07-29T07:10:52Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver: the streaming-provider secrets rework fixed this (7800bb1a2)."
+   "note": "Closed by the autoresolver: the streaming-provider secrets rework fixed this (7800bb1a2).",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 73482,
    "title": "fix(tts): fall back to mp3 when an OpenAI-compatible backend rejects response_format",
    "issue": 73470,
+   "state": "open",
    "created": "2026-07-28T16:48:11Z",
    "comments": 2,
    "labels": [
@@ -1815,13 +1935,13 @@
     "P2",
     "sweeper:risk-compatibility",
     "sweeper:blast-moderate"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 73357,
    "title": "fix(desktop): confirm before clearing the entire Enabled Toolsets list",
    "issue": 73319,
+   "state": "closed",
    "created": "2026-07-28T13:05:10Z",
    "comments": 3,
    "labels": [
@@ -1832,16 +1952,16 @@
     "sweeper:blast-moderate",
     "comp/desktop"
    ],
-   "state": "closed",
    "closed": "2026-08-15T08:50:43Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "Cherry-picked onto main by teknium1 on Aug 15, with you kept as the commit author."
+   "note": "Cherry-picked onto main by teknium1 on Aug 15, with you kept as the commit author.",
+   "via": "teknium1"
   },
   {
    "n": 73350,
    "title": "fix(agent): detect thinking-budget exhaustion for reasoning_content-only models",
    "issue": 73336,
+   "state": "closed",
    "created": "2026-07-28T12:53:30Z",
    "comments": 2,
    "labels": [
@@ -1853,7 +1973,6 @@
     "P2",
     "needs-decision"
    ],
-   "state": "closed",
    "closed": "2026-07-28T16:37:09Z",
    "closeKind": "duplicate",
    "note": "Labelled duplicate on GitHub: another PR already covered this issue."
@@ -1862,6 +1981,7 @@
    "n": 73342,
    "title": "fix(agent): add Kimi K2.x/K3 to reasoning stale-timeout allowlist",
    "issue": 73337,
+   "state": "open",
    "created": "2026-07-28T12:42:42Z",
    "comments": 1,
    "labels": [
@@ -1871,13 +1991,13 @@
     "P2",
     "sweeper:risk-compatibility",
     "sweeper:blast-contained"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 73273,
    "title": "fix(desktop): rehydrate persisted native OAuth tokens with a stored-set parser",
    "issue": 73271,
+   "state": "closed",
    "created": "2026-07-28T09:40:54Z",
    "comments": 4,
    "labels": [
@@ -1888,7 +2008,6 @@
     "sweeper:risk-security-boundary",
     "comp/desktop"
    ],
-   "state": "closed",
    "closed": "2026-07-28T12:05:05Z",
    "closeKind": "duplicate",
    "note": "Labelled duplicate on GitHub: another PR already covered this issue."
@@ -1897,6 +2016,7 @@
    "n": 73246,
    "title": "fix(kanban): populate board assignee picker from on-disk profiles",
    "issue": 73235,
+   "state": "closed",
    "created": "2026-07-28T08:44:37Z",
    "comments": 2,
    "labels": [
@@ -1906,7 +2026,6 @@
     "P3",
     "area/profiles"
    ],
-   "state": "closed",
    "closed": "2026-07-28T12:05:17Z",
    "closeKind": "duplicate",
    "note": "Labelled duplicate on GitHub: another PR already covered this issue."
@@ -1915,6 +2034,7 @@
    "n": 73127,
    "title": "fix(desktop): make auto-project Hide from sidebar reversible via an Undo toast",
    "issue": 73091,
+   "state": "open",
    "created": "2026-07-28T04:44:43Z",
    "comments": 2,
    "labels": [
@@ -1923,13 +2043,13 @@
     "sweeper:risk-compatibility",
     "sweeper:blast-contained",
     "comp/desktop"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 73102,
    "title": "fix(skills): resolve audit trust from provenance for official skills",
    "issue": 73099,
+   "state": "closed",
    "created": "2026-07-28T03:47:30Z",
    "comments": 5,
    "labels": [
@@ -1940,7 +2060,6 @@
     "P3",
     "sweeper:blast-moderate"
    ],
-   "state": "closed",
    "closed": "2026-09-05T12:35:35Z",
    "closeKind": "duplicate",
    "note": "Labelled duplicate on GitHub: another PR already covered this issue."
@@ -1949,6 +2068,7 @@
    "n": 73076,
    "title": "fix(gateway): cancel the whole queue on /stop and /new, not just the head",
    "issue": null,
+   "state": "open",
    "created": "2026-07-28T03:14:13Z",
    "comments": 2,
    "labels": [
@@ -1958,13 +2078,13 @@
     "sweeper:risk-session-state",
     "sweeper:risk-message-delivery",
     "sweeper:blast-moderate"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 72787,
    "title": "fix(gateway): don't re-home a non-git session onto a repo it only visited",
    "issue": null,
+   "state": "closed",
    "created": "2026-07-27T17:40:28Z",
    "comments": 1,
    "labels": [
@@ -1975,16 +2095,16 @@
     "sweeper:blast-moderate",
     "area/sessions"
    ],
-   "state": "closed",
    "closed": "2026-08-01T17:53:15Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "Cherry-picked onto main by teknium1 on Aug 1, with you kept as the commit author."
+   "note": "Cherry-picked onto main by teknium1 on Aug 1, with you kept as the commit author.",
+   "via": "teknium1"
   },
   {
    "n": 72026,
    "title": "fix(agent): deliver pre_llm_call/memory context on multimodal turns",
    "issue": 71998,
+   "state": "closed",
    "created": "2026-07-26T14:45:40Z",
    "comments": 5,
    "labels": [
@@ -1998,16 +2118,16 @@
     "sweeper:blast-moderate",
     "area/memory"
    ],
-   "state": "closed",
    "closed": "2026-09-22T07:59:05Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "Cherry-picked onto main by teknium1 on Sep 22, with you kept as the commit author."
+   "note": "Cherry-picked onto main by teknium1 on Sep 22, with you kept as the commit author.",
+   "via": "teknium1"
   },
   {
    "n": 71965,
    "title": "fix(approval): keep self-termination gated under the container-backend bypass",
    "issue": 71957,
+   "state": "open",
    "created": "2026-07-26T12:56:52Z",
    "comments": 5,
    "labels": [
@@ -2019,13 +2139,13 @@
     "needs-decision",
     "sweeper:risk-security-boundary",
     "sweeper:blast-moderate"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 71958,
    "title": "feat(config): render web.backend/search_backend/extract_backend as Config Form selects",
    "issue": 71929,
+   "state": "open",
    "created": "2026-07-26T12:38:58Z",
    "comments": 2,
    "labels": [
@@ -2036,13 +2156,13 @@
     "P3",
     "sweeper:risk-compatibility",
     "sweeper:blast-moderate"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 71947,
    "title": "fix(terminal): don't persist delegate_task lineage marker in the shared snapshot",
    "issue": 71941,
+   "state": "closed",
    "created": "2026-07-26T12:17:51Z",
    "comments": 13,
    "labels": [
@@ -2055,16 +2175,16 @@
     "sweeper:risk-compatibility",
     "sweeper:blast-broad"
    ],
-   "state": "closed",
    "closed": "2026-09-17T18:10:55Z",
    "closeKind": "salvaged",
-   "via": "kshitijk4poor",
-   "note": "Salvaged into #114312 with co-author credit; the marker exclusion landed on main."
+   "note": "Salvaged into #114312 with co-author credit; the marker exclusion landed on main.",
+   "via": "kshitijk4poor"
   },
   {
    "n": 71860,
    "title": "fix(desktop): reconcile backend main-lane ids with the frontend overlay convention",
    "issue": 71837,
+   "state": "closed",
    "created": "2026-07-26T08:46:39Z",
    "comments": 3,
    "labels": [
@@ -2076,16 +2196,16 @@
     "comp/desktop",
     "platform/windows"
    ],
-   "state": "closed",
    "closed": "2026-07-26T12:05:29Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Consolidated by the autoresolver into #71889 as a lossless superset."
+   "note": "Consolidated by the autoresolver into #71889 as a lossless superset.",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 71820,
    "title": "fix(browser): don't resolve CDP endpoint during startup tool-schema assembly",
    "issue": 71817,
+   "state": "closed",
    "created": "2026-07-26T07:25:05Z",
    "comments": 3,
    "labels": [
@@ -2096,16 +2216,16 @@
     "needs-decision",
     "sweeper:risk-compatibility"
    ],
-   "state": "closed",
    "closed": "2026-07-27T21:32:42Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "Landed via #72415 (731aa0c)."
+   "note": "Landed via #72415 (731aa0c).",
+   "via": "teknium1"
   },
   {
    "n": 71816,
    "title": "fix(tools): inject items into array tool schemas so Gemini accepts declarations",
    "issue": 71804,
+   "state": "open",
    "created": "2026-07-26T07:11:32Z",
    "comments": 7,
    "labels": [
@@ -2116,13 +2236,13 @@
     "needs-decision",
     "sweeper:risk-compatibility",
     "sweeper:blast-broad"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 69517,
    "title": "fix(anthropic): coerce empty/whitespace-only text blocks on the request path",
    "issue": 69512,
+   "state": "merged",
    "created": "2026-07-22T16:47:54Z",
    "comments": 1,
    "labels": [
@@ -2132,13 +2252,13 @@
     "P2",
     "area/compression"
    ],
-   "state": "merged",
    "closed": "2026-07-23T20:36:37Z"
   },
   {
    "n": 69490,
    "title": "fix(approval): gate Windows destructive-verb analogues (iwr|iex, format-volume, icacls, taskkill)",
    "issue": 69472,
+   "state": "closed",
    "created": "2026-07-22T16:02:24Z",
    "comments": 4,
    "labels": [
@@ -2151,16 +2271,16 @@
     "sweeper:blast-moderate",
     "platform/windows"
    ],
-   "state": "closed",
    "closed": "2026-09-06T16:53:13Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver: main moved detection into approval_detection.py and a broader security fix landed."
+   "note": "Closed by the autoresolver: main moved detection into approval_detection.py and a broader security fix landed.",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 69274,
    "title": "fix(cron): build failure reason from metadata, not the agent's final_response",
    "issue": 69224,
+   "state": "open",
    "created": "2026-07-22T11:22:17Z",
    "comments": 2,
    "labels": [
@@ -2170,13 +2290,13 @@
     "sweeper:risk-message-delivery",
     "sweeper:risk-compatibility",
     "sweeper:blast-moderate"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 69262,
    "title": "test(cli): stop test_gateway_service hard-exit from truncating the suite",
    "issue": 69218,
+   "state": "closed",
    "created": "2026-07-22T11:03:17Z",
    "comments": 2,
    "labels": [
@@ -2185,16 +2305,16 @@
     "comp/gateway",
     "P2"
    ],
-   "state": "closed",
    "closed": "2026-07-22T16:40:07Z",
    "closeKind": "duplicate",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver in favour of #69243 by @lesterlxt, opened about 30 minutes earlier with the same fix."
+   "note": "Closed by the autoresolver in favour of #69243 by @lesterlxt, opened about 30 minutes earlier with the same fix.",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 69215,
    "title": "fix(agent): checkpoint every terminal call, not just regex-matched ones",
    "issue": 69171,
+   "state": "open",
    "created": "2026-07-22T09:16:13Z",
    "comments": 8,
    "labels": [
@@ -2204,13 +2324,13 @@
     "P2",
     "sweeper:risk-session-state",
     "sweeper:blast-contained"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 69212,
    "title": "fix(gateway): suppress the duplicate clarify tool-progress bubble",
    "issue": 69175,
+   "state": "closed",
    "created": "2026-07-22T09:05:50Z",
    "comments": 2,
    "labels": [
@@ -2220,16 +2340,16 @@
     "P3",
     "sweeper:risk-message-delivery"
    ],
-   "state": "closed",
    "closed": "2026-07-22T14:48:32Z",
    "closeKind": "superseded",
-   "via": "teknium1",
-   "note": "The gateway now skips the tool-progress bubble for clarify entirely (#69318)."
+   "note": "The gateway now skips the tool-progress bubble for clarify entirely (#69318).",
+   "via": "teknium1"
   },
   {
    "n": 69159,
    "title": "fix(gateway): declare webhook sessions stateless so background delegations run inline",
    "issue": 69145,
+   "state": "open",
    "created": "2026-07-22T07:27:31Z",
    "comments": 2,
    "labels": [
@@ -2242,13 +2362,13 @@
     "sweeper:risk-message-delivery",
     "sweeper:blast-moderate",
     "area/sessions"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 69133,
    "title": "fix(matrix): read MATRIX_RECOVERY_KEY from the active profile secret scope",
    "issue": 69090,
+   "state": "closed",
    "created": "2026-07-22T05:46:04Z",
    "comments": 2,
    "labels": [
@@ -2260,7 +2380,6 @@
     "sweeper:risk-security-boundary",
     "area/profiles"
    ],
-   "state": "closed",
    "closed": "2026-07-22T08:15:57Z",
    "closeKind": "duplicate",
    "note": "Labelled duplicate on GitHub: another PR already covered this issue."
@@ -2269,6 +2388,7 @@
    "n": 69088,
    "title": "fix(desktop): render the real changelog for official-SSH update checks",
    "issue": 69081,
+   "state": "closed",
    "created": "2026-07-22T03:46:26Z",
    "comments": 5,
    "labels": [
@@ -2279,16 +2399,16 @@
     "comp/desktop",
     "area/install-update"
    ],
-   "state": "closed",
    "closed": "2026-09-16T13:55:44Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver: the update-check refactor on main handles this (6dfcf15685)."
+   "note": "Closed by the autoresolver: the update-check refactor on main handles this (6dfcf15685).",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 69068,
    "title": "fix(agent): strip inherited Authorization header in Gemini native client (Bug 1 of #69031)",
    "issue": null,
+   "state": "open",
    "created": "2026-07-22T02:50:44Z",
    "comments": 2,
    "labels": [
@@ -2299,13 +2419,13 @@
     "sweeper:risk-security-boundary",
     "sweeper:risk-compatibility",
     "sweeper:blast-moderate"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 68985,
    "title": "fix(desktop): bound optimistic user-row preservation to the in-flight tail",
    "issue": 68979,
+   "state": "closed",
    "created": "2026-07-21T23:50:46Z",
    "comments": 1,
    "labels": [
@@ -2315,44 +2435,48 @@
     "comp/desktop",
     "area/sessions"
    ],
-   "state": "closed",
    "closed": "2026-07-22T23:31:25Z",
    "closeKind": "superseded",
-   "via": "ethernet8023",
-   "note": "#69682 was preferred: same approach, but it keeps the repeat-prompt invariant."
+   "note": "#69682 was preferred: same approach, but it keeps the repeat-prompt invariant.",
+   "via": "ethernet8023"
   },
   {
    "n": 68967,
    "title": "fix(discord): retry post-connect slash-command sync while connected",
    "issue": 68963,
+   "state": "open",
    "created": "2026-07-21T22:45:29Z",
-   "comments": 5,
+   "comments": 6,
    "labels": [
     "type/bug",
     "comp/plugins",
     "platform/discord",
     "P3",
     "sweeper:blast-moderate"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 68953,
    "title": "fix(desktop): open macOS PDFs via Preview when the default handler is broken",
    "issue": 68937,
+   "state": "closed",
    "created": "2026-07-21T21:51:49Z",
-   "comments": 5,
+   "comments": 6,
    "labels": [
     "type/bug",
     "P3",
     "comp/desktop"
    ],
-   "state": "open"
+   "closed": "2026-10-04T14:43:19Z",
+   "closeKind": "superseded",
+   "via": "PRATHAMESH75",
+   "note": "Closed by the autoresolver: main stopped sending non-media chat links through the OS default handler (fae063f)."
   },
   {
    "n": 68914,
    "title": "fix(desktop): garbage-collect orphaned composer-queue entries so the stuck-queue error can't persist forever",
    "issue": null,
+   "state": "closed",
    "created": "2026-07-21T20:48:35Z",
    "comments": 1,
    "labels": [
@@ -2363,7 +2487,6 @@
     "comp/desktop",
     "area/sessions"
    ],
-   "state": "closed",
    "closed": "2026-07-30T04:27:49Z",
    "closeKind": "superseded",
    "note": "The triage sweeper closed it as already implemented on main.",
@@ -2373,6 +2496,7 @@
    "n": 68829,
    "title": "fix(cli): honor excluded_providers in the TUI /model picker's unconfigured rows",
    "issue": null,
+   "state": "open",
    "created": "2026-07-21T18:05:27Z",
    "comments": 5,
    "labels": [
@@ -2384,13 +2508,13 @@
     "sweeper:risk-compatibility",
     "sweeper:blast-moderate",
     "comp/desktop"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 68823,
    "title": "fix(telegram): parse ALLOW_ALL_USERS as boolean so an explicit false unblocks DM pairing",
    "issue": null,
+   "state": "open",
    "created": "2026-07-21T17:57:28Z",
    "comments": 2,
    "labels": [
@@ -2402,13 +2526,13 @@
     "sweeper:risk-security-boundary",
     "sweeper:risk-compatibility",
     "sweeper:blast-moderate"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 68796,
    "title": "fix(release): stage the desktop package.json bump so it lands in the release commit",
    "issue": 68783,
+   "state": "closed",
    "created": "2026-07-21T16:50:10Z",
    "comments": 4,
    "labels": [
@@ -2419,16 +2543,16 @@
     "sweeper:blast-moderate",
     "comp/desktop"
    ],
-   "state": "closed",
    "closed": "2026-09-16T13:52:11Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver: main fixed the staging gap (0b8daf30aa)."
+   "note": "Closed by the autoresolver: main fixed the staging gap (0b8daf30aa).",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 68407,
    "title": "fix(memory): honor write-isolation contract in the Mem0 provider",
    "issue": 68393,
+   "state": "closed",
    "created": "2026-07-21T04:50:33Z",
    "comments": 3,
    "labels": [
@@ -2442,16 +2566,16 @@
     "sweeper:blast-contained",
     "area/memory"
    ],
-   "state": "closed",
    "closed": "2026-09-18T19:40:21Z",
    "closeKind": "notplanned",
-   "via": "kshitijk4poor",
-   "note": "Memory providers are moving out of core; provider behaviour belongs in the provider's own repo."
+   "note": "Memory providers are moving out of core; provider behaviour belongs in the provider's own repo.",
+   "via": "kshitijk4poor"
   },
   {
    "n": 68405,
    "title": "fix(gateway): carry desktop_contract when activating a lazy session",
    "issue": 68392,
+   "state": "closed",
    "created": "2026-07-21T04:45:44Z",
    "comments": 3,
    "labels": [
@@ -2464,16 +2588,16 @@
     "comp/desktop",
     "area/sessions"
    ],
-   "state": "closed",
    "closed": "2026-08-10T08:34:41Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "Cherry-picked onto main by teknium1 on Aug 10, with you kept as the commit author."
+   "note": "Cherry-picked onto main by teknium1 on Aug 10, with you kept as the commit author.",
+   "via": "teknium1"
   },
   {
    "n": 68345,
    "title": "fix(kanban): cap corrupt-DB quarantine backups per DB basename",
    "issue": 68336,
+   "state": "closed",
    "created": "2026-07-21T02:39:24Z",
    "comments": 2,
    "labels": [
@@ -2481,16 +2605,16 @@
     "comp/cron",
     "P3"
    ],
-   "state": "closed",
    "closed": "2026-07-21T20:36:16Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver: main now bounds corrupt-DB quarantine backups (8fb3cc1b1)."
+   "note": "Closed by the autoresolver: main now bounds corrupt-DB quarantine backups (8fb3cc1b1).",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 68319,
    "title": "fix(agent): guard the optional Telegram rich-hint import in system_prompt (Fixes #68300)",
    "issue": null,
+   "state": "closed",
    "created": "2026-07-21T01:44:46Z",
    "comments": 3,
    "labels": [
@@ -2502,16 +2626,16 @@
     "sweeper:blast-broad",
     "area/install-update"
    ],
-   "state": "closed",
    "closed": "2026-08-02T12:35:44Z",
    "closeKind": "withdrawn",
-   "via": "PRATHAMESH75",
-   "note": "Withdrawn by the autoresolver: no committed revision actually shows the ImportError."
+   "note": "Withdrawn by the autoresolver: no committed revision actually shows the ImportError.",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 68317,
    "title": "fix(tests): make the live-system-guard canary fail closed (Fixes #68311)",
    "issue": null,
+   "state": "closed",
    "created": "2026-07-21T01:41:38Z",
    "comments": 1,
    "labels": [
@@ -2520,18 +2644,18 @@
     "sweeper:risk-compatibility",
     "area/install-update"
    ],
-   "state": "closed",
    "closed": "2026-07-21T06:48:09Z",
    "closeKind": "salvaged",
-   "via": "kshitijk4poor",
-   "note": "Cherry-picked onto main by kshitijk4poor on Jul 21, with you kept as the commit author."
+   "note": "Cherry-picked onto main by kshitijk4poor on Jul 21, with you kept as the commit author.",
+   "via": "kshitijk4poor"
   },
   {
    "n": 68271,
    "title": "fix(gateway): route TUI skill secret prompts to the owning session",
    "issue": 68261,
+   "state": "closed",
    "created": "2026-07-20T23:39:32Z",
-   "comments": 4,
+   "comments": 5,
    "labels": [
     "type/bug",
     "comp/tui",
@@ -2542,12 +2666,16 @@
     "sweeper:blast-moderate",
     "area/sessions"
    ],
-   "state": "open"
+   "closed": "2026-10-04T14:42:35Z",
+   "closeKind": "superseded",
+   "via": "PRATHAMESH75",
+   "note": "Closed by the autoresolver: main now routes the secret prompt to the owning UI session (b07d307)."
   },
   {
    "n": 68228,
    "title": "fix(memory): read non-secret provider config from config.yaml for OpenViking and RetainDB",
    "issue": 68209,
+   "state": "closed",
    "created": "2026-07-20T20:47:43Z",
    "comments": 1,
    "labels": [
@@ -2560,16 +2688,16 @@
     "sweeper:blast-contained",
     "area/memory"
    ],
-   "state": "closed",
    "closed": "2026-08-03T13:52:52Z",
    "closeKind": "salvaged",
-   "via": "kshitijk4poor",
-   "note": "Cherry-picked onto main by kshitijk4poor on Aug 3, with you kept as the commit author."
+   "note": "Cherry-picked onto main by kshitijk4poor on Aug 3, with you kept as the commit author.",
+   "via": "kshitijk4poor"
   },
   {
    "n": 68205,
    "title": "fix(agent): don't re-append persisted transcript on cold-resume rotating compression",
    "issue": 68196,
+   "state": "merged",
    "created": "2026-07-20T19:53:54Z",
    "comments": 0,
    "labels": [
@@ -2579,14 +2707,13 @@
     "sweeper:risk-session-state",
     "area/compression"
    ],
-   "state": "merged",
-   "closed": "2026-07-21T06:41:32Z",
-   "via": "kshitijk4poor"
+   "closed": "2026-07-21T06:41:32Z"
   },
   {
    "n": 68180,
    "title": "fix(bootstrap): reject truncated install-script downloads via Content-Length",
    "issue": 68163,
+   "state": "open",
    "created": "2026-07-20T18:39:30Z",
    "comments": 3,
    "labels": [
@@ -2598,13 +2725,13 @@
     "comp/desktop",
     "platform/windows",
     "area/install-update"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 68162,
    "title": "fix(cli): wait for background MCP discovery before building the one-shot agent",
    "issue": 68137,
+   "state": "closed",
    "created": "2026-07-20T17:42:14Z",
    "comments": 1,
    "labels": [
@@ -2615,16 +2742,16 @@
     "sweeper:risk-compatibility",
     "sweeper:blast-moderate"
    ],
-   "state": "closed",
    "closed": "2026-08-02T08:13:38Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver: main wires MCP discovery into the one-shot path (3572d4bca)."
+   "note": "Closed by the autoresolver: main wires MCP discovery into the one-shot path (3572d4bca).",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 68160,
    "title": "fix(gateway): read Slack thread-context messages whose text lives in blocks/attachments",
    "issue": 68138,
+   "state": "closed",
    "created": "2026-07-20T17:37:49Z",
    "comments": 1,
    "labels": [
@@ -2634,16 +2761,16 @@
     "P3",
     "sweeper:risk-message-delivery"
    ],
-   "state": "closed",
    "closed": "2026-07-22T14:25:22Z",
    "closeKind": "superseded",
-   "via": "teknium1",
-   "note": "A consolidated fix in #69316 covers thread context, parent text and mention gating."
+   "note": "A consolidated fix in #69316 covers thread context, parent text and mention gating.",
+   "via": "teknium1"
   },
   {
    "n": 68151,
    "title": "fix(agent): price reasoning tokens in estimate_usage_cost",
    "issue": 68081,
+   "state": "open",
    "created": "2026-07-20T17:09:41Z",
    "comments": 1,
    "labels": [
@@ -2653,13 +2780,13 @@
     "sweeper:risk-compatibility",
     "sweeper:blast-broad",
     "area/usage-cost"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 68062,
    "title": "fix(skills): tolerate non-UTF-8 bytes in hub lock.json",
    "issue": 68053,
+   "state": "closed",
    "created": "2026-07-20T13:41:21Z",
    "comments": 1,
    "labels": [
@@ -2667,16 +2794,16 @@
     "tool/skills",
     "P2"
    ],
-   "state": "closed",
    "closed": "2026-07-25T00:11:44Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "Cherry-picked onto main by teknium1 on Jul 24, with you kept as the commit author."
+   "note": "Cherry-picked onto main by teknium1 on Jul 24, with you kept as the commit author.",
+   "via": "teknium1"
   },
   {
    "n": 68059,
    "title": "fix(config): skip symlinked HERMES_HOME subdirs in _secure_dir",
    "issue": 68055,
+   "state": "open",
    "created": "2026-07-20T13:37:49Z",
    "comments": 4,
    "labels": [
@@ -2687,13 +2814,13 @@
     "P2",
     "sweeper:risk-compatibility",
     "sweeper:blast-contained"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 67991,
    "title": "fix(tools): bound env probe subprocess so a Windows inherited pipe can't wedge sessions",
    "issue": 67964,
+   "state": "closed",
    "created": "2026-07-20T10:38:53Z",
    "comments": 2,
    "labels": [
@@ -2703,18 +2830,18 @@
     "sweeper:risk-platform-windows",
     "platform/windows"
    ],
-   "state": "closed",
    "closed": "2026-07-20T13:52:13Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "Cherry-picked onto main by teknium1 on Jul 20, with you kept as the commit author."
+   "note": "Cherry-picked onto main by teknium1 on Jul 20, with you kept as the commit author.",
+   "via": "teknium1"
   },
   {
    "n": 67947,
    "title": "fix(agent): resolve custom-provider key_env preferring .env over stale os.environ",
    "issue": 67935,
+   "state": "closed",
    "created": "2026-07-20T08:43:11Z",
-   "comments": 4,
+   "comments": 5,
    "labels": [
     "type/bug",
     "comp/agent",
@@ -2726,12 +2853,16 @@
     "sweeper:risk-compatibility",
     "sweeper:blast-moderate"
    ],
-   "state": "open"
+   "closed": "2026-10-04T14:43:16Z",
+   "closeKind": "superseded",
+   "via": "PRATHAMESH75",
+   "note": "Closed by the autoresolver: all three key_env sites now resolve through _scoped_key_env() (#115885)."
   },
   {
    "n": 67944,
    "title": "fix(gateway): scope GET /api/config to config-only profile to unwedge the event loop",
    "issue": 67936,
+   "state": "closed",
    "created": "2026-07-20T08:38:48Z",
    "comments": 3,
    "labels": [
@@ -2743,16 +2874,16 @@
     "comp/dashboard",
     "area/profiles"
    ],
-   "state": "closed",
    "closed": "2026-08-13T15:07:33Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver: a broader sweep moved _profile_scope off the event loop (52c9aee3b)."
+   "note": "Closed by the autoresolver: a broader sweep moved _profile_scope off the event loop (52c9aee3b).",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 67926,
    "title": "fix(cli): keep picker prewarm read-only w.r.t. config.yaml",
    "issue": 67841,
+   "state": "closed",
    "created": "2026-07-20T08:03:43Z",
    "comments": 6,
    "labels": [
@@ -2763,16 +2894,16 @@
     "sweeper:risk-compatibility",
     "sweeper:blast-moderate"
    ],
-   "state": "closed",
    "closed": "2026-08-02T12:38:32Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver: #67893 fixed the metadata-destruction root cause on main."
+   "note": "Closed by the autoresolver: #67893 fixed the metadata-destruction root cause on main.",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 67611,
    "title": "fix(cli): wire plugin manager _cli_ref in query mode so dispatch_tool injects parent_agent",
    "issue": 67597,
+   "state": "closed",
    "created": "2026-07-19T17:37:26Z",
    "comments": 5,
    "labels": [
@@ -2782,16 +2913,16 @@
     "P3",
     "sweeper:blast-moderate"
    ],
-   "state": "closed",
    "closed": "2026-09-22T06:39:43Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "Landed on main as a slim redo that re-applied the mechanism at the current seam (#118842)."
+   "note": "Landed on main as a slim redo that re-applied the mechanism at the current seam (#118842).",
+   "via": "teknium1"
   },
   {
    "n": 67593,
    "title": "fix(gateway): forward Codex commentary to API Server streaming clients",
    "issue": 67580,
+   "state": "closed",
    "created": "2026-07-19T16:42:00Z",
    "comments": 9,
    "labels": [
@@ -2804,16 +2935,16 @@
     "sweeper:blast-moderate",
     "area/streaming"
    ],
-   "state": "closed",
    "closed": "2026-09-19T21:45:09Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "The work in this PR landed on main via #115903."
+   "note": "The work in this PR landed on main via #115903.",
+   "via": "teknium1"
   },
   {
    "n": 67583,
    "title": "fix(cli): recognize group_sessions_per_user and known_plugin_toolsets as known config roots",
    "issue": 67478,
+   "state": "closed",
    "created": "2026-07-19T16:25:26Z",
    "comments": 3,
    "labels": [
@@ -2825,7 +2956,6 @@
     "sweeper:risk-compatibility",
     "sweeper:blast-moderate"
    ],
-   "state": "closed",
    "closed": "2026-07-20T09:36:26Z",
    "closeKind": "duplicate",
    "note": "Labelled duplicate on GitHub: another PR already covered this issue."
@@ -2834,6 +2964,7 @@
    "n": 67471,
    "title": "fix(cli): run -w/--worktree in one-shot mode instead of silently ignoring it",
    "issue": 67458,
+   "state": "open",
    "created": "2026-07-19T11:38:42Z",
    "comments": 4,
    "labels": [
@@ -2842,13 +2973,13 @@
     "P2",
     "sweeper:risk-compatibility",
     "sweeper:blast-contained"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 67373,
    "title": "fix(tools): don't block execute() on Windows backgrounded-child stdout close",
    "issue": 67362,
+   "state": "closed",
    "created": "2026-07-19T07:59:11Z",
    "comments": 5,
    "labels": [
@@ -2861,16 +2992,16 @@
     "sweeper:blast-contained",
     "platform/windows"
    ],
-   "state": "closed",
    "closed": "2026-09-19T09:46:23Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "Landed on main via #115671 with Co-authored-by credit."
+   "note": "Landed on main via #115671 with Co-authored-by credit.",
+   "via": "teknium1"
   },
   {
    "n": 67350,
    "title": "perf(state): index assistant tool-call rows for Insights queries",
    "issue": 67341,
+   "state": "closed",
    "created": "2026-07-19T06:45:35Z",
    "comments": 4,
    "labels": [
@@ -2881,16 +3012,16 @@
     "sweeper:risk-compatibility",
     "sweeper:blast-moderate"
    ],
-   "state": "closed",
    "closed": "2026-08-03T11:58:44Z",
    "closeKind": "salvaged",
-   "via": "kshitijk4poor",
-   "note": "Cherry-picked onto main by kshitijk4poor on Aug 3, with you kept as the commit author."
+   "note": "Cherry-picked onto main by kshitijk4poor on Aug 3, with you kept as the commit author.",
+   "via": "kshitijk4poor"
   },
   {
    "n": 67336,
    "title": "fix(agent): recover Codex reasoning-only stalls with a nudge + fallback ladder",
    "issue": 67321,
+   "state": "closed",
    "created": "2026-07-19T05:42:13Z",
    "comments": 5,
    "labels": [
@@ -2903,16 +3034,16 @@
     "sweeper:risk-compatibility",
     "sweeper:blast-moderate"
    ],
-   "state": "closed",
    "closed": "2026-09-19T21:44:56Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "Landed on main via the Codex reasoning-only stall fix (656eb283)."
+   "note": "Landed on main via the Codex reasoning-only stall fix (656eb283).",
+   "via": "teknium1"
   },
   {
    "n": 67250,
    "title": "fix(feishu): repair Windows system SOCKS proxy for WS event channel",
    "issue": 67244,
+   "state": "open",
    "created": "2026-07-19T01:56:20Z",
    "comments": 6,
    "labels": [
@@ -2924,13 +3055,13 @@
     "sweeper:risk-platform-windows",
     "sweeper:blast-moderate",
     "platform/windows"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 67024,
    "title": "test(agent): guard anthropic_prompt_cache_policy positional agent param",
    "issue": 67016,
+   "state": "closed",
    "created": "2026-07-18T16:46:59Z",
    "comments": 2,
    "labels": [
@@ -2939,7 +3070,6 @@
     "comp/agent",
     "P3"
    ],
-   "state": "closed",
    "closed": "2026-07-18T17:37:40Z",
    "closeKind": "duplicate",
    "note": "Labelled duplicate on GitHub: another PR already covered this issue."
@@ -2948,6 +3078,7 @@
    "n": 67021,
    "title": "fix(install): keep install.ps1 pure ASCII so Windows PowerShell 5.1 doesn't misparse it",
    "issue": 66994,
+   "state": "closed",
    "created": "2026-07-18T16:40:47Z",
    "comments": 1,
    "labels": [
@@ -2957,16 +3088,16 @@
     "sweeper:risk-platform-windows",
     "platform/windows"
    ],
-   "state": "closed",
    "closed": "2026-07-18T22:47:06Z",
    "closeKind": "salvaged",
-   "via": "OutThisLife",
-   "note": "Cherry-picked onto main by OutThisLife on Jul 18, with you kept as the commit author."
+   "note": "Cherry-picked onto main by OutThisLife on Jul 18, with you kept as the commit author.",
+   "via": "OutThisLife"
   },
   {
    "n": 67011,
    "title": "fix(cli): scope TUI npm-install check to the ui-tui workspace closure",
    "issue": 66978,
+   "state": "closed",
    "created": "2026-07-18T16:24:50Z",
    "comments": 8,
    "labels": [
@@ -2978,16 +3109,16 @@
     "sweeper:blast-moderate",
     "area/install-update"
    ],
-   "state": "closed",
    "closed": "2026-09-09T18:57:15Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "Cherry-picked onto main by teknium1 on Aug 25, with you kept as the commit author."
+   "note": "Cherry-picked onto main by teknium1 on Aug 25, with you kept as the commit author.",
+   "via": "teknium1"
   },
   {
    "n": 66911,
    "title": "fix(desktop): resolve local plugin root independent of remote backend",
    "issue": 66899,
+   "state": "closed",
    "created": "2026-07-18T12:24:16Z",
    "comments": 6,
    "labels": [
@@ -2998,16 +3129,16 @@
     "sweeper:blast-contained",
     "comp/desktop"
    ],
-   "state": "closed",
    "closed": "2026-07-29T06:53:37Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "Cherry-picked onto main by teknium1 on Jul 28, with you kept as the commit author."
+   "note": "Cherry-picked onto main by teknium1 on Jul 28, with you kept as the commit author.",
+   "via": "teknium1"
   },
   {
    "n": 66882,
    "title": "fix(cron): only install profile secret scope when multiplexing is active",
    "issue": 66868,
+   "state": "closed",
    "created": "2026-07-18T10:57:35Z",
    "comments": 3,
    "labels": [
@@ -3021,7 +3152,6 @@
     "area/install-update",
     "area/profiles"
    ],
-   "state": "closed",
    "closed": "2026-07-21T04:37:17Z",
    "closeKind": "duplicate",
    "note": "Labelled duplicate on GitHub: another PR already covered this issue."
@@ -3030,6 +3160,7 @@
    "n": 66880,
    "title": "fix(desktop): switch to chat when resuming the open session from a full-page tab",
    "issue": 66875,
+   "state": "closed",
    "created": "2026-07-18T10:46:00Z",
    "comments": 5,
    "labels": [
@@ -3040,16 +3171,16 @@
     "comp/desktop",
     "area/sessions"
    ],
-   "state": "closed",
    "closed": "2026-07-28T03:16:29Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver: main fixed the same dead-click via #71901."
+   "note": "Closed by the autoresolver: main fixed the same dead-click via #71901.",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 66855,
    "title": "fix(agent): inject empty required array on Moonshot object schemas",
    "issue": 66835,
+   "state": "closed",
    "created": "2026-07-18T09:45:42Z",
    "comments": 2,
    "labels": [
@@ -3061,16 +3192,16 @@
     "sweeper:risk-compatibility",
     "sweeper:blast-moderate"
    ],
-   "state": "closed",
    "closed": "2026-07-20T18:06:12Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "Cherry-picked onto main by teknium1 on Jul 20, with you kept as the commit author."
+   "note": "Cherry-picked onto main by teknium1 on Jul 20, with you kept as the commit author.",
+   "via": "teknium1"
   },
   {
    "n": 66851,
    "title": "fix(discord): prepend warm-up silence so TTS first word isn't clipped",
    "issue": 66827,
+   "state": "closed",
    "created": "2026-07-18T09:40:52Z",
    "comments": 3,
    "labels": [
@@ -3081,16 +3212,16 @@
     "sweeper:risk-compatibility",
     "sweeper:blast-moderate"
    ],
-   "state": "closed",
    "closed": "2026-07-29T01:32:06Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "Cherry-picked onto main by teknium1 on Jul 28, with you kept as the commit author."
+   "note": "Cherry-picked onto main by teknium1 on Jul 28, with you kept as the commit author.",
+   "via": "teknium1"
   },
   {
    "n": 66828,
    "title": "fix(cli): skip unreachable support files instead of aborting URL skill install",
    "issue": 66760,
+   "state": "closed",
    "created": "2026-07-18T08:43:32Z",
    "comments": 6,
    "labels": [
@@ -3103,16 +3234,16 @@
     "sweeper:blast-moderate",
     "area/install-update"
    ],
-   "state": "closed",
    "closed": "2026-08-30T03:39:59Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "Cherry-picked onto main by teknium1 on Aug 29, with you kept as the commit author."
+   "note": "Cherry-picked onto main by teknium1 on Aug 29, with you kept as the commit author.",
+   "via": "teknium1"
   },
   {
    "n": 66426,
    "title": "fix(agent): load root SOUL.md when profile home has only the seeded default",
    "issue": 66396,
+   "state": "closed",
    "created": "2026-07-17T17:14:40Z",
    "comments": 2,
    "labels": [
@@ -3124,18 +3255,18 @@
     "sweeper:blast-moderate",
     "area/profiles"
    ],
-   "state": "closed",
    "closed": "2026-07-21T04:36:56Z",
    "closeKind": "withdrawn",
-   "via": "PRATHAMESH75",
-   "note": "Withdrawn by the autoresolver: a silent root fallback would break profile isolation."
+   "note": "Withdrawn by the autoresolver: a silent root fallback would break profile isolation.",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 65887,
    "title": "fix(agent): survive context-files kwarg skew instead of crashing the backend",
    "issue": 65868,
+   "state": "closed",
    "created": "2026-07-16T19:00:06Z",
-   "comments": 6,
+   "comments": 7,
    "labels": [
     "type/bug",
     "comp/agent",
@@ -3144,12 +3275,16 @@
     "sweeper:blast-broad",
     "area/install-update"
    ],
-   "state": "open"
+   "closed": "2026-09-30T02:18:49Z",
+   "closeKind": "superseded",
+   "via": "OutThisLife",
+   "note": "Superseded by #128569, which fixes the same root cause on current main."
   },
   {
    "n": 64344,
    "title": "fix(desktop): reap orphaned backends on startup to prevent duplicate sessions",
    "issue": 64304,
+   "state": "closed",
    "created": "2026-07-14T10:50:59Z",
    "comments": 5,
    "labels": [
@@ -3161,16 +3296,16 @@
     "comp/desktop",
     "area/sessions"
    ],
-   "state": "closed",
    "closed": "2026-08-23T08:13:51Z",
    "closeKind": "superseded",
-   "via": "teknium1",
-   "note": "Main implemented a backend-side orphan reaper in dashboard_procs.py (6386c7530)."
+   "note": "Main implemented a backend-side orphan reaper in dashboard_procs.py (6386c7530).",
+   "via": "teknium1"
   },
   {
    "n": 63930,
    "title": "fix(desktop): honor config.yaml provider over stale composer seed",
    "issue": 63835,
+   "state": "closed",
    "created": "2026-07-13T19:28:27Z",
    "comments": 4,
    "labels": [
@@ -3182,16 +3317,16 @@
     "comp/desktop",
     "area/billing"
    ],
-   "state": "closed",
    "closed": "2026-07-19T02:52:48Z",
    "closeKind": "superseded",
-   "via": "OutThisLife",
-   "note": "Same root cause fixed in #65896: the desktop's sticky composer model was overriding config.yaml."
+   "note": "Same root cause fixed in #65896: the desktop's sticky composer model was overriding config.yaml.",
+   "via": "OutThisLife"
   },
   {
    "n": 63903,
    "title": "fix(mcp): resolve completed future in poll loop to stop TimeoutError spin",
    "issue": 63892,
+   "state": "closed",
    "created": "2026-07-13T18:18:16Z",
    "comments": 3,
    "labels": [
@@ -3201,16 +3336,16 @@
     "P0",
     "sweeper:blast-moderate"
    ],
-   "state": "closed",
    "closed": "2026-07-18T22:47:09Z",
    "closeKind": "superseded",
-   "via": "OutThisLife",
-   "note": "Consolidated into #67183, built on another contributor's cherry-pick of the same fix."
+   "note": "Consolidated into #67183, built on another contributor's cherry-pick of the same fix.",
+   "via": "OutThisLife"
   },
   {
    "n": 63899,
    "title": "fix(delegate): surface child's resolved toolsets in async completion block",
    "issue": 63887,
+   "state": "open",
    "created": "2026-07-13T18:04:12Z",
    "comments": 5,
    "labels": [
@@ -3220,13 +3355,13 @@
     "P2",
     "sweeper:risk-session-state",
     "sweeper:blast-contained"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 63898,
    "title": "fix(tools): escalate repeated malformed patch calls instead of looping",
    "issue": 63880,
+   "state": "open",
    "created": "2026-07-13T18:03:58Z",
    "comments": 4,
    "labels": [
@@ -3235,13 +3370,13 @@
     "tool/file",
     "P2",
     "sweeper:blast-contained"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 63187,
    "title": "fix(gateway): stop standing-goal loop after a failed provider turn",
    "issue": 63180,
+   "state": "open",
    "created": "2026-07-12T12:54:14Z",
    "comments": 2,
    "labels": [
@@ -3251,13 +3386,13 @@
     "sweeper:risk-session-state",
     "sweeper:risk-message-delivery",
     "sweeper:blast-moderate"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 63084,
    "title": "fix(tools): don't report interrupted read_file as File not found",
    "issue": 63069,
+   "state": "closed",
    "created": "2026-07-12T08:54:26Z",
    "comments": 4,
    "labels": [
@@ -3267,7 +3402,6 @@
     "P2",
     "sweeper:blast-broad"
    ],
-   "state": "closed",
    "closed": "2026-09-10T12:46:36Z",
    "closeKind": "duplicate",
    "note": "Labelled duplicate on GitHub: another PR already covered this issue."
@@ -3276,6 +3410,7 @@
    "n": 62868,
    "title": "fix(tools): lazily bring up sandbox for vision_analyze reads",
    "issue": 62825,
+   "state": "closed",
    "created": "2026-07-11T21:09:18Z",
    "comments": 1,
    "labels": [
@@ -3288,16 +3423,16 @@
     "sweeper:risk-compatibility",
     "sweeper:blast-moderate"
    ],
-   "state": "closed",
    "closed": "2026-08-07T16:12:16Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "Cherry-picked onto main by teknium1 on Aug 7, with you kept as the commit author."
+   "note": "Cherry-picked onto main by teknium1 on Aug 7, with you kept as the commit author.",
+   "via": "teknium1"
   },
   {
    "n": 62826,
    "title": "fix(cli): treat bool handler results as exit 0, not status 1",
    "issue": 62810,
+   "state": "open",
    "created": "2026-07-11T19:30:56Z",
    "comments": 5,
    "labels": [
@@ -3307,13 +3442,13 @@
     "sweeper:risk-compatibility",
     "sweeper:risk-automation",
     "sweeper:blast-broad"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 62816,
    "title": "fix(tui): stop double-formatting friendly tool labels",
    "issue": 62796,
+   "state": "closed",
    "created": "2026-07-11T19:06:18Z",
    "comments": 7,
    "labels": [
@@ -3324,16 +3459,16 @@
     "sweeper:risk-compatibility",
     "sweeper:blast-moderate"
    ],
-   "state": "closed",
    "closed": "2026-07-29T08:16:48Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver: a gateway-side fix on main covers both TUI and desktop (f0031ab)."
+   "note": "Closed by the autoresolver: a gateway-side fix on main covers both TUI and desktop (f0031ab).",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 62803,
    "title": "fix(dashboard): reject port-binding channels on secondary multiplexed profiles",
    "issue": 62791,
+   "state": "closed",
    "created": "2026-07-11T18:42:48Z",
    "comments": 3,
    "labels": [
@@ -3347,16 +3482,16 @@
     "comp/dashboard",
     "area/profiles"
    ],
-   "state": "closed",
    "closed": "2026-07-16T14:24:16Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "Cherry-picked onto main by teknium1 on Jul 16, with you kept as the commit author."
+   "note": "Cherry-picked onto main by teknium1 on Jul 16, with you kept as the commit author.",
+   "via": "teknium1"
   },
   {
    "n": 62267,
    "title": "fix(providers): use native query-param auth for Gemini model discovery",
    "issue": 62259,
+   "state": "closed",
    "created": "2026-07-10T19:40:41Z",
    "comments": 2,
    "labels": [
@@ -3369,7 +3504,6 @@
     "sweeper:risk-compatibility",
     "sweeper:blast-moderate"
    ],
-   "state": "closed",
    "closed": "2026-09-24T00:55:29Z",
    "closeKind": "duplicate",
    "note": "Labelled duplicate on GitHub: another PR already covered this issue."
@@ -3378,6 +3512,7 @@
    "n": 62258,
    "title": "fix(models): surface Opus 4.8 fast variant so the desktop picker shows its Fast toggle",
    "issue": 62236,
+   "state": "closed",
    "created": "2026-07-10T19:04:40Z",
    "comments": 2,
    "labels": [
@@ -3389,16 +3524,16 @@
     "sweeper:blast-moderate",
     "comp/desktop"
    ],
-   "state": "closed",
    "closed": "2026-09-07T14:10:12Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver: main now exposes Fast Mode via the speed=fast override."
+   "note": "Closed by the autoresolver: main now exposes Fast Mode via the speed=fast override.",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 62246,
    "title": "fix(cli): don't reroute /model onto an unconfigured provider",
    "issue": 62240,
+   "state": "open",
    "created": "2026-07-10T18:48:19Z",
    "comments": 3,
    "labels": [
@@ -3409,13 +3544,13 @@
     "sweeper:risk-session-state",
     "sweeper:risk-compatibility",
     "sweeper:blast-moderate"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 62239,
    "title": "fix(agent): unify local OpenAI-compatible provider aliases to custom",
    "issue": 62213,
+   "state": "closed",
    "created": "2026-07-10T18:28:35Z",
    "comments": 2,
    "labels": [
@@ -3426,16 +3561,16 @@
     "sweeper:risk-compatibility",
     "sweeper:blast-moderate"
    ],
-   "state": "closed",
    "closed": "2026-09-26T02:56:06Z",
    "closeKind": "salvaged",
-   "via": "OutThisLife",
-   "note": "Cherry-picked onto main by OutThisLife on Sep 25, with you kept as the commit author."
+   "note": "Cherry-picked onto main by OutThisLife on Sep 25, with you kept as the commit author.",
+   "via": "OutThisLife"
   },
   {
    "n": 62190,
    "title": "fix(agent): run cron LLM calls inline to avoid gateway deadlock",
    "issue": 62151,
+   "state": "closed",
    "created": "2026-07-10T16:41:57Z",
    "comments": 2,
    "labels": [
@@ -3446,16 +3581,16 @@
     "P1",
     "sweeper:risk-session-state"
    ],
-   "state": "closed",
    "closed": "2026-07-11T05:38:23Z",
    "closeKind": "salvaged",
-   "via": "kshitijk4poor",
-   "note": "Cherry-picked onto main by kshitijk4poor on Jul 11, with you kept as the commit author."
+   "note": "Cherry-picked onto main by kshitijk4poor on Jul 11, with you kept as the commit author.",
+   "via": "kshitijk4poor"
   },
   {
    "n": 62014,
    "title": "fix(cron): never stale-remove a one-shot whose run is still alive",
    "issue": 62002,
+   "state": "merged",
    "created": "2026-07-10T10:39:47Z",
    "comments": 1,
    "labels": [
@@ -3465,14 +3600,13 @@
     "sweeper:risk-session-state",
     "sweeper:risk-message-delivery"
    ],
-   "state": "merged",
-   "closed": "2026-07-10T14:28:34Z",
-   "via": "teknium1"
+   "closed": "2026-07-10T14:28:34Z"
   },
   {
    "n": 58362,
    "title": "fix(agent): dedup duplicate tool_call_id after compaction",
    "issue": 58327,
+   "state": "closed",
    "created": "2026-07-04T16:18:52Z",
    "comments": 2,
    "labels": [
@@ -3482,7 +3616,6 @@
     "P2",
     "sweeper:risk-session-state"
    ],
-   "state": "closed",
    "closed": "2026-07-04T16:20:31Z",
    "closeKind": "duplicate",
    "note": "Labelled duplicate on GitHub: another PR already covered this issue."
@@ -3491,6 +3624,7 @@
    "n": 58247,
    "title": "fix(dashboard-auth): skip password-only providers in auto-SSO redirect",
    "issue": 58237,
+   "state": "closed",
    "created": "2026-07-04T11:47:59Z",
    "comments": 2,
    "labels": [
@@ -3501,7 +3635,6 @@
     "sweeper:implemented-on-main",
     "comp/dashboard"
    ],
-   "state": "closed",
    "closed": "2026-07-15T16:11:24Z",
    "closeKind": "duplicate",
    "note": "Already on main; closed as a duplicate of the earlier #54887.",
@@ -3511,6 +3644,7 @@
    "n": 58201,
    "title": "fix(bedrock): dedup profile-covered bare model IDs in /model picker",
    "issue": 58185,
+   "state": "open",
    "created": "2026-07-04T10:25:25Z",
    "comments": 2,
    "labels": [
@@ -3521,13 +3655,13 @@
     "sweeper:risk-compatibility",
     "sweeper:blast-contained",
     "area/profiles"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 58177,
    "title": "fix(cli): run git gc --auto after update to bound .git growth",
    "issue": 58172,
+   "state": "closed",
    "created": "2026-07-04T09:32:48Z",
    "comments": 3,
    "labels": [
@@ -3538,16 +3672,16 @@
     "sweeper:blast-moderate",
     "area/install-update"
    ],
-   "state": "closed",
    "closed": "2026-09-06T16:50:28Z",
    "closeKind": "withdrawn",
-   "via": "PRATHAMESH75",
-   "note": "Withdrawn by the autoresolver: git gc --auto wasn't shown to bound growth, so it would have shipped a no-op."
+   "note": "Withdrawn by the autoresolver: git gc --auto wasn't shown to bound growth, so it would have shipped a no-op.",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 57281,
    "title": "fix(runtime): close opencode-go/zen model-switch 404 on both resolver paths",
    "issue": 57259,
+   "state": "closed",
    "created": "2026-07-02T17:58:13Z",
    "comments": 4,
    "labels": [
@@ -3555,16 +3689,16 @@
     "comp/cli",
     "P2"
    ],
-   "state": "closed",
    "closed": "2026-07-03T13:00:50Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver: #57585 fixes it more comprehensively at all three sites."
+   "note": "Closed by the autoresolver: #57585 fixes it more comprehensively at all three sites.",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 56497,
    "title": "fix(tools): detect squashed multi-entry blobs as memory drift",
    "issue": 56464,
+   "state": "open",
    "created": "2026-07-01T16:19:07Z",
    "comments": 0,
    "labels": [
@@ -3575,13 +3709,13 @@
     "sweeper:risk-compatibility",
     "sweeper:blast-moderate",
     "area/memory"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 55789,
    "title": "fix(telegram): recover when polling updater stops while process stays alive",
    "issue": 55769,
+   "state": "closed",
    "created": "2026-06-30T17:33:26Z",
    "comments": 2,
    "labels": [
@@ -3591,18 +3725,18 @@
     "P3",
     "sweeper:risk-message-delivery"
    ],
-   "state": "closed",
    "closed": "2026-06-30T22:37:09Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "Cherry-picked onto main by teknium1 on Jun 30, with you kept as the commit author."
+   "note": "Cherry-picked onto main by teknium1 on Jun 30, with you kept as the commit author.",
+   "via": "teknium1"
   },
   {
    "n": 55781,
    "title": "fix(desktop): clear stuck compaction overlay and de-dupe terminal tool-title verb",
    "issue": 55775,
+   "state": "closed",
    "created": "2026-06-30T17:13:04Z",
-   "comments": 4,
+   "comments": 5,
    "labels": [
     "type/bug",
     "P3",
@@ -3610,12 +3744,16 @@
     "sweeper:blast-moderate",
     "comp/desktop"
    ],
-   "state": "open"
+   "closed": "2026-10-04T14:44:59Z",
+   "closeKind": "superseded",
+   "via": "PRATHAMESH75",
+   "note": "Closed by the autoresolver as superseded by #122791 (merged, fixes #55775), which clears the compaction overlay on Stop."
   },
   {
    "n": 54973,
    "title": "feat(feishu): add render_mode config to opt into native table rendering",
    "issue": 54951,
+   "state": "closed",
    "created": "2026-06-29T15:11:22Z",
    "comments": 1,
    "labels": [
@@ -3626,16 +3764,16 @@
     "sweeper:risk-message-delivery",
     "sweeper:blast-contained"
    ],
-   "state": "closed",
    "closed": "2026-07-29T08:26:33Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver: Feishu now routes tables through post/md by default (ae22a03)."
+   "note": "Closed by the autoresolver: Feishu now routes tables through post/md by default (ae22a03).",
+   "via": "PRATHAMESH75"
   },
   {
    "n": 54688,
    "title": "feat(gateway): /platform reload \u2014 hot-reload messaging platform adapters",
    "issue": 54681,
+   "state": "open",
    "created": "2026-06-29T07:00:56Z",
    "comments": 1,
    "labels": [
@@ -3646,13 +3784,13 @@
     "sweeper:risk-security-boundary",
     "sweeper:risk-compatibility",
     "sweeper:blast-contained"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 54645,
    "title": "fix(desktop): stop clipping descenders in sidebar row labels",
    "issue": 54634,
+   "state": "closed",
    "created": "2026-06-29T05:18:10Z",
    "comments": 4,
    "labels": [
@@ -3661,16 +3799,16 @@
     "sweeper:blast-contained",
     "comp/desktop"
    ],
-   "state": "closed",
    "closed": "2026-08-24T00:34:52Z",
    "closeKind": "superseded",
-   "via": "OutThisLife",
-   "note": "Fixed in #93036 along with the Inbox card's leading-none overrides and a shared rowLabel."
+   "note": "Fixed in #93036 along with the Inbox card's leading-none overrides and a shared rowLabel.",
+   "via": "OutThisLife"
   },
   {
    "n": 54597,
    "title": "fix(tools): transcode to OGG/Opus for OpenAI-compatible TTS backends without opus",
    "issue": 54589,
+   "state": "closed",
    "created": "2026-06-29T03:45:08Z",
    "comments": 3,
    "labels": [
@@ -3681,16 +3819,16 @@
     "sweeper:risk-compatibility",
     "sweeper:blast-contained"
    ],
-   "state": "closed",
    "closed": "2026-07-28T03:31:10Z",
    "closeKind": "superseded",
-   "via": "teknium1",
-   "note": "Resolved at the class level by #73072 instead of a per-provider transcode."
+   "note": "Resolved at the class level by #73072 instead of a per-provider transcode.",
+   "via": "teknium1"
   },
   {
    "n": 54378,
    "title": "feat(desktop): remote-only mode to block local workstation file access",
    "issue": 54363,
+   "state": "closed",
    "created": "2026-06-28T18:27:13Z",
    "comments": 1,
    "labels": [
@@ -3701,7 +3839,6 @@
     "comp/desktop",
     "sweeper:not-planned"
    ],
-   "state": "closed",
    "closed": "2026-07-15T07:04:36Z",
    "closeKind": "notplanned",
    "note": "Closed per policy: this setting belongs in config.yaml, not an environment variable.",
@@ -3711,6 +3848,7 @@
    "n": 54367,
    "title": "fix(checkpoint): share a logical workdir key across Docker bind-mount checkpoint create/rollback",
    "issue": 54356,
+   "state": "open",
    "created": "2026-06-28T17:58:31Z",
    "comments": 3,
    "labels": [
@@ -3722,13 +3860,13 @@
     "sweeper:risk-compatibility",
     "sweeper:risk-platform-windows",
     "sweeper:blast-moderate"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 51863,
    "title": "fix(session): auto-archive subagent + compressed-parent sessions",
    "issue": 51855,
+   "state": "closed",
    "created": "2026-06-24T11:43:19Z",
    "comments": 1,
    "labels": [
@@ -3738,7 +3876,6 @@
     "sweeper:implemented-on-main",
     "sweeper:risk-session-state"
    ],
-   "state": "closed",
    "closed": "2026-07-15T02:01:38Z",
    "closeKind": "superseded",
    "note": "Already implemented on main through the exclusion model.",
@@ -3748,6 +3885,7 @@
    "n": 51856,
    "title": "fix(agent): dispatch stale-stream pool cleanup by api_mode",
    "issue": 51844,
+   "state": "closed",
    "created": "2026-06-24T11:21:50Z",
    "comments": 2,
    "labels": [
@@ -3756,16 +3894,16 @@
     "provider/anthropic",
     "P2"
    ],
-   "state": "closed",
    "closed": "2026-06-28T02:40:07Z",
    "closeKind": "duplicate",
-   "via": "teknium1",
-   "note": "Closed in favour of #53926, the earliest dedicated fix, now merged."
+   "note": "Closed in favour of #53926, the earliest dedicated fix, now merged.",
+   "via": "teknium1"
   },
   {
    "n": 51849,
    "title": "fix(desktop): render reasoning effort as a distinct badge in the model menu",
    "issue": 51833,
+   "state": "closed",
    "created": "2026-06-24T10:58:05Z",
    "comments": 5,
    "labels": [
@@ -3775,7 +3913,6 @@
     "sweeper:blast-moderate",
     "comp/desktop"
    ],
-   "state": "closed",
    "closed": "2026-08-13T15:21:32Z",
    "closeKind": "duplicate",
    "note": "Labelled duplicate on GitHub: another PR already covered this issue."
@@ -3784,6 +3921,7 @@
    "n": 37587,
    "title": "Fix/cli bugs batch 37501 37472",
    "issue": null,
+   "state": "open",
    "created": "2026-06-02T19:08:22Z",
    "comments": 3,
    "labels": [
@@ -3794,13 +3932,13 @@
     "P2",
     "sweeper:risk-compatibility",
     "sweeper:blast-moderate"
-   ],
-   "state": "open"
+   ]
   },
   {
    "n": 37550,
    "title": "fix(gateway): reap cgroup orphans via ExecStopPost to unblock restart",
    "issue": null,
+   "state": "closed",
    "created": "2026-06-02T18:03:13Z",
    "comments": 1,
    "labels": [
@@ -3812,16 +3950,16 @@
     "sweeper:risk-compatibility",
     "sweeper:blast-moderate"
    ],
-   "state": "closed",
    "closed": "2026-06-28T09:06:00Z",
    "closeKind": "salvaged",
-   "via": "teknium1",
-   "note": "Cherry-picked onto main by teknium1 on Jun 28, with you kept as the commit author."
+   "note": "Cherry-picked onto main by teknium1 on Jun 28, with you kept as the commit author.",
+   "via": "teknium1"
   },
   {
    "n": 35983,
    "title": "fix(weixin): detect stale context_token when iLink returns \"rate limited\"",
    "issue": 35949,
+   "state": "closed",
    "created": "2026-05-31T17:16:56Z",
    "comments": 1,
    "labels": [
@@ -3833,11 +3971,10 @@
     "sweeper:risk-compatibility",
     "sweeper:blast-moderate"
    ],
-   "state": "closed",
    "closed": "2026-09-19T16:46:01Z",
    "closeKind": "superseded",
-   "via": "PRATHAMESH75",
-   "note": "Closed by the autoresolver: upstream main now implements the same mechanism."
+   "note": "Closed by the autoresolver: upstream main now implements the same mechanism.",
+   "via": "PRATHAMESH75"
   }
  ],
  "feed": [],
