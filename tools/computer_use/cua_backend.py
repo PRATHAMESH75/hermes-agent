@@ -9,6 +9,7 @@ Siblings: ``cua_backend_driver`` (binary/contract), ``cua_backend_capture`` + ``
 from __future__ import annotations
 
 import contextlib
+import json
 import logging
 import os
 import subprocess
@@ -122,11 +123,23 @@ def _computer_use_max_image_dimension() -> Optional[int]:
         dim = 1456
     return dim if dim > 0 else None
 
+# Endpoints a native-Wayland cua-driver binds at startup (compositor socket, runtime dir, session bus,
+# accessibility bus). A nested desktop can restart on new endpoints while keeping its DISPLAY string.
+_NATIVE_SESSION_ENDPOINT_KEYS = ("WAYLAND_DISPLAY", "XDG_RUNTIME_DIR", "DBUS_SESSION_BUS_ADDRESS", "AT_SPI_BUS_ADDRESS")
+
 def desktop_identity(env: Optional[Dict[str, str]] = None) -> str:
     """The screen a backend spawned from ``env`` acts on: its DISPLAY (``''`` when none). Recorded next to the
     cached backend so a Bot Desktop that starts (or restarts on another number) AFTER the backend was cached is
-    noticed — the cached cua-driver still points at the old seat or at no display at all."""
-    return str((cua_driver_child_env(env) if env is None else env).get("DISPLAY") or "")
+    noticed — the cached cua-driver still points at the old seat or at no display at all.
+
+    A native-Wayland spawn (the ``computer_use.native_wayland`` bridge is on in ``env``) also folds in the
+    session endpoints the driver binds, so a nested session restarted on the same DISPLAY retires the old
+    backend instead of being admitted as the same desktop. X11 / Bot Desktop identities stay the bare DISPLAY."""
+    env = cua_driver_child_env(env) if env is None else env
+    display = str(env.get("DISPLAY") or "")
+    if env.get(_CUA_NATIVE_WAYLAND_ENV_VAR) != "1":
+        return display
+    return display + "\x00native-wayland:" + json.dumps([str(env.get(k) or "") for k in _NATIVE_SESSION_ENDPOINT_KEYS])
 
 
 def backend_display_stale(recorded: str, current: str) -> bool:
