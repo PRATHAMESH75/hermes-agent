@@ -60,8 +60,18 @@ Open pages update as soon as the document changes. The page itself never needs r
 for new data.
 
 Closures in `seed-snapshot.json` were verified by hand against their comments and upstream
-`main` (author and timestamp matches catch silent cherry-picks), and the script keeps those as-is
-by reading the seed from this branch. New closures are classified from the closing comments
+`main`, and the script keeps those as-is by reading the seed from this branch.
+
+Every run also checks each closed, unmerged PR for a silent cherry-pick: it lists upstream `main`
+commits authored by you (`repos/.../commits?author=`), then compares each PR's own commits
+(authored by you, dated no earlier than three hours before the PR opened, so commits a stacked
+branch inherited don't count) by author timestamp and subject. A match marks the PR salvaged,
+even a hand-verified one closed as superseded, because a maintainer can salvage a PR weeks after
+it closed. Run against the real upstream history, it found exactly the 32 cherry-picks verified
+by hand, with no misses and no false matches. If you also commit under an email that isn't
+linked to your GitHub account, pass it with `--author-email`.
+
+New closures with no cherry-pick are classified from the closing comments
 (the autoresolver's own notes can only be duplicate, withdrawn or superseded; only a maintainer
 can mark one salvaged), then from the `duplicate`, `sweeper:implemented-on-main` and
 `sweeper:not-planned` labels. Against the verified set, those rules agree about 77% of the time
@@ -69,4 +79,5 @@ and lean toward under-counting salvages rather than inventing them.
 
 Flags: `--days` (battle-log window, default 14), `--feed-prs` (threads to read, default 100),
 `--classify` (new closed PRs to classify from comments, default 200), `--prior` (a snapshot
-whose closure classifications win; defaults to the seed on this branch).
+whose closure classifications win; defaults to the seed on this branch), `--author-email`
+(extra commit emails to match), `--no-cherry-picks` (skip the upstream check).

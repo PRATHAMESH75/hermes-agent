@@ -19,7 +19,9 @@ tool with action=batch. Uploading only the snapshot still works:
 
 Closures already classified in the dashboard's seed snapshot (verified by hand
 against comments and upstream git history) keep that classification; only new
-closures are classified here.
+closures are classified from comments. Every closed, unmerged PR is also checked
+for silent cherry-picks: if one of its commits reached upstream `main` with the
+same author timestamp or subject, it is marked salvaged whatever the comments say.
 """
 from __future__ import annotations
 
@@ -116,6 +118,63 @@ def classify(repo: str, author: str, pr: dict) -> tuple[str | None, str | None, 
     return None, None, None
 
 
+def norm_subject(message: str) -> str:
+    first = (message or "").splitlines()[0] if message else ""
+    return re.sub(r"\s*\(#\d+\)\s*$", "", first).strip().lower()
+
+
+def main_commits_by(repo: str, author: str, since: str) -> list[dict]:
+    """Upstream default-branch commits whose author is `author` (login or email), newest first."""
+    out, page = [], 1
+    while True:
+        batch = gh(f"repos/{repo}/commits", author=author, since=since, per_page=100, page=page) or []
+        if not isinstance(batch, list):
+            return out
+        out += [c for c in batch if isinstance(c, dict) and c.get("sha") and (c.get("commit") or {}).get("author")]
+        if len(batch) < 100:
+            return out
+        page += 1
+
+
+def cherry_pick_index(commits: list[dict]) -> tuple[dict, dict]:
+    by_date, by_subject = {}, {}
+    for c in reversed(commits):  # oldest first, so the latest landing wins
+        by_date[c["commit"]["author"]["date"]] = c
+        by_subject[norm_subject(c["commit"].get("message"))] = c
+    return by_date, by_subject
+
+
+def find_cherry_pick(repo: str, author_ids: set[str], pr: dict, index: tuple[dict, dict]) -> dict | None:
+    """The upstream commit that carries this PR's own work, if any.
+
+    Only the PR's own commits count: authored by the autoresolver and dated no more than
+    three hours before the PR opened, which skips commits a stacked branch inherited.
+    """
+    by_date, by_subject = index
+    opened = datetime.fromisoformat(pr["created"].replace("Z", "+00:00")) - timedelta(hours=3)
+    for c in gh(f"repos/{repo}/pulls/{pr['n']}/commits", per_page=100) or []:
+        info = c.get("commit") or {}
+        who = {((c.get("author") or {}).get("login") or "").lower(), (info.get("author", {}).get("email") or "").lower()}
+        if not (who & author_ids):
+            continue
+        date = info.get("author", {}).get("date") or ""
+        if not date or datetime.fromisoformat(date.replace("Z", "+00:00")) < opened:
+            continue
+        hit = by_date.get(date) or by_subject.get(norm_subject(info.get("message")))
+        if hit:
+            return hit
+    return None
+
+
+def salvage_from_commit(hit: dict) -> tuple[str, str]:
+    login = (hit.get("committer") or {}).get("login") or ""
+    via = login if login and login != "web-flow" else hit["commit"]["committer"]["name"]
+    day = datetime.fromisoformat(hit["commit"]["committer"]["date"].replace("Z", "+00:00"))
+    note = (f"Cherry-picked onto main by {via} on {day.strftime('%b')} {day.day} "
+            f"({hit['sha'][:10]}), with you kept as the commit author.")
+    return via, note
+
+
 def load_prior(path: str | None) -> dict[int, dict]:
     """Hand-verified closure classifications, keyed by PR number."""
     try:
@@ -183,6 +242,9 @@ def main() -> int:
     ap.add_argument("--classify", type=int, default=200, help="recent closed PRs to classify from comments")
     ap.add_argument("--out", default="snapshot.json")
     ap.add_argument("--prior", help="snapshot whose closure classifications win (default: the seed on the dashboard branch)")
+    ap.add_argument("--author-email", action="append", default=[],
+                    help="extra commit email(s) the autoresolver commits as; the login is always checked")
+    ap.add_argument("--no-cherry-picks", action="store_true", help="skip the upstream cherry-pick check")
     args = ap.parse_args()
 
     raw = fetch_prs(args.repo, args.author)
@@ -207,6 +269,27 @@ def main() -> int:
         if known:
             p.update({k: known[k] for k in ("closeKind", "note", "via") if known.get(k)})
             reused += 1
+    # Git evidence first: a silent cherry-pick upgrades any non-salvaged closure, verified or not.
+    picked = 0
+    unsalvaged = [p for p in closed if p.get("closeKind") != "salvaged"]
+    if unsalvaged and not args.no_cherry_picks:
+        oldest = min(p["created"] for p in unsalvaged)
+        since_pr = (datetime.fromisoformat(oldest.replace("Z", "+00:00")) - timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        landed: dict[str, dict] = {}
+        for ident in [args.author, *args.author_email]:
+            for c in main_commits_by(args.repo, ident, since_pr):
+                landed[c["sha"]] = c
+        commits = sorted(landed.values(), key=lambda c: c["commit"]["committer"]["date"], reverse=True)
+        author_ids = {i.lower() for i in [args.author, *args.author_email]}
+        if commits:
+            index = cherry_pick_index(commits)
+            for p in unsalvaged:
+                hit = find_cherry_pick(args.repo, author_ids, p, index)
+                if hit:
+                    p["closeKind"] = "salvaged"
+                    p["via"], p["note"] = salvage_from_commit(hit)
+                    picked += 1
+
     for p in [p for p in closed if not p.get("closeKind")][: args.classify]:
         kind, note, who = classify(args.repo, args.author, p)
         if kind:
@@ -257,7 +340,8 @@ def main() -> int:
 
     t = snap["totals"]
     print(f"wrote {args.out}: {t['all']} PRs ({t['open']} open, {t['merged']} merged, {t['closed']} closed), "
-          f"{sum(1 for p in prs if p.get('closeKind'))} closures classified ({reused} from the verified seed), "
+          f"{sum(1 for p in prs if p.get('closeKind'))} closures classified ({reused} from the verified seed, "
+          f"{picked} silent cherry-picks found), "
           f"{len(snap['feed'])} feed events, {len(by_day)} daily feed documents")
     return 0
 
