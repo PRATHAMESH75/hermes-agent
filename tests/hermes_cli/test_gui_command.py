@@ -1760,6 +1760,31 @@ def test_windows_build_under_its_own_desktop_skips_instead_of_killing_it(tmp_pat
     assert not list(desktop_dir.glob(f"{main_desktop._DESKTOP_STAGING_PREFIX}*"))
 
 
+@pytest.mark.parametrize("build_fails", [False, True])
+def test_desktop_build_drops_the_orphaned_home_build_stamp(tmp_path, monkeypatch, build_fails):
+    """#133523: builds stopped writing $HERMES_HOME/desktop-build-stamp.json, so a copy
+    left by an older version read as a weeks-old build forever. A finished build clears
+    it; a failed one leaves the home untouched."""
+    desktop_dir = _make_desktop_tree(tmp_path) / "apps" / "desktop"
+    legacy = Path(os.environ["HERMES_HOME"]) / "desktop-build-stamp.json"
+    legacy.parent.mkdir(parents=True, exist_ok=True)
+    legacy.write_text('{"builtAt": "2026-09-14T19:51:16Z"}', encoding="utf-8")
+    monkeypatch.setattr("pm.ensure", lambda name, base_env: types.SimpleNamespace(env=base_env))
+
+    def fake_run_contained(cmd, label, **kwargs):
+        if build_fails:
+            raise subprocess.CalledProcessError(1, cmd, output="")
+
+    monkeypatch.setattr("pm.progress.run_contained", fake_run_contained)
+
+    if build_fails:
+        with pytest.raises(subprocess.CalledProcessError):
+            main_desktop.build_prepared_desktop(desktop_dir, source_mode=True, npm="npm", env={})
+    else:
+        main_desktop.build_prepared_desktop(desktop_dir, source_mode=True, npm="npm", env={})
+    assert legacy.exists() is build_fails
+
+
 def test_gui_failed_pack_leaves_previous_app_untouched(tmp_path, monkeypatch, capsys):
     """Every pack attempt fails → the pre-existing app is exactly as it was,
     no staging dir remains, exit is non-zero."""

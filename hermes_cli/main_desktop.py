@@ -1608,6 +1608,12 @@ def build_prepared_desktop(desktop_dir: Path, *, source_mode: bool, npm: str, en
         packaged_executable = (
             _promote_staged_desktop_app(desktop_dir, staging_dir) if staging_dir is not None else None
         )
+        # Builds no longer write $HERMES_HOME/desktop-build-stamp.json (the receipt in
+        # apps/desktop/dist replaced it); a leftover from an older version reads as a
+        # weeks-old build (#133523). A stale file must never fail a finished build.
+        from hermes_constants import get_hermes_home
+        with contextlib.suppress(OSError):
+            (get_hermes_home() / "desktop-build-stamp.json").unlink(missing_ok=True)
         return packaged_executable
     except subprocess.CalledProcessError as exc:
         _diagnose_esbuild_ignore_scripts(exc.output)
