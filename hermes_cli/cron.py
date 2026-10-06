@@ -176,8 +176,11 @@ _STATE_BADGES = {"paused": ("[paused]", Colors.YELLOW), "completed": ("[complete
 
 def cron_list(show_all: bool = False):
     """List all scheduled jobs."""
+    from cron.delivery_reconcile import reconcile_queued_deliveries
     from cron.jobs import effective_job_state, list_jobs
     jobs = list_jobs(include_disabled=True)
+    # No gateway ticker may be running to settle a finished Bot Chat hand-off; read the receipt here.
+    reconcile_queued_deliveries(jobs)
     if not show_all:
         jobs = [
             job for job in jobs

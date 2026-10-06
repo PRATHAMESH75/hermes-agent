@@ -52,6 +52,11 @@ def _tick_admitted(
             drain()
         else:
             drain_in_background()
+        # A Bot Chat owner settles its receipt after the run finished `delivery_queued`; copy
+        # that outcome onto the job so it does not read "in progress" until the next run.
+        from cron.delivery_reconcile import reconcile_queued_deliveries
+        from cron.jobs import load_jobs
+        reconcile_queued_deliveries(load_jobs())
         _sched._maybe_reap_dead_owners()
         # Periodic worktree GC (6h, threaded) — the only sweep gateway-only boxes get.
         try:
