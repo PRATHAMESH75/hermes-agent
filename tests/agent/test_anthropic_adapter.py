@@ -1,6 +1,7 @@
 """Tests for agent/anthropic_adapter.py — Anthropic Messages API adapter."""
 
 import json
+import re
 import sys
 import time
 from types import SimpleNamespace
@@ -1835,6 +1836,24 @@ def test_oauth_system_prompt_sanitizer_preserves_docs_url():
     assert "built by claude-code." in system_text  # a sentence-final dot is prose
     assert "claude-code's docs" in system_text  # so is a possessive
     assert kwargs["system"][-1]["text"].count("claude-code") == 3  # the caller's block, not the CC prefix
+
+
+def test_oauth_rewrite_keeps_skills_index_names_unique():
+    """#134744: the index key ``- hermes-agent:`` is an identifier ``skill_view`` resolves; rewriting
+    it to ``claude-code`` collides with the bundled delegation skill of that name."""
+    from agent.anthropic_adapter import _apply_claude_code_identity
+
+    index = (
+        "<available_skills>\n"
+        "  autonomous-ai-agents:\n"
+        "    - claude-code: Delegate coding to Claude Code CLI (features, PRs).\n"
+        "    - hermes-agent: Use, configure, theme, extend, and orchestrate Hermes Agent.\n"
+        "</available_skills>"
+    )
+    system = _apply_claude_code_identity(index, [], [], lambda n: n)
+    text = "\n".join(b["text"] for b in system if isinstance(b, dict))
+    names = re.findall(r"^\s+- ([\w-]+):", text, flags=re.MULTILINE)
+    assert sorted(names) == ["claude-code", "hermes-agent"]
 
 
 def test_unsupported_inline_image_subtype_downgrades_to_text_for_anthropic(monkeypatch):
