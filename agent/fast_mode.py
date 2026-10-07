@@ -89,17 +89,30 @@ def effective_request_overrides(agent: Any) -> dict[str, Any]:
     return overrides
 
 
+def _error_message(api_error: Any) -> str:
+    body = getattr(api_error, "body", None)
+    if isinstance(body, dict):
+        error = body.get("error")
+        message = error.get("message") if isinstance(error, dict) else body.get("message")
+        if isinstance(message, str):
+            return message
+    return str(api_error)
+
+
 def fast_mode_unprovisioned(api_error: Any, api_kwargs: Any) -> bool:
-    """True for a 429 on a ``speed: "fast"`` request whose fast-mode limit header is 0. The
-    organization has no fast capacity for the model, so waiting or rotating keys cannot help."""
+    """True for a 429 on a ``speed: "fast"`` request that fast speed can never satisfy: a
+    fast-mode limit header of 0 (no fast capacity for the model), or a body saying fast mode
+    needs usage credits (a subscription with extra usage off). Waiting, rotating keys or
+    failing over cannot help; standard speed on the same model can."""
     if getattr(api_error, "status_code", None) != 429 or not isinstance(api_kwargs, dict):
         return False
     if (api_kwargs.get("extra_body") or {}).get("speed") != "fast":
         return False
     headers = getattr(getattr(api_error, "response", None), "headers", None)
-    if headers is None:
-        return False
-    return any(str(headers.get(name, "")).strip() == "0" for name in _FAST_LIMIT_HEADERS)
+    if headers is not None and any(str(headers.get(name, "")).strip() == "0" for name in _FAST_LIMIT_HEADERS):
+        return True
+    message = _error_message(api_error).lower()
+    return "fast mode" in message and "credits" in message
 
 
 def mark_fast_mode_unavailable(agent: Any) -> bool:

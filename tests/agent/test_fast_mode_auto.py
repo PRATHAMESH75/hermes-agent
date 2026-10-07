@@ -167,6 +167,25 @@ def test_unprovisioned_detects_only_zero_limit_fast_429s():
     assert fast_mode.fast_mode_unprovisioned(RuntimeError("boom"), _FAST_KWARGS) is False
 
 
+class _FastCreditsError(Exception):
+    """The subscription (extra usage off) shape: no fast-limit headers, the reason is in the body."""
+
+    def __init__(self, message="Usage credits are required for fast mode."):
+        super().__init__(f"Error code: 429 - {message}")
+        self.status_code = 429
+        self.body = {"type": "error", "error": {"type": "rate_limit_error", "message": message}}
+        self.response = SimpleNamespace(headers={})
+
+
+def test_unprovisioned_detects_fast_mode_credits_429s():
+    assert fast_mode.fast_mode_unprovisioned(_FastCreditsError(), _FAST_KWARGS) is True
+    # Credits for a model (not fast mode) are a billing problem: standard speed would fail too.
+    assert fast_mode.fast_mode_unprovisioned(
+        _FastCreditsError("Usage credits are required for this model."), _FAST_KWARGS
+    ) is False
+    assert fast_mode.fast_mode_unprovisioned(_FastCreditsError(), {"model": "claude-opus-5"}) is False
+
+
 def test_unavailable_model_drops_speed_for_the_session_and_only_that_model():
     agent = _agent(
         service_tier="priority", model="claude-opus-5", provider="anthropic",
