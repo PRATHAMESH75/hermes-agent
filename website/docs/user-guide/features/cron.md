@@ -1220,6 +1220,8 @@ cronjob(action="create", name="weekly-news-summary",
         prompt="Summarize this week's AI news: ...")
 ```
 
+A per-job list still picks up enabled MCP servers and plugin toolsets, so a plugin installed after the job was created is visible to it. Naming one MCP server or plugin toolset in the list makes that kind an allowlist (nothing else of that kind is added), `no_mcp` drops every MCP server, and a plugin toolset unchecked for the cron platform in `hermes tools` stays off.
+
 When `enabled_toolsets` is set on a job it wins; otherwise the `hermes tools` cron-platform config wins; otherwise Hermes falls back to the built-in defaults. If the cron-platform toolset config cannot be read at all (for example a malformed `platform_toolsets` block in `config.yaml`), the run fails with a recorded error instead of quietly running with every tool — check `hermes cron list` / `hermes cron doctor`. This matters for cost control: carrying `browser`, `delegation` into every tiny "fetch news" job bloats the tool-schema prompt on every LLM call.
 
 If the job drives a site you're logged into, the login has to be in place before the run — a scheduled tick has nobody to answer a prompt. [Scheduled and unattended runs](./browser.md#scheduled-and-unattended-runs) covers that setup.

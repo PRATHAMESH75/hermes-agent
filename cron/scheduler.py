@@ -473,14 +473,37 @@ def _merge_mcp_into_per_job_toolsets(per_job: list[str], cfg: dict) -> list[str]
     return result
 
 
+def _merge_plugin_toolsets_into_per_job(per_job: list[str], cfg: dict) -> list[str]:
+    """Layer enabled plugin toolsets onto a per-job allowlist, the plugin twin of the MCP merge
+    (#134311): else a job created as ``["terminal","file"]`` never sees a plugin installed later,
+    and from inside the run "not allowed" is indistinguishable from "not installed". Any plugin
+    toolset already listed -> allowlist, add nothing; else union the plugin toolsets the ``cron``
+    platform enables (``_enabled_plugin_toolsets``), so a ``hermes tools`` cron disable still holds."""
+    # Blocking discovery, not the nowait key set: that one may serve a stale persisted set, which is
+    # only safe for callers that EXCLUDE keys — this one ADDS them to an unattended run.
+    from hermes_cli.plugins import discover_plugins, get_plugin_toolsets
+    from hermes_cli.tools_config import _coerce_platform_toolsets_value, _enabled_plugin_toolsets
+
+    discover_plugins()
+    plugin_keys = {ts_key for ts_key, _, _ in get_plugin_toolsets()}
+    if not plugin_keys or set(per_job) & plugin_keys:
+        return per_job
+    # The saved cron list says which "known" plugin toolsets the user kept checked.
+    platform_toolsets = cfg.get("platform_toolsets")
+    saved = _coerce_platform_toolsets_value(platform_toolsets.get("cron"), "cron") if isinstance(platform_toolsets, dict) else None
+    cron_names = [str(ts) for ts in saved] if isinstance(saved, list) else []
+    return per_job + sorted(_enabled_plugin_toolsets(cfg, "cron", cron_names, plugin_keys) - set(per_job))
+
+
 def _resolve_cron_enabled_toolsets(job: dict, cfg: dict) -> list[str]:
-    """Toolset list for a cron job. Precedence: per-job ``enabled_toolsets`` (+ MCP merge) >
+    """Toolset list for a cron job. Precedence: per-job ``enabled_toolsets`` (+ MCP/plugin merge) >
     ``cron`` platform config (``_get_platform_tools``, which strips _DEFAULT_OFF_TOOLSETS so fresh
     installs run without ``moa``). A lookup failure fails CLOSED: the run errors out.
 
     1. Per-job ``enabled_toolsets`` (set via ``cronjob`` tool on create/update). Keeps the agent's
     job-scoped toolset override intact — #6130. Enabled MCP servers are layered on per
-    ``_merge_mcp_into_per_job_toolsets`` so a native-toolset allowlist does not silently strip MCP tools.
+    ``_merge_mcp_into_per_job_toolsets`` so a native-toolset allowlist does not silently strip MCP tools;
+    enabled plugin toolsets likewise per ``_merge_plugin_toolsets_into_per_job``.
     An explicitly-set EMPTY list is a zero-toolset allowlist, not a clear to the platform default —
     it is falsy, so it must be compared with ``is not None``, else it fell through to the config
     default and widened an unattended job back to every toolset (#82010). 2.
@@ -496,7 +519,8 @@ def _resolve_cron_enabled_toolsets(job: dict, cfg: dict) -> list[str]:
             # Explicit zero: no toolsets at all — no MCP merge either, else every enabled server
             # would ride back in and widen the allowlist the operator just emptied (#82010).
             return []
-        return _merge_mcp_into_per_job_toolsets(list(per_job), cfg or {})
+        merged = _merge_mcp_into_per_job_toolsets(list(per_job), cfg or {})
+        return _merge_plugin_toolsets_into_per_job(merged, cfg or {})
     try:
         from hermes_cli.tools_config import _get_platform_tools  # lazy: avoid heavy import at cron module load
         return sorted(_get_platform_tools(cfg or {}, "cron"))

@@ -141,6 +141,39 @@ class TestPerJobToolsetMcpMerge:
             {"enabled_toolsets": ["nonexistent_ts"]}, {"platform_toolsets": "oops", "mcp_servers": {}}
         ) == ["nonexistent_ts"]
 
+class TestPerJobToolsetPluginMerge:
+    """A per-job enabled_toolsets allowlist must not silently drop plugin toolsets (#134311)."""
+
+    @pytest.fixture
+    def plugins(self, monkeypatch):
+        import hermes_cli.plugins as plugins_mod
+
+        monkeypatch.setattr(plugins_mod, "discover_plugins", lambda *a, **k: None)
+        monkeypatch.setattr(
+            plugins_mod,
+            "get_plugin_toolsets",
+            lambda: [("notes", "Notes", ""), ("crm", "CRM", "")],
+        )
+
+    def test_native_only_list_gets_enabled_plugin_toolsets(self, plugins):
+        result = _resolve_cron_enabled_toolsets({"enabled_toolsets": ["terminal", "file"]}, {"mcp_servers": {}})
+        assert result[:2] == ["terminal", "file"]
+        assert {"notes", "crm"} <= set(result)
+
+    def test_listed_plugin_toolset_is_an_allowlist_and_cron_disables_hold(self, plugins):
+        # Naming one plugin toolset keeps the rest out, like naming one MCP server.
+        assert _resolve_cron_enabled_toolsets(
+            {"enabled_toolsets": ["terminal", "notes"]}, {"mcp_servers": {}}
+        ) == ["terminal", "notes"]
+        # A plugin the user unchecked for the cron platform in `hermes tools` stays off.
+        cfg = {"mcp_servers": {}, "known_plugin_toolsets": {"cron": ["notes", "crm"]},
+               "platform_toolsets": {"cron": ["terminal", "crm"]}}
+        result = _resolve_cron_enabled_toolsets({"enabled_toolsets": ["terminal"]}, cfg)
+        assert "notes" not in result and "crm" in result
+        # Explicit zero stays zero (#82010).
+        assert _resolve_cron_enabled_toolsets({"enabled_toolsets": []}, {"mcp_servers": {}}) == []
+
+
 class TestResolveOrigin:
 
     @pytest.mark.parametrize(
@@ -720,7 +753,7 @@ class TestRunJobSessionPersistence:
         fake_db = MagicMock()
         seen = {}
 
-        (tmp_path / ".env").write_text("TELEGRAM_HOME_CHANNEL=-2002\n")
+        (tmp_path / ".env").write_text("TELEGRAM_HOME_CHANNEL=-2002\n", encoding="utf-8")
         monkeypatch.delenv("TELEGRAM_HOME_CHANNEL", raising=False)
         monkeypatch.delenv("HERMES_CRON_AUTO_DELIVER_PLATFORM", raising=False)
         monkeypatch.delenv("HERMES_CRON_AUTO_DELIVER_CHAT_ID", raising=False)
@@ -1021,7 +1054,7 @@ class TestRunJobConfigEnvVarExpansion:
 
     def test_model_env_ref_in_config_yaml_is_expanded(self, tmp_path, monkeypatch):
         """${VAR} in config.yaml model: is expanded using env after .env is loaded."""
-        (tmp_path / "config.yaml").write_text("model: ${_HERMES_TEST_CRON_MODEL}\n")
+        (tmp_path / "config.yaml").write_text("model: ${_HERMES_TEST_CRON_MODEL}\n", encoding="utf-8")
         monkeypatch.setenv("_HERMES_TEST_CRON_MODEL", "gpt-4o-mini-cron-test")
 
         job = {"id": "env-job", "name": "env test", "prompt": "hi"}
@@ -1183,7 +1216,7 @@ class TestRunJobModelResolution:
 
     def test_null_job_model_falls_back_to_env(self, tmp_path, monkeypatch):
         """``model: null`` on the job uses HERMES_MODEL when set."""
-        (tmp_path / "config.yaml").write_text("")
+        (tmp_path / "config.yaml").write_text("", encoding="utf-8")
         monkeypatch.setenv("HERMES_MODEL", "env-model")
 
         job = {"id": "null-model-job", "name": "null model", "prompt": "hi", "model": None}
@@ -1208,7 +1241,7 @@ class TestRunJobModelResolution:
 
     def test_no_model_anywhere_fails_with_actionable_error(self, tmp_path, monkeypatch):
         """All three sources empty → fail fast with a clear message, not an opaque 400."""
-        (tmp_path / "config.yaml").write_text("")
+        (tmp_path / "config.yaml").write_text("", encoding="utf-8")
         monkeypatch.delenv("HERMES_MODEL", raising=False)
 
         job = {"id": "no-model-job", "name": "no model anywhere", "prompt": "hi", "model": None}
@@ -1238,7 +1271,7 @@ class TestRunJobModelResolution:
         resolver mirrors that so a config that works in the CLI also works in
         cron.
         """
-        (tmp_path / "config.yaml").write_text("model:\n  model: alias-key-model\n")
+        (tmp_path / "config.yaml").write_text("model:\n  model: alias-key-model\n", encoding="utf-8")
         monkeypatch.delenv("HERMES_MODEL", raising=False)
 
         job = {"id": "alias-job", "name": "alias", "prompt": "hi", "model": None}
@@ -1263,7 +1296,7 @@ class TestRunJobModelResolution:
 
     def test_corrupt_config_yaml_does_not_crash_with_job_model(self, tmp_path, monkeypatch):
         """A malformed config.yaml degrades gracefully when the job has a model."""
-        (tmp_path / "config.yaml").write_text("{{{invalid yaml!!!")
+        (tmp_path / "config.yaml").write_text("{{{invalid yaml!!!", encoding="utf-8")
         monkeypatch.delenv("HERMES_MODEL", raising=False)
 
         job = {"id": "corrupt-job", "name": "corrupt", "prompt": "hi", "model": "explicit-model"}
@@ -1608,7 +1641,7 @@ class TestBuildJobPromptAbsoluteSkillPath:
         skills_dir = tmp_path / "skills"
         skill_dir = skills_dir / "alpha-skill"
         skill_dir.mkdir(parents=True)
-        (skill_dir / "SKILL.md").write_text("# Alpha\nDo alpha.")
+        (skill_dir / "SKILL.md").write_text("# Alpha\nDo alpha.", encoding="utf-8")
         absolute_path = str(skill_dir)
         seen_names: list[str] = []
 
