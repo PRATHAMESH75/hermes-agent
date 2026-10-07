@@ -135,8 +135,9 @@ def test_acceptance_receipts_and_terminal_write_share_run_ownership(github):
 
 @pytest.mark.platforms("posix")
 def test_acceptance_runs_gh_as_the_assignee_profile(tmp_path, monkeypatch):
-    """The gh child env carries the assignee's own GH credentials (its .env),
-    never the ambient/launch residue, and an invisible repo is classified
+    """The gh child env carries the assignee's own GH credentials (its .env) and
+    none of its other secrets (#134669), never the ambient/launch residue, and an
+    invisible repo is classified
     `auth` naming the repository — not a retryable `infra` failure."""
     from pathlib import Path
 
@@ -145,7 +146,9 @@ def test_acceptance_runs_gh_as_the_assignee_profile(tmp_path, monkeypatch):
     monkeypatch.setenv("HERMES_HOME", str(launch_home))
     assignee_home = launch_home / "profiles" / "b"
     assignee_home.mkdir(parents=True)
-    (assignee_home / ".env").write_text("GH_TOKEN=b-token\n", encoding="utf-8")
+    (assignee_home / ".env").write_text(
+        "GH_TOKEN=b-token\nWEIXIN_ADAPTER_SECRET=wx-secret\nOPENROUTER_API_KEY=sk-or-b\n",
+        encoding="utf-8")
     # Ambient residue that must NOT decide the login.
     monkeypatch.setenv("GH_TOKEN", "launch-token")
     monkeypatch.setenv("GH_CONFIG_DIR", "/nonexistent/launch/gh")
@@ -172,6 +175,7 @@ def test_acceptance_runs_gh_as_the_assignee_profile(tmp_path, monkeypatch):
     captured = json.loads(env_dump.read_text())
     assert captured["GH_TOKEN"] == "b-token"
     assert captured.get("GH_CONFIG_DIR") != "/nonexistent/launch/gh"
+    assert not {"WEIXIN_ADAPTER_SECRET", "OPENROUTER_API_KEY"} & captured.keys()
     assert "credentials" in (kb.get_task(conn, tid).last_failure_error or "")
 
 
