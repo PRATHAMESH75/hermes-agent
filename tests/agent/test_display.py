@@ -216,8 +216,8 @@ class TestEditDiffPreview:
         )
 
         assert diff is not None
-        assert "--- a/" in diff
-        assert "+++ b/" in diff
+        header = [line for line in diff.splitlines() if line.startswith(("--- ", "+++ "))]
+        assert len(header) == 2 and all(line.endswith("/note.txt") and "//" not in line for line in header)
         assert "-old" in diff
         assert "+new" in diff
 

@@ -24,6 +24,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from hermes_constants import get_hermes_home
+from tools.file_operations_common import diff_header_paths
 from utils import atomic_json_write
 
 logger = logging.getLogger(__name__)
@@ -339,8 +340,9 @@ def skill_pending_diff(
             new = folded
     else:
         new = payload.get("content" if action == "edit" else "file_content") or ""
+    fromfile, tofile = diff_header_paths(target_label)
     diff = difflib.unified_diff(current.splitlines(keepends=True), new.splitlines(keepends=True),
-                                fromfile=f"a/{target_label}", tofile=f"b/{target_label}")
+                                fromfile=fromfile, tofile=tofile)
     return "".join(diff) or "(no textual change)"
 
 

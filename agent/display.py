@@ -19,6 +19,7 @@ from utils import safe_json_loads
 from agent.i18n import t
 from agent.redact import redact_sensitive_text
 from agent.tool_result_classification import file_mutation_result_landed, is_guardrail_refusal
+from tools.file_operations_common import diff_header_paths
 
 logger = logging.getLogger(__name__)
 
@@ -705,10 +706,10 @@ def _diff_from_snapshot(snapshot: LocalEditSnapshot | None) -> str | None:
         before, after = snapshot.before.get(str(path)), _snapshot_text(path)
         if before == after:
             continue
-        display_path = _display_diff_path(path)
+        fromfile, tofile = diff_header_paths(_display_diff_path(path))
         diff = "".join(unified_diff(
             (before or "").splitlines(keepends=True), (after or "").splitlines(keepends=True),
-            fromfile=f"a/{display_path}", tofile=f"b/{display_path}",
+            fromfile=fromfile, tofile=tofile,
         ))
         if diff:
             chunks.append(diff if diff.endswith("\n") else diff + "\n")

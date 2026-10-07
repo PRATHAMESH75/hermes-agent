@@ -273,6 +273,18 @@ def _has_bom(text: Optional[str]) -> bool:
     return bool(text) and text.startswith(_UTF8_BOM)
 
 
+def diff_header_paths(path: str) -> tuple[str, str]:
+    """``(fromfile, tofile)`` labels for a unified-diff header.
+
+    Relative paths get git's ``a/`` / ``b/`` prefixes. Absolute paths stay bare,
+    as ``diff -u`` writes them: ``a/`` + ``/home/...`` reads as a nonexistent
+    ``a//home/...`` root, and stripping the slash instead would hand consumers
+    that drop the prefix (ACP diff blocks) a relative path."""
+    if path.startswith("/"):
+        return path, path
+    return f"a/{path}", f"b/{path}"
+
+
 # ---------------------------------------------------------------------------
 # Pagination clamps
 # ---------------------------------------------------------------------------

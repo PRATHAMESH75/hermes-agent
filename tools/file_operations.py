@@ -26,7 +26,7 @@ from tools.binary_extensions import has_binary_extension
 from agent.file_safety import get_write_denied_error
 from tools.file_operations_common import (
     ExecuteResult, PatchResult, ReadResult, SearchResult, WriteResult,
-    _UTF8_BOM, _detect_line_ending, _has_bom, _normalize_line_endings, _strip_bom,
+    _UTF8_BOM, _detect_line_ending, _has_bom, diff_header_paths, _normalize_line_endings, _strip_bom,
     _strip_terminal_fence_leaks, normalize_read_pagination, normalize_search_pagination)
 from tools.file_operations_lint import LINTERS_INPROC, LintMixin, _FAIL_CLOSED_INPROC_EXTS
 from tools.file_operations_search import SearchMixin
@@ -629,9 +629,10 @@ class ShellFileOperations(LintMixin, SearchMixin, FileOperations):
         return head_result.exit_code == 0 and _has_bom(head_result.stdout)
 
     def _unified_diff(self, old_content: str, new_content: str, filename: str) -> str:
+        fromfile, tofile = diff_header_paths(filename)
         return ''.join(difflib.unified_diff(
             old_content.splitlines(keepends=True), new_content.splitlines(keepends=True),
-            fromfile=f"a/{filename}", tofile=f"b/{filename}"))
+            fromfile=fromfile, tofile=tofile))
 
     # --- READ ---------------------------------------------------------------
 

@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple
 if TYPE_CHECKING:  # annotations only; the real import is per-call in apply_v4a_operations
     from tools.file_operations_common import PatchResult
 
-from tools.file_operations_common import PatchResult
+from tools.file_operations_common import PatchResult, diff_header_paths
 
 
 class OperationType(Enum):
@@ -286,9 +286,10 @@ def _written(result: Any, diff: str, path: str, read_sha256: Optional[str]) -> A
 
 def _unified_diff(path: str, old: str, new: Optional[str]) -> str:
     """Unified diff ``a/path`` -> ``b/path`` (``new=None`` = deletion, ``/dev/null``)."""
+    fromfile, tofile = diff_header_paths(path)
     return ''.join(difflib.unified_diff(
         old.splitlines(keepends=True), [] if new is None else new.splitlines(keepends=True),
-        fromfile=f"a/{path}", tofile="/dev/null" if new is None else f"b/{path}"))
+        fromfile=fromfile, tofile="/dev/null" if new is None else tofile))
 
 
 def apply_v4a_operations(operations: List[PatchOperation], file_ops: Any) -> PatchResult:
@@ -363,7 +364,7 @@ def _apply_add(op: PatchOperation, file_ops: Any) -> ApplyResult:
         return _fail(f"{op.file_path}: could not confirm the path is free — {read_back.error}")
     content_lines = [line.content for hunk in op.hunks for line in hunk.lines if line.prefix == '+']
     result = file_ops.write_file(op.file_path, '\n'.join(content_lines))
-    diff = f"--- /dev/null\n+++ b/{op.file_path}\n" + '\n'.join(f"+{line}" for line in content_lines)
+    diff = f"--- /dev/null\n+++ {diff_header_paths(op.file_path)[1]}\n" + '\n'.join(f"+{line}" for line in content_lines)
     return _written(result, diff, op.file_path, "")
 
 

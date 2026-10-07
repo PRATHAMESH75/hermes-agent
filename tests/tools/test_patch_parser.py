@@ -986,3 +986,37 @@ class TestV4ABomRoundTrip:
             self.BOM.encode("utf-8")
         ), "BOM was injected on a plain file"
         assert b"print('world')" in raw
+
+
+class TestDiffHeaderPaths:
+    """Diff headers must name the real target once a consumer drops git's ``a/``/``b/``
+    prefix (ACP diff blocks do) — an absolute path rendered ``a//home/...`` (#134718)
+    or a relative one ``home/...`` both break that."""
+
+    @staticmethod
+    def _header_targets(diff):
+        return [
+            line[4:].removeprefix("a/").removeprefix("b/")
+            for line in diff.splitlines()
+            if line.startswith(("--- ", "+++ ")) and line[4:] != "/dev/null"
+        ]
+
+    def test_update_and_add_headers_round_trip_absolute_and_relative_paths(self):
+        for path in ("/home/abg/.local/bin/dictate", "src/main.py"):
+            new_path = path + ".new"
+            patch = (
+                "*** Begin Patch\n"
+                f"*** Update File: {path}\n"
+                "@@\n"
+                "-x = 1\n"
+                "+x = 2\n"
+                f"*** Add File: {new_path}\n"
+                "+y = 1\n"
+                "*** End Patch"
+            )
+            ops, err = parse_v4a_patch(patch)
+            assert err is None
+            result = apply_v4a_operations(ops, _DictFileOps({path: "x = 1\n"}))
+            assert result.success is True, result.error
+            assert "//" not in result.diff
+            assert self._header_targets(result.diff) == [path, path, new_path]
