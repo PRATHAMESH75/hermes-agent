@@ -414,6 +414,40 @@ class TestPersistence:
         assert mc == {"cwd": "/work", "provider": "anthropic",
                       "base_url": "https://anthropic.example/v1", "api_mode": "anthropic_messages"}
 
+    def test_restore_keeps_named_custom_provider_endpoint(self, tmp_path, monkeypatch):
+        """#135688: a named custom provider persists as the bare runtime name ``custom``; the restored
+        agent must resolve back to that entry's endpoint and key, not the config's default provider."""
+        from hermes_constants import get_hermes_home
+
+        (get_hermes_home() / "config.yaml").write_text(
+            "model:\n  provider: openrouter\n  default: anthropic/claude-sonnet-4\n"
+            "providers:\n  strata:\n    api: http://127.0.0.1:8080/v1\n    api_key: sk-strata-local\n",
+            encoding="utf-8")
+        for var in ("OPENROUTER_API_KEY", "OPENAI_API_KEY", "OPENAI_BASE_URL", "CUSTOM_BASE_URL"):
+            monkeypatch.delenv(var, raising=False)
+        built: list[dict] = []
+
+        def fake_agent(**kwargs):
+            built.append(kwargs)
+            return SimpleNamespace(**kwargs)
+
+        monkeypatch.setattr("run_agent.AIAgent", fake_agent)
+        monkeypatch.setattr("hermes_cli.mcp_startup.ensure_mcp_discovery_before_agent_build", lambda **_kw: None)
+        monkeypatch.setattr("acp_adapter.session._register_task_cwd", lambda task_id, cwd: None)
+        db = SessionDB(tmp_path / "state.db")
+        live = SimpleNamespace(model="qwen3", provider="custom", base_url="http://127.0.0.1:8080/v1",
+                               api_mode="chat_completions")
+        first = SessionManager(agent_factory=lambda: live, db=db)
+        state = first.create_session(cwd="/work")
+        state.history.append({"role": "user", "content": "hello"})
+        first.save_session(state.session_id)
+
+        restored = SessionManager(db=db).get_session(state.session_id)
+
+        assert restored is not None
+        assert (built[-1]["provider"], built[-1]["base_url"], built[-1]["api_key"]) == (
+            "custom", "http://127.0.0.1:8080/v1", "sk-strata-local")
+
 
 
 
