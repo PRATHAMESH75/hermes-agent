@@ -441,6 +441,22 @@ class TestReadShape:
         assert big["original_content_chars"] == 80_000
         assert sum(len(m.get("content") or "") for m in result["messages"]) < 5_000
 
+    @pytest.mark.parametrize("current", ["s_live", "s_other_live"])
+    def test_read_only_advises_scroll_that_scroll_accepts(self, db, current):
+        """#136496: READ's "scroll the middle" pointer must name a call SCROLL accepts —
+        advised for a historical session, withheld for the caller's live lineage."""
+        db.create_session("s_live", source="cli")
+        db.create_session("s_other_live", source="cli")
+        for i in range(35):
+            db.append_message("s_live", role="assistant", content=f"fixture {i}")
+        db._conn.commit()
+        read = json.loads(session_search(session_id="s_live", current_session_id=current, db=db))
+        assert read["truncated"] is True
+        anchor = read["messages"][-1]["id"]
+        scroll = json.loads(session_search(session_id="s_live", around_message_id=anchor,
+                                           current_session_id=current, db=db))
+        assert ("around_message_id" in read["message"]) == (scroll.get("success") is not False)
+
     def test_title_match_entry_caps_content_like_fts_hits(self, db):
         """A session-title match is a discovery entry: bookends 1200, window 4000, same as FTS hits."""
         db.create_session("s_titled", source="cli")

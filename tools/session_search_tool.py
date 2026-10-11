@@ -444,8 +444,11 @@ def _resolve_profile_db(profile: str):
     return SessionDB(db_path=profiles_mod.get_profile_dir(canon) / "state.db", read_only=True)
 
 
-def _read_session(db, session_id: str, head: int = 20, tail: int = 10, link_profile: str | None = None) -> str:
-    """Read shape: whole session, or ``head`` + ``tail`` messages with a scroll pointer."""
+def _read_session(db, session_id: str, head: int = 20, tail: int = 10, link_profile: str | None = None,
+                  current_session_id: str | None = None) -> str:
+    """Read shape: whole session, or ``head`` + ``tail`` messages with a scroll pointer.
+    The pointer must match what scroll will accept: a session still in the caller's live
+    lineage gets no "scroll the middle" advice, since scroll rejects its anchors (#136496)."""
     meta = _get_session_meta(db, session_id)
     if not meta:
         return tool_error(f"session_id not found: {session_id}", success=False)
@@ -455,14 +458,19 @@ def _read_session(db, session_id: str, head: int = 20, tail: int = 10, link_prof
         return err
     shaped = [_shape_message(m, max_content_len=_READ_MAX_CONTENT) for m in rows]
     total, truncated = len(shaped), len(shaped) > head + tail
+    live = bool(current_session_id) and _same_lineage(db, session_id, current_session_id) \
+        and not _session_left_live_context(db, session_id)
+    scroll_hint = ("This session is in your current lineage: its messages are already in your active "
+                   "context, so scroll rejects them as anchors." if live else
+                   "Pass around_message_id (any id above) to scroll the middle.")
     return _ok(mode="read", session_id=session_id, link=_session_link(session_id, link_profile),
                session_meta=_session_meta_block(meta), message_count=total, truncated=truncated,
                messages=shaped[:head] + shaped[-tail:] if truncated else shaped,
-               **({"message": (f"Session has {total} messages; showing first {head} + last {tail}. "
-                               "Pass around_message_id (any id above) to scroll the middle.")} if truncated else {}))
+               **({"message": f"Session has {total} messages; showing first {head} + last {tail}. {scroll_hint}"}
+                  if truncated else {}))
 
 
-def _read_scoped(db, sid: str, profile: Optional[str]) -> str:
+def _read_scoped(db, sid: str, profile: Optional[str], current_session_id: str | None = None) -> str:
     """Read shape scoped to ONE store: the caller's profile, or the profile it named.
 
     A miss is a miss. Profiles are isolated islands, so a bare id never falls through to
@@ -470,7 +478,7 @@ def _read_scoped(db, sid: str, profile: Optional[str]) -> str:
     transcript to any caller holding the id (#106761). The hint tells the model how to
     ask properly: ``@session:<profile>/<id>`` or ``profile=``.
     """
-    result = _read_session(db, sid, link_profile=profile)
+    result = _read_session(db, sid, link_profile=profile, current_session_id=current_session_id)
     if json.loads(result).get("success") is not False or profile:
         return result
     return tool_error(f"session_id not found in this profile: {sid}. If it belongs to another "
@@ -599,7 +607,7 @@ def _dispatch(query, role_filter, limit, db, current_session_id, session_id,
     if isinstance(session_id, str) and session_id.strip():
         if around_message_id is not None:
             return _scroll(db, session_id.strip(), around_message_id, window, current_session_id)
-        return _read_scoped(db, session_id.strip(), profile)
+        return _read_scoped(db, session_id.strip(), profile, current_session_id)
     limit = _clamp_int(limit, 3, 1, 10)
     if not query or not isinstance(query, str) or not query.strip():
         return _list_recent_sessions(db, limit, current_session_id, link_profile=profile)
