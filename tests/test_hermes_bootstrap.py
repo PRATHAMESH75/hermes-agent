@@ -656,3 +656,27 @@ class TestNeverFreeEnviron:
             grown = tracemalloc.get_traced_memory()[0] - before
             assert grown < 64 * 1024, f"20k set/del of 4 names grew the heap by {grown} bytes"
         """)], check=True, cwd=str(Path(__file__).resolve().parents[1]), timeout=120)
+
+
+def test_node_children_never_inherit_a_supervisors_ipc_channel(tmp_path):
+    # pm2 (fork mode) hands its Python child NODE_CHANNEL_FD; a Node grandchild adopting an fd that
+    # close_fds already closed aborts at exit (#139556). Other Node settings still pass through.
+    repo = Path(__file__).resolve().parents[1]
+    env = {k: os.environ[k] for k in ("PATH", "SYSTEMROOT", "WINDIR") if k in os.environ}
+    env.update({"HOME": str(tmp_path), "USERPROFILE": str(tmp_path), "PYTHONPATH": str(repo),
+                "HERMES_HOME": str(tmp_path / "home"), "HERMES_DISABLE_LAZY_INSTALLS": "1",
+                "NODE_CHANNEL_FD": "13", "NODE_CHANNEL_SERIALIZATION_MODE": "json",
+                "NODE_OPTIONS": "--max-old-space-size=512"})
+    code = textwrap.dedent("""
+        import hermes_bootstrap, json, subprocess, sys
+        probe = "import json, os; print(json.dumps({k: os.environ.get(k) for k in "
+        probe += "('NODE_CHANNEL_FD', 'NODE_CHANNEL_SERIALIZATION_MODE', 'NODE_OPTIONS')}))"
+        print(subprocess.run([sys.executable, "-c", probe], capture_output=True, text=True, check=True).stdout)
+    """)
+    child = subprocess.run([sys.executable, "-c", code], cwd=str(repo), env=env,
+                           capture_output=True, text=True, timeout=120, check=False)
+    assert child.returncode == 0, child.stderr
+    import json
+    seen = json.loads(child.stdout.strip().splitlines()[-1])
+    assert seen == {"NODE_CHANNEL_FD": None, "NODE_CHANNEL_SERIALIZATION_MODE": None,
+                    "NODE_OPTIONS": "--max-old-space-size=512"}

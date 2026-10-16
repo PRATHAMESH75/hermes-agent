@@ -468,11 +468,28 @@ def export_scratch_tmp_env() -> None:
         pass  # a missing/unwritable home just leaves the system temp dir in place
 
 
+# Node's IPC handshake: pm2 (fork mode) and child_process.fork() set these on the child they spawn.
+_NODE_IPC_CHANNEL_ENV = ("NODE_CHANNEL_FD", "NODE_CHANNEL_SERIALIZATION_MODE")
+
+
+def drop_inherited_node_ipc_channel() -> None:
+    """Drop the Node IPC channel variables a Node supervisor handed this Python process (#139556).
+
+    No Hermes process speaks that channel, and every Node child inheriting the variable adopts an fd
+    it does not own: ``subprocess`` closes it (``close_fds``) and Node reuses the number for its own
+    epoll fds, so the child aborts at exit (libuv ``uv__io_poll`` EEXIST) after printing its output.
+    Under pm2 that killed every TUI / build-script spawn of the dashboard. Clearing it here, once,
+    covers every spawn path (PTY, PM ``env_for``, terminal tool) instead of each env builder."""
+    for name in _NODE_IPC_CHANNEL_ENV:
+        os.environ.pop(name, None)
+
+
 # Apply on import — entry points just need ``import hermes_bootstrap``
 # (or ``from hermes_bootstrap import apply_windows_utf8_bootstrap``) at
 # the very top of their module, before importing anything else.  The
 # import side effect does the right thing.
 apply_windows_utf8_bootstrap()
+drop_inherited_node_ipc_channel()
 enable_windows_vt()
 suppress_platform_ver_console()
 install_never_free_environ()
