@@ -53,6 +53,7 @@ class ConversationState:
     # (channel_prompt, parent_chat_id) of the last non-internal turn; internal events reuse it
     channel_pin: Optional[tuple[Optional[str], Optional[str]]] = None
     vc_last: Optional[str] = None  # last voice-channel context delivered
+    drain_acked: Any = None  # identity of the follow-up last told it was queued across a restart
 
     def clear(self) -> None:
         """Reset every field to its default, so new fields are cleared automatically."""

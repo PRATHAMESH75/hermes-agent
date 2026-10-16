@@ -97,6 +97,20 @@ class GatewayBusySessionMixin:
         mode = busy_input_mode or self._busy_input_mode
         return self._restart_requested and mode in {"queue", "steer"}
 
+    def _drain_queued_ack_due(self, session_key: str, event: MessageEvent) -> bool:
+        """Whether a follow-up just queued during a restart drain still needs the "queued" notice.
+
+        The queued event bounces back through the busy path for the whole drain (each re-dispatch
+        finds the session still busy, #123229); without this every bounce re-sent the notice, 235
+        times to one thread in one restart wait (#139911). Identity is the one
+        ``_requeue_backoff_delay`` uses: the message id, or the timestamp for an id-less event."""
+        conversation = self._session_state(session_key).conversation
+        identity = event.message_id or event.timestamp
+        if conversation.drain_acked == identity:
+            return False
+        conversation.drain_acked = identity
+        return True
+
     def _overflow_queue(self, session_key: str):
         """The session's FIFO overflow list, or None when no session state exists yet."""
         state = self._peek_session_state(session_key)
@@ -508,6 +522,8 @@ class GatewayBusySessionMixin:
             return
         if self._queue_during_drain_enabled(effective_mode):
             self._queue_or_replace_pending_event(session_key, event)
+            if not self._drain_queued_ack_due(session_key, event):
+                return
             message = t("gateway.busy.drain_queued", action=self._status_action_gerund())
         else:
             message = t("gateway.busy.drain_rejected", action=self._status_action_gerund())
