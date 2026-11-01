@@ -137,6 +137,8 @@ _FTS_OPERATORS = frozenset({"AND", "OR", "NOT"})
 _LIKE_SKIP_TOKENS = _FTS_OPERATORS | {"NEAR"}
 _LIKE_TOKEN_RE = re.compile(r'"[^"]+"|\S+')
 _QUOTED_PHRASE_RE = re.compile(r'"[^"]*"')
+# Rows read per pass when a fail-open LIKE scan re-checks candidates in Python (each carries its full body).
+_LIKE_TOKEN_SCAN_BATCH = 100
 
 # Column list shared by every search route (snippet + metadata, never content).
 _SEARCH_SELECT_TAIL = "m.timestamp, m.tool_name, s.source, s.model, s.started_at AS session_started"
@@ -200,6 +202,15 @@ def _quote_fts_tokens(raw_query: str) -> str:
 def _like_params(term: str) -> list[str]:
     """One ``%term%`` bind per column of ``_LIKE_ANY_COLUMN_SQL``."""
     return [f"%{_escape_like(term)}%"] * 3
+
+
+def _like_token_pattern(term: str, prefix: bool) -> re.Pattern[str]:
+    """What the word index answers for *term*: a whole token (``_`` separates tokens, as in unicode61),
+    or a token start for ``term*``. CJK text has no word boundaries, so it stays a substring."""
+    if any(_is_cjk(ord(ch)) for ch in term):
+        return re.compile(re.escape(term), re.IGNORECASE)
+    end = "" if prefix else r"(?![^\W_])"
+    return re.compile(rf"(?<![^\W_]){re.escape(term)}{end}", re.IGNORECASE)
 
 
 def _strip_cjk_wildcards(raw_query: str) -> str:
@@ -1162,10 +1173,11 @@ class SessionSearchMixin:
         return [dict(row) for row in self._read_all(sql, params)]
 
     @staticmethod
-    def _compile_like_boolean_query(query: str) -> tuple[str, list[Any], Optional[str]]:
-        """Compile the supported FTS boolean subset into LIKE predicates: terms within an OR
-        group are ANDed (FTS5's implicit conjunction) and ``NOT`` negates the next term."""
-        groups: list[list[tuple[str, bool]]] = [[]]
+    def _like_boolean_groups(query: str) -> list[list[tuple[str, bool, bool]]]:
+        """Parse the supported FTS boolean subset into OR groups of ``(term, negated, prefix)``: terms
+        within a group are ANDed (FTS5's implicit conjunction), ``NOT`` negates the next term, and a
+        group with no positive term is dropped."""
+        groups: list[list[tuple[str, bool, bool]]] = [[]]
         negate_next = False
         for raw_token in _LIKE_TOKEN_RE.findall(query):
             operator = raw_token.upper()
@@ -1179,19 +1191,29 @@ class SessionSearchMixin:
             if operator == "NOT":
                 negate_next = True
                 continue
+            if raw_token == "*" and groups[-1]:  # ``"phrase"*`` tokenizes as the phrase, then a bare star.
+                groups[-1][-1] = (*groups[-1][-1][:2], True)
+                continue
             term = raw_token.strip('"').strip("*").strip()
             if term:
-                groups[-1].append((term, negate_next))
+                groups[-1].append((term, negate_next, raw_token.endswith("*")))
                 negate_next = False
+        return [group for group in groups if any(not negated for _, negated, _ in group)]
 
+    @staticmethod
+    def _compile_like_boolean_query(
+        groups: list[list[tuple[str, bool, bool]]], *, positive_only: bool = False,
+    ) -> tuple[str, list[Any], Optional[str]]:
+        """Compile parsed groups into LIKE predicates. *positive_only* leaves ``NOT`` terms out: a
+        substring ``NOT LIKE`` would also drop rows that only hold a longer token containing the term."""
         compiled_groups: list[str] = []
         params: list[Any] = []
         snippet_term: Optional[str] = None
         for group in groups:
-            if not group or not any(not negated for _, negated in group):
-                continue
             clauses: list[str] = []
-            for term, negated in group:
+            for term, negated, _prefix in group:
+                if negated and positive_only:
+                    continue
                 clauses.append(f"NOT {_LIKE_COALESCED_COLUMN_SQL}" if negated else _LIKE_COALESCED_COLUMN_SQL)
                 params.extend(_like_params(term))
                 if snippet_term is None and not negated:
@@ -1200,16 +1222,53 @@ class SessionSearchMixin:
         return " OR ".join(compiled_groups), params, snippet_term
 
     def _search_messages_like_fallback(
-        self, query: str, *, limit: int, offset: int, sort: Optional[str], **filters) -> list[dict[str, Any]]:
-        """Search canonical messages while derived FTS state is stale."""
-        predicate, params, snippet_term = self._compile_like_boolean_query(query)
+        self, query: str, *, limit: int, offset: int, sort: Optional[str], whole_tokens: bool = False,
+        **filters) -> list[dict[str, Any]]:
+        """Search canonical messages with LIKE. *whole_tokens* (standing in for the word index while it
+        is down) keeps the answers FTS5 would give; without it every term is a plain substring."""
+        groups = self._like_boolean_groups(query)
+        predicate, params, snippet_term = self._compile_like_boolean_query(groups, positive_only=whole_tokens)
         if not predicate or snippet_term is None:
             return []
         where = [f"({predicate})"]
         _search_filter_clauses(where, params, **filters)
         order = "ASC" if isinstance(sort, str) and sort.strip().lower() == "oldest" else "DESC"
-        return self._like_rows(where, [snippet_term, *params, limit, offset],
-                               order_by=f"ORDER BY m.timestamp {order}, m.id {order}", limit_sql="LIMIT ? OFFSET ?")
+        order_by = f"ORDER BY m.timestamp {order}, m.id {order}"
+        if whole_tokens:
+            return self._like_rows_whole_tokens(groups, where, [snippet_term, *params], order_by, limit, offset)
+        return self._like_rows(where, [snippet_term, *params, limit, offset], order_by=order_by,
+                               limit_sql="LIMIT ? OFFSET ?")
+
+    def _like_rows_whole_tokens(
+        self, groups: list[list[tuple[str, bool, bool]]], where: list[str], params: list, order_by: str,
+        limit: int, offset: int) -> list[dict[str, Any]]:
+        """Page over LIKE candidates that pass the token check. The check has to run before paging, or a
+        row holding only a longer token (``x128`` for ``x12``) would use up a page slot."""
+        matchers = [[(_like_token_pattern(term, prefix), negated) for term, negated, prefix in group]
+                    for group in groups]
+        sql = _search_select_sql(f"{_LIKE_SNIPPET_SQL}, m.content AS raw_content, m.tool_calls AS raw_tool_calls",
+                                 "messages m", where, order_by, "LIMIT ? OFFSET ?")
+        hits: list[dict[str, Any]] = []
+        skip = offset
+        scanned = 0
+        while True:
+            rows = self._read_all(sql, [*params, _LIKE_TOKEN_SCAN_BATCH, scanned])
+            for row in map(dict, rows):
+                # All three indexed columns, as ``_LIKE_COALESCED_COLUMN_SQL`` searches them.
+                text = "\n".join(str(value) for value in (row.pop("raw_content"), row["tool_name"],
+                                                          row.pop("raw_tool_calls")) if value)
+                if not any(all(bool(pattern.search(text)) != negated for pattern, negated in group)
+                           for group in matchers):
+                    continue
+                if skip:
+                    skip -= 1
+                    continue
+                hits.append(row)
+                if len(hits) >= limit:
+                    return hits
+            if len(rows) < _LIKE_TOKEN_SCAN_BATCH:
+                return hits
+            scanned += len(rows)
 
     def _refresh_fts_stale_state(self) -> None:
         """Observe fail-open initiated by another process sharing state.db."""
@@ -1306,7 +1365,8 @@ class SessionSearchMixin:
             return self._finalize_search_matches(matches, result_fields=result_fields)
         self._refresh_fts_stale_state()
         if self._fts_stale:
-            matches = self._search_messages_like_fallback(query, limit=limit, offset=offset, sort=sort, **filters)
+            matches = self._search_messages_like_fallback(query, limit=limit, offset=offset, sort=sort,
+                                                          whole_tokens=True, **filters)
             return self._finalize_search_matches(matches, result_fields=result_fields)
         if not self._fts_enabled:
             return []
@@ -1335,7 +1395,8 @@ class SessionSearchMixin:
                 # stale-open/repair paths retain rebuild ownership.
                 if not self._enter_fts_fail_open(exc):
                     raise
-                matches = self._search_messages_like_fallback(query, limit=limit, offset=offset, sort=sort, **filters)
+                matches = self._search_messages_like_fallback(query, limit=limit, offset=offset, sort=sort,
+                                                              whole_tokens=True, **filters)
 
         # Deferred-rebuild supplement: while the backfill is pending the FTS indexes miss
         # the (progress, high_water] gap; top up with a bounded LIKE scan so old messages
