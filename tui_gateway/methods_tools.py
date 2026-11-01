@@ -1447,17 +1447,13 @@ def _(rid, params: dict) -> dict:
     mcp_catalog = _tools_mod("hermes_cli.mcp_catalog")
     out = []
     for entry in mcp_catalog.list_catalog():
-        try:
-            requires = [str(k) for k in (getattr(entry, "env_keys", None) or [])]
-        except Exception:
-            requires = []
-        transport = getattr(entry, "transport", None)  # TransportSpec → its kind string
         out.append({
             "name": entry.name, "description": getattr(entry, "description", "") or "",
             "connector_slug": getattr(entry, "connector_slug", None),
             "installed": bool(mcp_catalog.is_installed(entry.name)),
-            "enabled": bool(mcp_catalog.is_enabled(entry.name)), "requires": requires,
-            "transport": str(getattr(transport, "kind", "") or transport or "stdio")})
+            "enabled": bool(mcp_catalog.is_enabled(entry.name)),
+            "requires": [env.name for env in entry.auth.env if env.required],
+            "transport": entry.transport.type})
     return _ok(rid, {"servers": out})
 
 
