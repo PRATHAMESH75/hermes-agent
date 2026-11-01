@@ -8,6 +8,8 @@ from typing import Optional
 
 # Prefix a caller uses in ``extra_env`` to force a blocklisted var through.
 _HERMES_PROVIDER_ENV_FORCE_PREFIX = "_HERMES_FORCE_"
+# Shape of ``hermes_cli.config.custom_endpoint_key_env`` names: ``HERMES_CUSTOM[_<SLUG>]_API_KEY``.
+_CUSTOM_ENDPOINT_KEY_PREFIX, _CUSTOM_ENDPOINT_KEY_SUFFIX = "HERMES_CUSTOM_", "_API_KEY"
 
 # Hermes-managed AWS *inference* credentials for ``auth_type="aws_sdk"`` (Bedrock):
 # only the Bedrock bearer token, which no aws/terraform/boto3 toolchain uses. The
@@ -182,6 +184,11 @@ def _is_provider_env_blocklisted(name: str, _registered: frozenset | None = None
     ``_registered`` so the registry is read once per env, not once per key."""
     upper = name.upper()
     if name in _HERMES_PROVIDER_ENV_BLOCKLIST or upper in _HERMES_PROVIDER_ENV_BLOCKLIST:
+        return True
+    # Custom-endpoint keys live under names Hermes mints per endpoint
+    # (``hermes_cli.config.custom_endpoint_key_env``), so no registry can enumerate them (#147329).
+    # Provider tier, not ``_is_hermes_internal_secret``: an inheriting child still drives the endpoint.
+    if upper.startswith(_CUSTOM_ENDPOINT_KEY_PREFIX) and upper.endswith(_CUSTOM_ENDPOINT_KEY_SUFFIX):
         return True
     return upper in (_registered_adapter_secret_env() if _registered is None else _registered)
 
