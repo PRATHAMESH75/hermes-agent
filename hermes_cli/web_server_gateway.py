@@ -2,6 +2,7 @@
 subprocess spawning, gateway restart plumbing, system platform display.
 """
 
+import contextlib
 import logging
 import json
 import os
@@ -362,6 +363,24 @@ def _is_host_gateway_spawn(subcommand: list[str]) -> bool:
     return bool(args) and args[0] == "gateway"
 
 
+@contextlib.contextmanager
+def _target_secret_scope(target_home: Path):
+    """Bind the secret scope of the profile a detached action runs for: its own ``.env`` + sources,
+    or the launch scope when it is this process's own home (systemd / ``op run`` injection)."""
+    from agent.secret_scope import build_profile_secret_scope, reset_secret_scope, set_secret_scope
+    from hermes_constants import get_process_hermes_home
+    from tui_gateway.launch_profile_policy import launch_secret_scope
+
+    is_launch_home = target_home.resolve() == get_process_hermes_home().resolve()
+    token = set_secret_scope(
+        launch_secret_scope(target_home) if is_launch_home else build_profile_secret_scope(target_home),
+        profile_home=None if is_launch_home else str(target_home))
+    try:
+        yield
+    finally:
+        reset_secret_scope(token)
+
+
 def _profile_action_environment(
     subcommand: list[str], env_overrides: Optional[dict[str, str]] = None,
 ) -> dict[str, str]:
@@ -396,7 +415,11 @@ def _profile_action_environment(
         from tools.environments.local import build_subprocess_env, strip_launch_profile_env
 
         target_home = _resolve_profile_dir(profile)
-        action_env = build_subprocess_env(base=os.environ, scrub_secrets=True)
+        # This request binds no secret scope, and an unscoped env_passthrough read fails closed
+        # under multiplexing (#147694). Passthrough values come from the target's scope, so a
+        # sibling profile's child never borrows the launch profile's injected secrets.
+        with _target_secret_scope(target_home):
+            action_env = build_subprocess_env(base=os.environ, scrub_secrets=True)
 
         profile_keys = set(_PROFILE_MANAGED_ENV_KEYS)
         try:
