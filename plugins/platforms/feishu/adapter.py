@@ -2005,7 +2005,7 @@ class FeishuAdapter(BasePlatformAdapter):
                 logger.warning("[Feishu] Failed to get chat info for %s: [%s] %s", chat_id, code, msg)
                 return fallback
             data = getattr(response, "data", None)
-            raw_chat_type = str(getattr(data, "chat_type", "") or "").strip().lower()
+            raw_chat_type = str(getattr(data, "chat_mode", "") or "").strip().lower()  # chat_type is private/public
             info = {
                 "chat_id": chat_id, "name": str(getattr(data, "name", None) or chat_id),
                 "type": self._map_chat_type(raw_chat_type), "raw_type": raw_chat_type or None,
