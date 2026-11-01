@@ -205,11 +205,11 @@ class StormInfo(NamedTuple):
 def record_start_and_check_storm(
     max_starts: int = 5, window_s: float = 120.0, *, backoff_cap_s: float = 300.0
 ) -> Optional[StormInfo]:
-    """Record this start; :class:`StormInfo` when > ``max_starts`` landed in ``window_s``.
-    Best-effort: a broken ``gateway-starts.log`` ledger is logged and swallowed, never fatal."""
+    """Record this start; :class:`StormInfo` when > ``max_starts`` landed in ``window_s``. Never fatal: a
+    ``gateway-starts.log`` that cannot be written still lets the count it already holds decide."""
+    storm = None
     try:
         path = get_hermes_home() / "gateway-starts.log"
-        make_user_dir(path.parent, parents=True, exist_ok=True)
         now = datetime.now(UTC).timestamp()
         existing: list[float] = []
         if path.exists():
@@ -223,18 +223,17 @@ def record_start_and_check_storm(
                     pass  # corrupt/truncated ledger line — skip, never fatal
         existing.append(now)
         recent = [ts for ts in existing if now - ts <= window_s]
+        if len(recent) > max_starts:
+            storm = StormInfo(len(recent), window_s, min(backoff_cap_s, 5.0 * (2 ** min(len(recent) - max_starts, 6))))
         # Ring-buffer the persisted file so it stays bounded.
         to_write = existing[-max(max_starts * 4, 40):]
+        make_user_dir(path.parent, parents=True, exist_ok=True)
         tmp = path.with_suffix(".tmp")
         tmp.write_text("\n".join(repr(ts) for ts in to_write) + "\n", encoding="utf-8")
         os.replace(tmp, path)
-        if len(recent) <= max_starts:
-            return None
-        backoff = min(backoff_cap_s, 5.0 * (2 ** min(len(recent) - max_starts, 6)))
-        return StormInfo(count=len(recent), window_s=window_s, backoff_s=backoff)
     except Exception as _e:
-        logger.debug("respawn-storm breaker bookkeeping failed (non-fatal): %s", _e)
-        return None
+        logger.warning("Could not update the respawn-storm start ledger; this start goes uncounted: %s", _e)
+    return storm
 
 
 def _get_process_hermes_home() -> Path:
