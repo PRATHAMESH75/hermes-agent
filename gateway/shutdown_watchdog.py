@@ -356,19 +356,24 @@ async def loop_heartbeat_forever(
     require the witness to agree before classifying WEDGED."""
     interval = _coerce_float(interval_s, DEFAULT_HEARTBEAT_INTERVAL_S, floor=1.0)
     # The witness exposes only a scheduling ping, not control/auth operations. Reuse its
-    # loopback transport when AF_UNIX is unavailable or the encoded address will not fit;
+    # loopback transport when AF_UNIX is unavailable, refused by the home, or the address will not fit;
     # consumers already discover this port in the heartbeat, independent of their TMPDIR.
     from gateway.control_socket import _fits_sun_path
     tick_server = tick_socket_path = tick_tcp_port = None
     try:
         unix_path = get_loop_tick_socket_path(home) if os.name == "posix" else None
         if unix_path is not None and _fits_sun_path(unix_path):
-            tick_socket_path = unix_path
-            tick_socket_path.parent.mkdir(parents=True, exist_ok=True)
-            _sweep_stale_tick_sockets(tick_socket_path)
-            tick_server = await asyncio.start_unix_server(_tick_socket_handler,
-                                                          path=str(tick_socket_path))
-        else:
+            unix_path.parent.mkdir(parents=True, exist_ok=True)
+            _sweep_stale_tick_sockets(unix_path)
+            try:
+                tick_server = await asyncio.start_unix_server(_tick_socket_handler, path=str(unix_path))
+                tick_socket_path = unix_path
+            except OSError as exc:
+                # A short path can still sit on a filesystem that refuses AF_UNIX nodes (9p/drvfs,
+                # virtiofs: #146919). Without a witness a wedged loop would never escalate.
+                logger.info("Loop tick socket refused in %s (%s); witnessing over loopback TCP",
+                            unix_path.parent, exc.strerror or exc)
+        if tick_server is None:
             tick_server = await asyncio.start_server(_tick_socket_handler, host="127.0.0.1", port=0)
             for _s in tick_server.sockets or []:
                 with contextlib.suppress(Exception):
