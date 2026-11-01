@@ -2149,31 +2149,31 @@ def _dispatch_lane_task(
         claimed.skills = list(dict.fromkeys([*(claimed.skills or []), "sdlc-review"]))
     try:
         pid = _call_spawn_fn(spawn_fn if spawn_fn is not None else _default_spawn, claimed, str(workspace), board)
-        if pid:
-            _set_worker_pid(conn, claimed.id, int(pid), run_id=claimed.current_run_id, claim_lock=claimed.claim_lock)
-        # Fires AFTER the PID (when reported) is durably persisted. Best-effort.
-        _kb._fire_worker_spawned_hook(conn, claimed, str(workspace), pid, board=board)
-        # consecutive_failures is deliberately NOT reset here: resetting on
-        # spawn would let a task that keeps timing out loop forever. Cleared
-        # only on successful completion (complete_task).
-        result.spawned.append((claimed.id, claimed.assignee or "", str(workspace)))
-        _count_spawn(claimed.assignee)
-        return True
-    except Exception as exc:
+    except Exception as exc:  # health: allow BLE001 -- nothing is running yet; any spawn_fn failure is booked on the card
         from tools.process_registry import RestartSafeScopeUnavailable
-
-        # The host refused the spawn (no restart-safe scope): nothing about the
-        # card ran, so it must not spend the card's retry budget (#114720).
+        # The host refused the spawn: nothing about the card ran, so it spends no retry budget (#114720).
         infrastructure = isinstance(exc, RestartSafeScopeUnavailable)
         if infrastructure:
             _kb._log.warning("kanban dispatcher: spawn of %s deferred, host cannot place the worker: %s", claimed.id, exc)
         if _record_task_failure(
-            conn, claimed.id, str(exc),
-            outcome="spawn_failed", failure_limit=failure_limit, release_claim=True, end_run=True,
-            infrastructure=infrastructure,
+            conn, claimed.id, str(exc), outcome="spawn_failed", failure_limit=failure_limit,
+            release_claim=True, end_run=True, infrastructure=infrastructure,
         ):
             result.auto_blocked.append(claimed.id)
         return False
+    # The worker runs from here on: a bookkeeping failure must not release the claim beside it (the next
+    # tick would spawn a second one). It publishes a missing pid itself (adopt_worker_pid). Hook after the pid.
+    try:
+        if pid:
+            _set_worker_pid(conn, claimed.id, int(pid), run_id=claimed.current_run_id, claim_lock=claimed.claim_lock)
+        _kb._fire_worker_spawned_hook(conn, claimed, str(workspace), pid, board=board)
+    except Exception:  # health: allow BLE001 -- the worker is already running, so any failure here holds the claim
+        _kb._log.warning("kanban dispatcher: %s spawned as pid %s, bookkeeping failed, claim held", claimed.id, pid, exc_info=True)
+    # consecutive_failures is deliberately NOT reset here: resetting on spawn would let a task that
+    # keeps timing out loop forever. Cleared only on successful completion (complete_task).
+    result.spawned.append((claimed.id, claimed.assignee or "", str(workspace)))
+    _count_spawn(claimed.assignee)
+    return True
 
 
 def _apply_default_assignee(
