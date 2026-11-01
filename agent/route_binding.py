@@ -93,6 +93,17 @@ def bind_route_entry(agent: Any, entry: dict[str, Any], provider: str, model: st
     return old_model, old_provider
 
 
+def settle_fallback_route(agent: Any, provider: str) -> None:
+    """Refresh what the rest of the turn reads off a just-activated fallback route. The runtime main
+    was published at turn start for the primary; left alone, ``vision_analyze``'s native gate and
+    ``auto`` auxiliary routing keep answering for a route that is no longer serving the turn (#147539)."""
+    from agent.native_compaction import resolve_native_compaction_capabilities
+    from agent.turn_context import _publish_runtime_main
+    agent.runtime_capabilities = resolve_native_compaction_capabilities(
+        model=agent.model, base_url=agent.base_url, provider=provider, is_codex_backend=provider == "openai-codex")
+    _publish_runtime_main(agent)
+
+
 def reinstall_runtime_snapshot(agent: Any, rt: dict[str, Any]) -> None:
     """Put ``agent`` on the runtime recorded in ``rt`` (a ``_primary_runtime``-shaped snapshot):
     identity, client, caching flags, compressor, reasoning and prompt identity. Credential pool

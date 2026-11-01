@@ -2100,9 +2100,8 @@ def try_activate_fallback(agent, reason: FailoverReason | None = None, reset_at=
             # The stale-call streak measured the OLD provider; carrying it over would
             # short-circuit the fresh fallback before its first stream attempt.
             _reset_stale_streak(agent)
-            from agent.native_compaction import resolve_native_compaction_capabilities
-            agent.runtime_capabilities = resolve_native_compaction_capabilities(
-                model=agent.model, base_url=agent.base_url, provider=fb_provider, is_codex_backend=fb_provider == "openai-codex")
+            from agent.route_binding import settle_fallback_route
+            settle_fallback_route(agent, fb_provider)
             return True
         except Exception as e:
             if fb_provider == "nous":

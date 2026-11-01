@@ -14,12 +14,15 @@ import hermes_yaml as yaml
 @pytest.fixture
 def actual_endpoint(monkeypatch):
     from agent.auxiliary_client import (
+        clear_runtime_main,
         shutdown_cached_clients,
         _reset_aux_unhealthy_cache,
     )
 
     shutdown_cached_clients()
     _reset_aux_unhealthy_cache()
+    # A fallback activated outside a turn's scoped_runtime_main stays published in this context.
+    clear_runtime_main()
     requests = []
     resolve_address = socket.getaddrinfo
 
@@ -515,11 +518,11 @@ def test_actual_setup_keeps_provider_settings_in_yaml(
     setup._model_flow_api_key_provider(config_module.load_config(), "actual")
 
     expected_url = override if override.startswith("http://") else configured_url
-    saved = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    saved = yaml.safe_load(config_path.read_text(encoding="utf-8-sig"))
     assert saved["model"]["provider"] == "actual"
     assert saved["model"]["base_url"] == expected_url
     assert saved["model"]["default"] == "test-model"
-    assert env_path.read_text(encoding="utf-8") == "ACTUAL_API_KEY=actual-test-key\n"
+    assert env_path.read_text(encoding="utf-8-sig") == "ACTUAL_API_KEY=actual-test-key\n"
     assert get_provider_profile("actual").env_vars == ("ACTUAL_API_KEY",)
     assert "ACTUAL_BASE_URL" not in config_module.OPTIONAL_ENV_VARS
     assert "ACTUAL_API_MODE" not in config_module.OPTIONAL_ENV_VARS
