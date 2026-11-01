@@ -155,6 +155,21 @@ The shape needs `boundElements` listing the text, and the text needs `containerI
 
 `fixedPoint` coordinates: `top=[0.5,0]`, `bottom=[0.5,1]`, `left=[0,0.5]`, `right=[1,0.5]`
 
+A binding does not place the arrow, and it only follows a shape that lists it. A bound arrow needs both:
+
+1. **Its own geometry.** Keep `x`, `y`, `width`, `height` and `points`, computed from the attachment points so the arrow starts on one shape and ends on the other:
+   - `attach_x = shape.x + fixedPoint[0] * shape.width`
+   - `attach_y = shape.y + fixedPoint[1] * shape.height`
+   - The arrow's `x`, `y` is the start attachment; the last entry of `points` is the end attachment minus that start.
+2. **An entry in each bound shape's `boundElements`.** Without it the arrow stays behind when the shape is dragged. Keep any bound text entry alongside it:
+
+```json
+{ "type": "rectangle", "id": "r1", "x": 100, "y": 100, "width": 200, "height": 100,
+  "boundElements": [{ "id": "t_r1", "type": "text" }, { "id": "a1", "type": "arrow" }] }
+```
+
+With that `r1` and the arrow's `fixedPoint: [1, 0.5]`, the start attachment is `x=300, y=150`, which matches the arrow's `x` and `y`.
+
 ### Drawing Order (z-order)
 - Array order = z-order (first = back, last = front)
 - Emit progressively: background zones → shape → its bound text → its arrows → next shape
