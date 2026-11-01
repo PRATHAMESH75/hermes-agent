@@ -669,6 +669,26 @@ function liveLaneForRepo(repoRoot: string, session: SessionInfo): null | Sidebar
 }
 
 const NO_REMOVED: ReadonlySet<string> = new Set()
+const NO_PATHS: readonly string[] = []
+
+/** Drop `session` from every lane except `keep`; true when a row was removed. */
+function evictSession(lanes: SidebarSessionGroup[], session: SessionInfo, keep?: SidebarSessionGroup): boolean {
+  const isSame = sameConversationAs(session)
+  let evicted = false
+
+  for (const g of lanes) {
+    if (g !== keep) {
+      const idx = g.sessions.findIndex(isSame)
+
+      if (idx >= 0) {
+        g.sessions = [...g.sessions.slice(0, idx), ...g.sessions.slice(idx + 1)]
+        evicted = true
+      }
+    }
+  }
+
+  return evicted
+}
 
 /**
  * Reconcile ONE repo's lanes against the live `$sessions` cache: evict
@@ -676,14 +696,18 @@ const NO_REMOVED: ReadonlySet<string> = new Set()
  * mutates exactly like the flat Recents list. The backend snapshot stays the
  * datasource for structure and off-page history; this is the optimistic layer
  * on top (Apollo-style), reconciled away on the next snapshot refresh. Returns
- * the same repo ref when nothing changes (memo-stable).
+ * the same repo ref when nothing changes (memo-stable). `projectRepoPaths` lists
+ * the project's folders: a session under a folder nested in this repo belongs
+ * to that folder's repo alone, as the backend files it.
  */
 export function overlayRepoLanes(
   repo: SidebarWorkspaceTree,
   live: SessionInfo[],
-  removed: ReadonlySet<string> = NO_REMOVED
+  removed: ReadonlySet<string> = NO_REMOVED,
+  projectRepoPaths: readonly string[] = NO_PATHS
 ): SidebarWorkspaceTree {
   const repoRootKey = pathKey(repo.path)
+  const nestedRepoPaths = projectRepoPaths.filter(p => pathKey(p) !== repoRootKey && isPathUnder(repo.path ?? '', p))
   let changed = false
   // Lanes that arrived with no rows are not eviction casualties — they're real
   // structure (a `git worktree list` lane, or one whose sessions are pinned
@@ -707,6 +731,12 @@ export function overlayRepoLanes(
     const sessionPath = livePathForRepo(repo.path ?? '', session)
 
     if (removed.has(session.id) || !sessionPath) {
+      continue
+    }
+
+    if (nestedRepoPaths.some(p => isPathUnder(p, sessionPath))) {
+      changed = evictSession(lanes, session) || changed
+
       continue
     }
 
@@ -776,19 +806,7 @@ export function overlayRepoLanes(
     // new worktree — the overlay places it into the worktree lane, but without
     // this eviction the stale main-lane entry persists and the session appears
     // under both groups until the next backend tree refresh).
-    const isSame = sameConversationAs(session)
-
-    for (const g of lanes) {
-      if (g !== lane) {
-        const idx = g.sessions.findIndex(isSame)
-
-        if (idx >= 0) {
-          g.sessions = [...g.sessions.slice(0, idx), ...g.sessions.slice(idx + 1)]
-          changed = true
-        }
-      }
-    }
-
+    evictSession(lanes, session, lane)
     lane.sessions = upsertSession(lane.sessions, session)
     changed = true
   }
@@ -926,8 +944,10 @@ export function overlayLiveLanes(
     return !owner || owner === project.id
   })
 
+  const repoPaths = project.repos.flatMap(repo => (repo.path ? [repo.path] : []))
+
   const repos = project.repos.map(repo => {
-    const next = overlayRepoLanes(repo, projectLive, removed)
+    const next = overlayRepoLanes(repo, projectLive, removed, repoPaths)
 
     changed ||= next !== repo
 

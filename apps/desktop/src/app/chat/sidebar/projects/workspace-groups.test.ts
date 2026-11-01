@@ -660,6 +660,50 @@ describe('sessionProjectColor', () => {
 })
 
 describe('overlayLiveLanes', () => {
+  describe('a project whose folders nest', () => {
+    const umbrella = '/work/project'
+    const nested = '/work/project/lane-a'
+
+    const repoAt = (path: string, sessions: SessionInfo[] = []) => ({
+      id: path,
+      label: path,
+      path,
+      sessionCount: sessions.length,
+      groups: [lane({ id: `${path}::branch::main`, label: 'main', isMain: true, path, sessions })]
+    })
+
+    const idsByRepo = (project: SidebarProjectTree) =>
+      Object.fromEntries(
+        project.repos.map(repo => [repo.path, repo.groups.flatMap(group => group.sessions.map(s => s.id))])
+      )
+
+    it('files a session under its deepest folder only', () => {
+      const project = projectNode({ id: 'p', path: umbrella, repos: [repoAt(umbrella), repoAt(nested)] })
+      const session = makeCwdSession(`${nested}/src`, { id: 'deep' })
+
+      expect(idsByRepo(overlayLiveLanes(project, [session]))).toEqual({ [umbrella]: [], [nested]: ['deep'] })
+    })
+
+    it('still files a session outside the nested folder under the umbrella', () => {
+      const project = projectNode({ id: 'p', path: umbrella, repos: [repoAt(umbrella), repoAt(nested)] })
+      const session = makeCwdSession(`${umbrella}/lane-b`, { id: 'shallow' })
+
+      expect(idsByRepo(overlayLiveLanes(project, [session]))).toEqual({ [umbrella]: ['shallow'], [nested]: [] })
+    })
+
+    it('moves a session out of the umbrella when its cwd enters the nested folder', () => {
+      const stale = makeCwdSession(umbrella, { id: 'moved' })
+      const project = projectNode({ id: 'p', path: umbrella, repos: [repoAt(umbrella, [stale]), repoAt(nested)] })
+      const moved = makeCwdSession(nested, { id: 'moved' })
+
+      const overlaid = overlayLiveLanes(project, [moved])
+
+      expect(idsByRepo(overlaid)[nested]).toEqual(['moved'])
+      expect(idsByRepo(overlaid)[umbrella]).toEqual([])
+      expect(overlaid.sessionCount).toBe(1)
+    })
+  })
+
   // Issue layout: explicit "work" (/work) + explicit "app" (/work/repos/app);
   // the session's cwd is the SIBLING linked worktree /work/repos/app-2, which
   // the backend's git common-root probe assigns to "app" while the renderer's

@@ -47,6 +47,8 @@ export function EnteredProjectContent({
   liveSessions?: SessionInfo[]
   removedSessionIds?: ReadonlySet<string>
 }) {
+  const repoPaths = useMemo(() => project.repos.flatMap(repo => (repo.path ? [repo.path] : [])), [project.repos])
+
   if (!project.repos.length) {
     return null
   }
@@ -71,6 +73,7 @@ export function EnteredProjectContent({
           removedSessionIds={removedSessionIds}
           renderRows={renderRows}
           repo={repo}
+          repoPaths={repoPaths}
           showHeader={!single}
         />
       ))}
@@ -101,6 +104,7 @@ function HomeSessions({
 
 function RepoFlatSection({
   repo,
+  repoPaths,
   showHeader,
   renderRows,
   onNewSession,
@@ -110,6 +114,7 @@ function RepoFlatSection({
   removedSessionIds
 }: {
   repo: SidebarWorkspaceTree
+  repoPaths: readonly string[]
   showHeader: boolean
   renderRows: (sessions: SessionInfo[]) => React.ReactNode
   onNewSession?: (path: null | string) => void
@@ -137,10 +142,15 @@ function RepoFlatSection({
       return mergedGroups
     }
 
-    const { groups } = overlayRepoLanes({ ...repo, groups: mergedGroups }, liveSessions ?? [], removedSessionIds)
+    const { groups } = overlayRepoLanes(
+      { ...repo, groups: mergedGroups },
+      liveSessions ?? [],
+      removedSessionIds,
+      repoPaths
+    )
 
     return mergeRepoWorktreeGroups({ id: repo.id, path: repo.path, groups }, discoveredWorktrees)
-  }, [repo, mergedGroups, discoveredWorktrees, liveSessions, removedSessionIds])
+  }, [repo, repoPaths, mergedGroups, discoveredWorktrees, liveSessions, removedSessionIds])
 
   const discoveredWorktreePaths = useMemo(
     () =>
