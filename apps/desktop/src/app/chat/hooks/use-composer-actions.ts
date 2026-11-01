@@ -21,6 +21,7 @@ import {
   updateComposerAttachment
 } from '@/store/composer'
 import { notify, notifyError, readableError } from '@/store/notifications'
+import { $messagingSessions, $selectedStoredSessionId, sessionMatchesStoredId } from '@/store/session'
 
 import type { ImageDetachResponse } from '../../types'
 
@@ -440,13 +441,15 @@ interface ComposerActionsOptions {
   currentCwd: string
   requestGateway: <T>(method: string, params?: Record<string, unknown>) => Promise<T>
   scope?: ComposerActionsScope
+  storedSessionId?: string
 }
 
 export function useComposerActions({
   activeSessionId,
   currentCwd,
   requestGateway,
-  scope = MAIN_ACTIONS_SCOPE
+  scope = MAIN_ACTIONS_SCOPE,
+  storedSessionId
 }: ComposerActionsOptions) {
   const { t } = useI18n()
   const copy = t.desktop
@@ -752,13 +755,21 @@ export function useComposerActions({
    * Hermes-managed composer-pastes file via the main process, then attached
    * through the same `@file:` pipeline as a manually attached text file.
    * Returns false (paste stays inline) when the desktop bridge is missing
-   * or the write fails.
+   * or the write fails, and in a messaging session: `file.attach` only stages
+   * for local sessions, so its chip could never upload (permission_denied).
    */
   const attachPastedText = useCallback(
     async (text: string) => {
       const save = window.hermesDesktop?.savePastedText
 
       if (!text || !save) {
+        return false
+      }
+
+      // A tile names its session; the main composer follows the selection.
+      const stored = storedSessionId ?? $selectedStoredSessionId.get()
+
+      if (stored && $messagingSessions.get().some(s => sessionMatchesStoredId(s, stored))) {
         return false
       }
 
@@ -786,7 +797,7 @@ export function useComposerActions({
         return false
       }
     },
-    [attachToMain, copy.pasteAttachFailed, copy.pastedContent, currentCwd]
+    [attachToMain, copy.pasteAttachFailed, copy.pastedContent, currentCwd, storedSessionId]
   )
 
   const attachContextFolderPath = useCallback(

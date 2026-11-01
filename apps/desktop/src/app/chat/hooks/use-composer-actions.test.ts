@@ -2,7 +2,8 @@ import { act, renderHook, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { $composerAttachments, type ComposerAttachment, updateComposerAttachment } from '@/store/composer'
-import { $connection } from '@/store/session'
+import { $connection, $messagingSessions, $selectedStoredSessionId } from '@/store/session'
+import type { SessionInfo } from '@/types/hermes'
 
 import { droppedFileInlineRefs } from '../composer/inline-refs'
 
@@ -508,6 +509,54 @@ describe('useComposerActions generated paste title metadata', () => {
         titlePreview: pasted.slice(0, 1_000)
       })
     )
+  })
+
+  describe('large paste by session kind (#146730)', () => {
+    const paste = (storedSessionId?: string) => {
+      const savePastedText = vi.fn(async () => '/tmp/composer-pastes/pasted-content.txt')
+      Object.defineProperty(window, 'hermesDesktop', { configurable: true, value: { savePastedText } })
+
+      const { result } = renderHook(() =>
+        useComposerActions({ activeSessionId: 'runtime-1', currentCwd: '/test', requestGateway: vi.fn(), storedSessionId })
+      )
+
+      return { attached: result.current.attachPastedText('x'.repeat(4_000)), savePastedText }
+    }
+
+    afterEach(() => {
+      $messagingSessions.set([])
+      $selectedStoredSessionId.set(null)
+    })
+
+    it('stays inline in a messaging session, whose file.attach can only refuse', async () => {
+      $messagingSessions.set([{ _lineage_root_id: 'discord-root', id: 'discord-tip', source: 'discord' } as SessionInfo])
+
+      const { attached, savePastedText } = paste('discord-root')
+
+      await expect(attached).resolves.toBe(false)
+      expect(savePastedText).not.toHaveBeenCalled()
+      expect($composerAttachments.get()).toEqual([])
+    })
+
+    it('reads the selected session in the main composer, which names none', async () => {
+      $messagingSessions.set([{ id: 'discord-tip', source: 'discord' } as SessionInfo])
+      $selectedStoredSessionId.set('discord-tip')
+
+      const { attached, savePastedText } = paste()
+
+      await expect(attached).resolves.toBe(false)
+      expect(savePastedText).not.toHaveBeenCalled()
+    })
+
+    it('still becomes a chip in a local session while messaging sessions are listed', async () => {
+      $messagingSessions.set([{ id: 'discord-tip', source: 'discord' } as SessionInfo])
+
+      const { attached, savePastedText } = paste('local-session')
+
+      await expect(attached).resolves.toBe(true)
+      expect(savePastedText).toHaveBeenCalledOnce()
+      $composerAttachments.set([])
+    })
   })
 })
 
