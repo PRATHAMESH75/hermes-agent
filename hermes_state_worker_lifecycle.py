@@ -227,14 +227,17 @@ def insert_session_row_in_transaction(
     if not (profile_name or "").strip():
         profile_name = self._own_profile_name()
     system_prompt_hash = self._store_system_prompt(conn, system_prompt)
+    # A branch's copied rows keep the parent's old timestamps, and recency is the freshest of those and
+    # last_activity_at: without its own stamp the new row sorts among the parent's history (#146712).
+    started_at = time.time()
     conn.execute(
         """INSERT INTO sessions (
            id, source, created_source, user_id, session_key, chat_id, chat_type, thread_id,
            model, model_config, system_prompt, system_prompt_hash,
            parent_session_id, cwd, profile_name, transport_profile, git_repo_root,
-           origin_json, display_name, started_at
+           origin_json, display_name, started_at, last_activity_at
         )
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
            ON CONFLICT(id) DO UPDATE SET
                source = CASE
                    WHEN sessions.source = 'unknown'
@@ -276,7 +279,7 @@ def insert_session_row_in_transaction(
             session_id, source, source, user_id, session_key, chat_id, chat_type, thread_id, model,
             json.dumps(model_config) if model_config else None, system_prompt_hash,
             parent_session_id, cwd, profile_name, transport_profile, git_repo_root, origin_json,
-            display_name, time.time(),
+            display_name, started_at, started_at if "_branched_from" in (model_config or {}) else None,
         ),
     )
     if system_prompt_hash is not None:

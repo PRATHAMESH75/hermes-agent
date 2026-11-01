@@ -344,6 +344,9 @@ class SessionCompressionMixin:
         # that NULL; auxiliary usage must not write ``unknown`` into it first.
         from gateway.session_policy import created_surface
         created_source = created_surface(parent["created_source"]) or created_surface(source)
+        # A branch's copied rows keep the parent's old timestamps, and recency is the freshest of those
+        # and last_activity_at: without its own stamp the new row sorts among the parent's history (#146712).
+        started_at = time.time()
         # The child continues the parent's tools[] pin (the compaction refresh re-pinned it just
         # before publish), or its first hop to another surface re-derives the array.
         conn.execute(
@@ -352,9 +355,9 @@ class SessionCompressionMixin:
                    system_prompt_hash, tool_names,
                    parent_session_id, cwd, git_branch, git_repo_root,
                    profile_name, user_id, session_key, chat_id, chat_type,
-                   thread_id, display_name, origin_json, pinned, started_at,
+                   thread_id, display_name, origin_json, pinned, started_at, last_activity_at,
                    archived, auto_archived
-                ) VALUES (?, ?, ?, ?, ?, NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                ) VALUES (?, ?, ?, ?, ?, NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (
                 child_session_id, source, created_source, model, json.dumps(model_config) if model_config else None,
                 system_prompt_hash, parent["tool_names"], parent_session_id, cwd or parent["cwd"], parent["git_branch"],
@@ -363,7 +366,8 @@ class SessionCompressionMixin:
                 parent["user_id"], parent["session_key"], parent["chat_id"], parent["chat_type"],
                 parent["thread_id"], parent["display_name"], parent["origin_json"],
                 # The pin is lineage-wide (set_session_pinned); a segment published after it joins it.
-                int(parent["pinned"] or 0) if continuation else 0, time.time(),
+                int(parent["pinned"] or 0) if continuation else 0, started_at,
+                started_at if "_branched_from" in (model_config or {}) else None,
                 # Inherit the lineage's archive state so a manually archived chat stays uniformly
                 # archived (a mixed lineage let the sweep re-stamp its fresh tip as auto-archived).
                 (parent["archived"] or 0) if continuation else 0,
