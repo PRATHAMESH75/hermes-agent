@@ -469,7 +469,7 @@ class SessionPortabilityMixin:
                 return False
             # First end_reason wins in end_session(); reopen so the adoption boundary is
             # stamped even on ended segments.
-            donor_db.reopen_session(seg_id)
+            donor_db.reopen_session(seg_id, drop_compression_boundary=True)
             donor_db.end_session(seg_id, "adopted_by_profile")
             # The session lives on in the adopting profile: not a delete for plugins.
             donor_db.set_session_archived(seg_id, True, notify=False)
