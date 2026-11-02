@@ -3,12 +3,12 @@ import { useEffect, useState } from 'react'
 
 import { useCanonicalGroupLabels } from './canonical-group-labels'
 import { CanonicalGroupRow } from './canonical-group-row'
-import { canonicalGroupRequest, captureCanonicalGroupRoute, discoverCanonicalGroups } from './canonical-groups'
+import { canonicalGroupRequest, captureCanonicalGroupRoute, createCanonicalGroup, discoverCanonicalGroups } from './canonical-groups'
 import type { CanonicalGroupBinding, CanonicalGroupRoute, CanonicalRoom } from './canonical-groups'
 import { closeGroupChatMainTab } from './group-panes'
 
 export const $canonicalGroupBindings = atom<Record<string, CanonicalGroupBinding>>({})
-// Bumped when a room leaves outside the list's own Refresh, so the sidebar re-reads `groups.list`.
+// Bumped when a room arrives or leaves outside the list's own Refresh, so the sidebar re-reads `groups.list`.
 const $canonicalGroupListRevision = atom(0)
 
 /** Drop a disbanded room's key and every alias to it, then re-read the sidebar list. */
@@ -16,6 +16,16 @@ export function forgetCanonicalGroup({ connectionId, profile, roomId }: Canonica
   $canonicalGroupBindings.set(Object.fromEntries(Object.entries($canonicalGroupBindings.get()).filter(([, binding]) =>
     binding.connectionId !== connectionId || binding.profile !== profile || binding.roomId !== roomId)))
   $canonicalGroupListRevision.set($canonicalGroupListRevision.get() + 1)
+}
+
+/** Create a room on `route`, then re-read the sidebar list, which otherwise reads `groups.list` only once per route. */
+export async function createListedCanonicalGroup(
+  ...args: Parameters<typeof createCanonicalGroup>
+): ReturnType<typeof createCanonicalGroup> {
+  const created = await createCanonicalGroup(...args)
+  $canonicalGroupListRevision.set($canonicalGroupListRevision.get() + 1)
+
+  return created
 }
 
 export function registerCanonicalGroup(route: CanonicalGroupRoute, room: CanonicalRoom): string {

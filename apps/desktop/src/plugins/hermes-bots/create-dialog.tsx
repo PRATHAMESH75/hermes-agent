@@ -51,9 +51,9 @@ import {
   useGroupCapability
 } from './canonical-group-capabilities'
 import type { GroupCapabilityState } from './canonical-group-capabilities'
-import { registerCanonicalGroup } from './canonical-group-registry'
+import { createListedCanonicalGroup, registerCanonicalGroup } from './canonical-group-registry'
 import type { CanonicalGroupOrigin } from './canonical-group-registry'
-import { canonicalGroupRequest, createCanonicalGroup } from './canonical-groups'
+import { canonicalGroupRequest } from './canonical-groups'
 import type { CanonicalGroupRoute } from './canonical-groups'
 import { $botMeta, botHandle, botRosterKey, filterBots, ROSTER_KEY, saveBotMeta } from './data'
 import { labeled, ResizableFrame } from './dialog-parts'
@@ -1347,7 +1347,7 @@ export function CreateGroupChatDialog({ open, roster, onClose, onCreated }: Crea
         throw new Error(b.canonical.driverUnavailable)
       }
 
-      const created = await createCanonicalGroup(route, base, durableGroupChatMembers(selected))
+      const created = await createListedCanonicalGroup(route, base, durableGroupChatMembers(selected))
 
       // Creation already succeeded; leave it on its owner without adopting a stale result.
       if (!sourceCurrent()) {return}

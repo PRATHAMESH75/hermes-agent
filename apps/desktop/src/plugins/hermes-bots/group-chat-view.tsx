@@ -47,12 +47,13 @@ import {
   $canonicalGroupBindings,
   canonicalGroupBindingFor,
   canonicalGroupKeyRoute,
+  createListedCanonicalGroup,
   publishCanonicalGroup,
   registerCanonicalGroup,
   resolveCanonicalGroup
 } from './canonical-group-registry'
 import { CanonicalGroupWorkspace } from './canonical-group-workspace'
-import { canonicalGroupRequest, createCanonicalGroup } from './canonical-groups'
+import { canonicalGroupRequest } from './canonical-groups'
 import {
   $botMeta,
   $lastRoster,
@@ -689,7 +690,7 @@ function GroupExecutionGate(props: GroupChatWorkspaceProps) {
       }
 
       setBusy(true)
-      void createCanonicalGroup(route, props.group, props.members)
+      void createListedCanonicalGroup(route, props.group, props.members)
         .then(({ room }) => {
           if (sourceCurrent()) {openGroupChat(registerCanonicalGroup(route, room), 'key')}
         })
