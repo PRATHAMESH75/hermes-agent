@@ -115,7 +115,7 @@ class TestHeadedLaunch:
             def poll(self):
                 return 1
 
-        def capture_spawn(argv, env, user_data_dir):
+        def capture_spawn(argv, env, user_data_dir, liveness=None):
             captured.append(argv)
             return _Proc()
 

@@ -12,7 +12,9 @@ A pid means something only inside the PID namespace and boot that wrote it (a ``
 container gateway and a host CLI): every record, lease and throwaway-dir name carries the writer's
 :func:`ns_identity`, and one from another namespace or boot, or one lacking it, is never judged dead. A lease is
 keyed by the record of the browser it holds, whichever namespace wrote that record; only its holder part carries
-the lease writer's tag, so a launcher finds every holder whatever namespace it attached from.
+the lease writer's tag, so a launcher finds every holder whatever namespace it attached from. What does prove
+another namespace's browser gone is a lock the kernel holds: a launch leaves a ``.alive`` file beside its record
+whose shared ``flock`` the browser inherits, so it drops with the browser, whatever happened to the container.
 
 Every decision runs under the records dir's lock: a lease written while another process decides cannot be
 missed. Siblings late-import the facade (its ``_pid_alive`` / ``_start_time`` are the patched seams).
@@ -23,6 +25,7 @@ from __future__ import annotations
 import contextlib
 import errno
 import functools
+import glob
 import hashlib
 import json
 import logging
@@ -184,6 +187,98 @@ def other_live_holders(record: Path, browser_start_time) -> list[dict]:
             continue
         holders.append(lease)
     return holders
+
+
+def open_liveness(records: Path) -> Optional[tuple[int, Path]]:
+    """``(fd, path)`` of a new file under a shared ``flock``, for a browser about to launch to inherit ``fd``: the
+    lock then lives exactly as long as that browser. None where it cannot be had (Windows, no ``flock`` there)."""
+    if os.name == "nt":
+        return None
+    import fcntl  # windows-footgun: ok — POSIX only (nt returned above)
+    path = records / f".starting-{os.getpid()}-{time.monotonic_ns()}.alive"
+    try:
+        fd = os.open(path, os.O_RDWR | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0), 0o600)
+    except OSError:
+        return None
+    try:
+        fcntl.flock(fd, fcntl.LOCK_SH | fcntl.LOCK_NB)
+    except OSError:
+        os.close(fd)
+        path.unlink(missing_ok=True)
+        return None
+    return fd, path
+
+
+def _liveness_path(record: Path) -> Path:
+    return record.with_suffix(".alive")
+
+
+def bind_liveness(liveness: Optional[tuple[int, Path]], record: Optional[Path]) -> Optional[tuple[int, Path]]:
+    """Move a launch's liveness file beside its launch record, whose name carries the pid."""
+    if liveness is None or record is None:
+        return liveness
+    fd, path = liveness
+    try:
+        path.rename(_liveness_path(record))
+    except OSError as exc:
+        logger.debug("browser: could not bind the liveness lock of %s: %s", record.name, exc)
+        return liveness
+    return fd, _liveness_path(record)
+
+
+def settle_liveness(liveness: Optional[tuple[int, Path]]) -> None:
+    """Drop the launcher's own copy of the lock. A file nobody else holds proves nothing (the launch failed, or the
+    executable is a wrapper that closes inherited fds), so it goes: its record then counts as one without proof."""
+    if liveness is None:
+        return
+    fd, path = liveness
+    os.close(fd)
+    if _flock_free(path):
+        path.unlink(missing_ok=True)
+
+
+def _flock_free(path: Path) -> bool:
+    import fcntl  # windows-footgun: ok — POSIX only (open_liveness makes no such file on nt)
+    fd = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError:
+        return False
+    finally:
+        os.close(fd)
+    return True
+
+
+def liveness_released(record: Path) -> Optional[bool]:
+    """Whether the browser ``record`` names let go of its liveness lock; None when the launch left no such file
+    (written by an older Hermes, or the browser did not keep the fd). An unreadable file is not proof of anything."""
+    try:
+        return _flock_free(_liveness_path(record))
+    except FileNotFoundError:
+        return None
+    except OSError:
+        return False
+
+
+def same_boot(data: dict) -> bool:
+    """A record written under this kernel: only there is a free ``flock`` proof (a share to a VM does not carry it)."""
+    here, theirs = ns_identity(), data.get("ns")
+    return isinstance(here, str) and isinstance(theirs, str) and here.rpartition(":")[2] == theirs.rpartition(":")[2]
+
+
+def forget_launch(record: Path) -> None:
+    """Remove every trace of a launch whose browser is gone (caller holds :func:`records_lock`)."""
+    for lease in record.parent.glob(f"{glob.escape(record.stem)}@*.lease"):
+        lease.unlink(missing_ok=True)
+    _liveness_path(record).unlink(missing_ok=True)
+    record.unlink(missing_ok=True)
+
+
+def drop_orphan_liveness(records: Path) -> None:
+    """Liveness files whose launch record is gone (caller holds :func:`records_lock`, which a launch holds too)."""
+    for path in records.glob("*.alive"):
+        if not path.with_suffix(".json").exists():
+            path.unlink(missing_ok=True)
 
 
 def drop_dead_leases(records: Path) -> None:

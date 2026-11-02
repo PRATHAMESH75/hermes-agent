@@ -286,7 +286,7 @@ class TestRealProfileCdpLaunch:
             def wait(self, timeout=None):
                 return 0
 
-        def fake_spawn(argv, env, user_data_dir):
+        def fake_spawn(argv, env, user_data_dir, liveness=None):
             captured["argv"] = argv
             (copy_dir / "DevToolsActivePort").write_text("41000\n/devtools/browser/x\n", encoding="utf-8")
             return FakeChrome()
@@ -307,7 +307,7 @@ class TestRealProfileCdpLaunch:
         assert "--headless=new" in argv
         assert "--password-store=basic" not in argv and "--use-mock-keychain" not in argv
         assert not set(launcher.CHROMIUM_SANDBOX_BYPASS_ARGS) & set(argv)
-        assert (copy_dir / "Default" / "Cookies").read_text(encoding="utf-8") == "copied-cookies"
+        assert (copy_dir / "Default" / "Cookies").read_text(encoding="utf-8-sig") == "copied-cookies"
         running = launcher.get_browser(rp.real_profile_key())
         assert running is not None and running.owned and not running.ephemeral
 

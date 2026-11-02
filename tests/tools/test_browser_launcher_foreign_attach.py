@@ -64,7 +64,7 @@ def test_a_reachable_browser_from_another_environment_is_attached_and_never_stop
     theirs = _start_fake(script, udd)
     try:
         _relock(udd, _OTHER_HOST, _dead_pid())  # its pid in the container names nobody here
-        port_file = (udd / "DevToolsActivePort").read_text()
+        port_file = (udd / "DevToolsActivePort").read_text(encoding="utf-8-sig")
 
         browser, err = launcher.launch_chromium(key, executable=str(script), user_data_dir=str(udd),
                                                 ephemeral=False, headed=False, env=dict(os.environ), timeout=30)
@@ -73,7 +73,7 @@ def test_a_reachable_browser_from_another_environment_is_attached_and_never_stop
         port, path = port_file.split()
         assert browser.cdp_url == f"ws://127.0.0.1:{port}{path}"
         assert pids(udd, "spawns") == [theirs.pid], "a second Chromium was started on the held profile"
-        assert (udd / "DevToolsActivePort").read_text() == port_file
+        assert (udd / "DevToolsActivePort").read_text(encoding="utf-8-sig") == port_file
         state = launcher._shared_state_dir(str(udd))
         assert list(state.glob("*.lease")), "attached without a lease"
         assert launcher.get_browser(key) is browser
@@ -82,7 +82,7 @@ def test_a_reachable_browser_from_another_environment_is_attached_and_never_stop
         assert launcher.reap_orphaned_browsers() == 0
         assert theirs.poll() is None, "stopped a browser another environment holds"
         assert not list(state.glob("*.lease"))
-        assert (udd / "DevToolsActivePort").read_text() == port_file
+        assert (udd / "DevToolsActivePort").read_text(encoding="utf-8-sig") == port_file
     finally:
         kill_fake(theirs.pid, script)
         theirs.wait(timeout=10)
@@ -109,6 +109,7 @@ def test_an_attached_browser_from_another_environment_is_dropped_once_its_endpoi
 @pytest.mark.live_system_guard_bypass  # a wrongly started second browser is ours to stop
 @pytest.mark.parametrize("evidence", ["other-hostname", "other-namespace-record"])
 def test_an_unreachable_browser_from_another_environment_is_an_error_not_a_second_launch(tmp_path, evidence):
+    fcntl = pytest.importorskip("fcntl")
     script = write_fake_chromium(tmp_path / "chromium")
     udd, key = tmp_path / "pinned-profile", f"profile:{tmp_path / 'pinned-profile'}"
     udd.mkdir()
@@ -117,12 +118,17 @@ def test_an_unreachable_browser_from_another_environment_is_an_error_not_a_secon
     closed.bind(("127.0.0.1", 0))
     port_file = f"{closed.getsockname()[1]}\n/devtools/browser/elsewhere\n"
     closed.close()  # its DevTools port is the container's loopback: nothing answers here
-    (udd / "DevToolsActivePort").write_text(port_file)
+    (udd / "DevToolsActivePort").write_text(port_file, encoding="utf-8")
     if evidence == "other-hostname":
         _relock(udd, _OTHER_HOST, pid)
     else:
         _relock(udd, socket.gethostname(), pid)  # same hostname (--uts=host), another pid namespace
         _foreign_launch_record(udd, pid)
+    state = launcher._shared_state_dir(str(udd))
+    # The browser in that namespace holds its launch's liveness lock: it is alive, just out of reach from here.
+    held = os.open(state / f"{launcher._profile_digest(str(udd))[:16]}-{pid}-nffffffffffff.alive",
+                   os.O_RDWR | os.O_CREAT, 0o600)
+    fcntl.flock(held, fcntl.LOCK_SH)
 
     try:
         browser, err = launcher.launch_chromium(key, executable=str(script), user_data_dir=str(udd),
@@ -131,9 +137,10 @@ def test_an_unreachable_browser_from_another_environment_is_an_error_not_a_secon
         assert browser is None
         assert str(udd) in err and "another environment" in err
         assert pids(udd, "spawns") == [], "a second Chromium was started on a profile another environment holds"
-        assert (udd / "DevToolsActivePort").read_text() == port_file
+        assert (udd / "DevToolsActivePort").read_text(encoding="utf-8-sig") == port_file
         assert os.readlink(udd / "SingletonLock").endswith(f"-{pid}")
     finally:
+        os.close(held)
         launcher.stop_browser(key)
         for spawned in pids(udd, "spawns"):
             kill_fake(spawned, script)

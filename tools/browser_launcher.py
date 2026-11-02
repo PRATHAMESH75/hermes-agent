@@ -334,18 +334,59 @@ def _foreign_record_names(user_data_dir: str, pid: int) -> bool:
     """A launch record from another PID namespace names ``pid`` as shared profile ``user_data_dir``'s browser: the one
     serving the profile's DevTools endpoint now, or one not yet up there (its record has no endpoint). An earlier
     launch there that reached another endpoint is not that browser, whatever pid number it had."""
-    from tools.browser_launcher_holders import same_namespace
     state = _shared_state_dir(user_data_dir)
-    if state is None:
-        return False
+    return state is not None and bool(_foreign_records(state, user_data_dir, pid))
+
+
+def _foreign_records(state: Path, user_data_dir: str, pid: int) -> list[tuple[Path, dict]]:
+    from tools.browser_launcher_holders import same_namespace
     found = _read_devtools_file(user_data_dir)
+    matches = []
     for name in _record_names(state, user_data_dir, pid):
         record = _load_record(state / name)
         if (record is not None and record.get("pid") == pid and not same_namespace(record)
                 and _same_profile(record.get("user_data_dir"), user_data_dir)
                 and record.get("devtools") in (None, found and found[1])):
-            return True
-    return False
+            matches.append((state / name, record))
+    return matches
+
+
+def _foreign_launch_gone(path: Path, record: dict, user_data_dir: str, host: str) -> bool:
+    """The browser another namespace's launch record names is proven gone: its liveness lock is free under this
+    kernel. A free lock of another boot is no proof (that kernel may be a VM behind a share that does not carry
+    ``flock``), so that and a record with no lock file (an older Hermes) fall back to what a pinned hostname can
+    show: nothing here runs on the profile and nothing answers on its endpoint."""
+    from tools import browser_launcher_holders as holders
+    released = holders.liveness_released(path)
+    if released is False:
+        return False
+    if released and holders.same_boot(record):
+        return True
+    if host != socket.gethostname() or _browser_running_on(user_data_dir):
+        return False
+    found = _read_devtools_file(user_data_dir)
+    return found is None or not _devtools_endpoint_live(*found)
+
+
+def _retire_dead_foreign_launch(state: Optional[Path], user_data_dir: str) -> None:
+    """Records of earlier containers are kept, so one existing proves a browser ran there once, not that it runs now.
+    When the ``SingletonLock``'s browser is proven gone (a recreated container, a reboot) its records and the lock
+    go, under any hostname: Chromium would refuse another hostname's lock. Caller holds the profile's lock."""
+    owner = _singleton_owner(user_data_dir)
+    if state is None or owner is None:
+        return
+    host, pid = owner
+    if _pid_alive(pid) and _cmdline_names_dir(pid, user_data_dir):
+        return
+    records = _foreign_records(state, user_data_dir, pid)
+    if not records or not all(_foreign_launch_gone(path, record, user_data_dir, host) for path, record in records):
+        return
+    from tools.browser_launcher_holders import forget_launch
+    for path, _ in records:
+        forget_launch(path)
+    for name in ("SingletonLock", "SingletonCookie", "SingletonSocket"):
+        Path(user_data_dir, name).unlink(missing_ok=True)
+    logger.info("browser: cleared the stale lock of a gone browser (pid %s there) on %s", pid, user_data_dir)
 
 
 def _record_names(records: Path, user_data_dir: str, pid) -> list[str]:
@@ -427,11 +468,13 @@ def _prepare_dir(user_data_dir: str, ephemeral: bool) -> None:
         pass
 
 
-def _spawn(argv: list[str], env: dict, user_data_dir: str) -> subprocess.Popen:
+def _spawn(argv: list[str], env: dict, user_data_dir: str, liveness: Optional[tuple[int, Path]] = None) -> subprocess.Popen:
     log_path = os.path.join(user_data_dir, _LAUNCH_LOG)
+    kwargs = _spawn_kwargs()
+    if liveness is not None:
+        kwargs["pass_fds"] = (liveness[0],)
     with open(log_path, "wb") as log:
-        return subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=log, stderr=log, env=env,
-                                **_spawn_kwargs())
+        return subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=log, stderr=log, env=env, **kwargs)
 
 
 def _attach_running(key: str, user_data_dir: str, home_key: str) -> Optional[LaunchedBrowser]:
@@ -535,6 +578,7 @@ def _start_shared(key: str, executable: str, udd: str, home_key: str, prepare,
     from tools import browser_launcher_holders as holders
     state = _shared_state_dir(udd)
     with holders.records_lock(state) if state is not None else contextlib.nullcontext():
+        _retire_dead_foreign_launch(state, udd)
         foreign = _foreign_holder(udd)
         if foreign is not None:
             attached = _attach_foreign(key, udd, home_key, foreign)
@@ -612,9 +656,13 @@ def _launch_owned(key: str, executable: str, udd: str, *, ephemeral: bool, packa
         return None, f"Could not create the browser profile directory {udd}: {exc}"
     argv = build_chromium_argv(executable, udd, packaged=packaged, headed=_resolve_headed(headed, env),
                                sandbox_bypass=sandbox_bypass, extra_args=extra_args)
+    from tools import browser_launcher_holders as holders
+    state = None if ephemeral else _shared_state_dir(udd)
+    liveness = holders.open_liveness(state) if state is not None else None
     try:
-        proc = _spawn(argv, env, udd)
+        proc = _spawn(argv, env, udd, liveness)
     except (OSError, subprocess.SubprocessError) as exc:
+        holders.settle_liveness(liveness)
         return None, f"Failed to launch Chromium ({executable}): {exc}"
     start_time = _start_time(proc.pid)
     starting = _make_browser(key, 0, "", pid=proc.pid, start_time=start_time, user_data_dir=udd, owned=True,
@@ -625,11 +673,14 @@ def _launch_owned(key: str, executable: str, udd: str, *, ephemeral: bool, packa
     with _lock:
         _launching[proc.pid] = starting
     _write_record(starting)
+    liveness = holders.bind_liveness(liveness, _record_path(starting))
     try:
         found, err = _wait_for_devtools(proc, udd, time.monotonic() + _launch_timeout(timeout))
     except BaseException:  # interrupted (Ctrl-C, shutdown): nobody else knows this browser exists
         _abandon_launch(proc, starting)
         raise
+    finally:
+        holders.settle_liveness(liveness)
     if found is None:
         _abandon_launch(proc, starting)
         return None, err
@@ -1091,6 +1142,7 @@ def _reap_state_dir(records: Path, home: Optional[str]) -> int:
             return 0
         reaped = sum(1 for path in paths if _reap_record(path, home))
         holders.drop_dead_leases(records)
+        holders.drop_orphan_liveness(records)
     return reaped
 
 
