@@ -352,7 +352,8 @@ def stale_channel_records(config: Optional[dict]) -> list[tuple[str, dict, str]]
       new record claimed it; this one is a leftover).
     * ``"missing"``  — nothing at the recorded path: offer GC (keep-on-doubt).
     * ``"unclaimed"`` — the sha16 matches no live install record
-      (``installs/<sha16>/install.json``): offer GC.
+      (``installs/<sha16>/facts.json``, or the ``install.json`` marker older
+      installs left behind): offer GC.
     """
     stale: list[tuple[str, dict, str]] = []
     for sha16, record in _install_records(config).items():
@@ -373,10 +374,13 @@ def stale_channel_records(config: Optional[dict]) -> list[tuple[str, dict, str]]
                 continue
 
         # Cross-check against the live install-state records: a channel
-        # record whose sha16 has no installs/<sha16>/install.json was
-        # either hand-written or its install never booted post-record.
+        # record whose sha16 has no installs/<sha16>/facts.json was either
+        # hand-written or its install never booted post-record. PM provisioning
+        # writes facts.json; nothing writes install.json since 1686e54d4f5, but
+        # the installs that got one before then are still real.
         try:
-            if not (installs_root() / sha16 / "install.json").is_file():
+            state = installs_root() / sha16
+            if not any((state / name).is_file() for name in ("facts.json", "install.json")):
                 stale.append((sha16, record, "unclaimed"))
         except Exception as exc:
             logger.debug("installs root unavailable: %s", exc)
