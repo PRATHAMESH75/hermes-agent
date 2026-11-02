@@ -179,6 +179,72 @@ class TestUnfurlDuringInflightMessage:
         assert len(delivered) == 1
 
 
+class TestUnfurlBeforeOriginal:
+    """Slack can deliver the unfurl's ``message_changed`` ahead of the plain ``message``."""
+
+    def test_original_after_unfurl_does_not_create_second_turn(self):
+        delivered = []
+        adapter = _make_adapter(delivered)
+        adapter._resolve_user_name = AsyncMock(return_value="richard")
+
+        async def scenario():
+            await adapter._handle_slack_message(_unfurl_event(), _body())
+            await adapter._handle_slack_message(_original_event(), _body())
+
+        asyncio.run(scenario())
+        assert len(delivered) == 1
+
+    def test_original_arriving_mid_flight_does_not_create_second_turn(self):
+        delivered = []
+        adapter = _make_adapter(delivered)
+        release = asyncio.Event()
+        entered = asyncio.Event()
+
+        async def _parked_user_name_resolve(*a, **k):
+            entered.set()
+            await release.wait()
+            return "richard"
+
+        adapter._resolve_user_name = _parked_user_name_resolve
+
+        async def scenario():
+            first = asyncio.create_task(adapter._handle_slack_message(_unfurl_event(), _body()))
+            await asyncio.wait_for(entered.wait(), timeout=2.0)
+            await asyncio.wait_for(adapter._handle_slack_message(_original_event(), _body()), timeout=5.0)
+            release.set()
+            await asyncio.wait_for(first, timeout=5.0)
+
+        asyncio.run(scenario())
+        assert len(delivered) == 1
+
+    def test_original_still_delivers_when_the_unfurl_copy_failed(self):
+        delivered = []
+        adapter = _make_adapter(delivered)
+        adapter._resolve_user_name = AsyncMock(side_effect=[RuntimeError("slack api died"), "richard"])
+
+        async def scenario():
+            with pytest.raises(RuntimeError):
+                await adapter._handle_slack_message(_unfurl_event(), _body())
+            await adapter._handle_slack_message(_original_event(), _body())
+
+        asyncio.run(scenario())
+        assert len(delivered) == 1
+
+    def test_same_ts_in_another_workspace_is_unaffected(self):
+        delivered = []
+        adapter = _make_adapter(delivered)
+        adapter._resolve_user_name = AsyncMock(return_value="richard")
+        other_team = _original_event()
+        other_team["team"] = "T0OTHER"
+
+        async def scenario():
+            await adapter._handle_slack_message(_unfurl_event(), _body())
+            await adapter._handle_slack_message(other_team, {"team_id": "T0OTHER"})
+
+        asyncio.run(scenario())
+        assert len(delivered) == 2
+
+
 class TestClaimDoesNotSwallowRealMessages:
     def test_a_different_message_is_unaffected(self):
         """Claiming one ts must not suppress an unrelated message."""

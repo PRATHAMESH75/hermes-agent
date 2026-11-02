@@ -4427,6 +4427,14 @@ class SlackAdapter(BasePlatformAdapter):
         self._reacting_message_ids.add(self._workspace_message_marker(team_id, ts))
         self._evict_oldest_by_ts(self._reacting_message_ids, self._REACTING_MESSAGE_IDS_MAX)
 
+    def _changed_original_dedup_id(self, event: Optional[dict], payload: Optional[dict]) -> str:
+        """The dedup id of the plain ``message`` event a ``message_changed`` envelope edits, or ""."""
+        inner = (event or {}).get("message")
+        if (event or {}).get("subtype") != "message_changed" or not isinstance(inner, dict):
+            return ""
+        ts = str(inner.get("ts") or "")
+        return self._workspace_event_id(self._event_team_id({**event, **inner}, payload), ts) if ts else ""
+
     async def _handle_slack_message(self, event: dict, payload: Optional[dict] = None) -> None:
         """Guard around :meth:`_handle_slack_message_impl`: the impl claims the ts early (no second
         turn from a mid-flight unfurl); if THIS call newly claimed it and raises, release the claim
@@ -4435,9 +4443,13 @@ class SlackAdapter(BasePlatformAdapter):
         # getattr: bare test doubles (object.__new__) may lack the map.
         _claims = getattr(self, "_processed_message_ts", None)
         _was_claimed = bool(_ts) and _claims is not None and _ts in _claims
+        _original_id = self._changed_original_dedup_id(event, payload)
+        _original_seen = bool(_original_id) and self._dedup.contains(_original_id)
         try:
             return await self._handle_slack_message_impl(event, payload)
         except BaseException:
+            if _original_id and not _original_seen:
+                self._dedup.discard(_original_id)
             _claims = getattr(self, "_processed_message_ts", None)
             if _ts and not _was_claimed and _claims is not None and _ts in _claims:
                 _claims.pop(_ts, None)
@@ -4655,6 +4667,10 @@ class SlackAdapter(BasePlatformAdapter):
         _claim_ts = str(event.get("ts") or "")
         if _claim_ts:
             self._remember_processed_message_ts(_claim_ts)
+            # The edit can beat its original: the original's own event then finds this ts in `_dedup`
+            # instead of becoming a second turn.
+            if event.get("_slack_changed_event_ts"):
+                self._dedup.is_duplicate(self._workspace_event_id(dedup_team_id, _claim_ts))
         if is_mentioned:
             text, original_text, command_probe_text, is_command_text = self._apply_bot_mention(
                 text, original_text, command_probe_text, is_command_text, bot_uid, thread_ts,
