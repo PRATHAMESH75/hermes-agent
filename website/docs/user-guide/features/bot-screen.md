@@ -198,7 +198,11 @@ The guard is the panel layout file
 while it exists the launcher leaves the panel alone, so changing
 `browser.executable_path` or `browser.user_data_dir` and restarting the
 screen does not re-pin the Browser icon. Delete that file and the dock is
-rebuilt on the next `screen start` from whatever is installed then.
+rebuilt on the next `screen start` from whatever is installed then. When the
+screen lives inside a sandbox, the same layout (with your wallpaper, theme and
+other Xfce settings) is under `~/.hermes/bot-desktop/xdg/` in the desktop user's
+home there, so it survives a screen restart. It survives losing the container
+only if that home is on a mounted volume.
 
 Which Chromium the dock and the bot use: an explicit
 `browser.executable_path` wins; otherwise Hermes uses the PM-managed

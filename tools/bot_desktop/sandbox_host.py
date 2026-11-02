@@ -5,6 +5,7 @@ gateway host and this module via ``placement()``; callers keep using ``runtime.s
 
 Layout inside the sandbox, under ``<sandbox tmp>/hermes-bot-desktop/<profile>/``: ``launcher.sh`` (copied in
 at start), ``env`` (published DISPLAY/XAUTHORITY/DBUS), ``rfb.sock`` (Xvnc's unix socket), ``launcher.pid``.
+That directory is wiped on every start; Xfce's settings live in ``desktop_config_dir()`` instead.
 Host-side state under ``<HERMES_HOME>/bot-desktop/``: ``sandbox.json`` = ``{"env_key": ..., "display": ...}``
 so status() knows which terminal environment owns the screen without re-deriving it.
 
@@ -136,6 +137,12 @@ def browser_profile_dir(env: Any) -> str:
     return f"{desktop_home(env).rstrip('/')}/.hermes/bot-desktop/browser-profile"
 
 
+def desktop_config_dir(env: Any) -> str:
+    """Xfce's ``XDG_CONFIG_HOME`` inside the sandbox, beside the browser profile: settings a human makes on
+    the screen must outlive ``start()``'s wipe of the runtime dir, as they do under gateway placement."""
+    return f"{desktop_home(env).rstrip('/')}/.hermes/bot-desktop/xdg"
+
+
 _CHROMIUM_PROBE = (
     'for d in "${PLAYWRIGHT_BROWSERS_PATH:-}" /opt/playwright "$HOME/.cache/ms-playwright"; do'
     ' [ -n "$d" ] || continue;'
@@ -243,8 +250,12 @@ def start(env: Any, profile: str, *, geometry: str, wait_seconds: float = 20.0,
     user = _user_for(env)
     launcher = (Path(__file__).with_name("launcher.sh").read_bytes())
     wallpaper = Path(__file__).with_name("wallpaper.png").read_bytes()
+    config_home = desktop_config_dir(env)
+    q_config_home = shlex.quote(config_home)
     seed = (
-        f"set -e; rm -rf {shlex.quote(rdir)}; mkdir -p {shlex.quote(rdir)}; cd {shlex.quote(rdir)};"
+        # The runtime dir's 0700 no longer covers the settings, so they get their own.
+        f"set -e; mkdir -p {q_config_home}; chmod 0700 {q_config_home};"
+        f" rm -rf {shlex.quote(rdir)}; mkdir -p {shlex.quote(rdir)}; cd {shlex.quote(rdir)};"
         f" echo {shlex.quote(base64.b64encode(launcher).decode())} | base64 -d > launcher.sh;"
         f" echo {shlex.quote(base64.b64encode(wallpaper).decode())} | base64 -d > wallpaper.png;"
         " chmod 0700 . launcher.sh"
@@ -256,7 +267,7 @@ def start(env: Any, profile: str, *, geometry: str, wait_seconds: float = 20.0,
     child_env = {
         "HERMES_BD_PROFILE": profile, "HERMES_BD_DISPLAY_NUM": str(num), "HERMES_BD_SOCKET": f"{rdir}/rfb.sock",
         "HERMES_BD_XAUTH": f"{rdir}/Xauthority", "HERMES_BD_ENV_FILE": f"{rdir}/env",
-        "HERMES_BD_CONFIG_HOME": f"{rdir}/xdg", "HERMES_BD_GEOMETRY": geometry, "HERMES_BD_WALLPAPER": f"{rdir}/wallpaper.png",
+        "HERMES_BD_CONFIG_HOME": config_home, "HERMES_BD_GEOMETRY": geometry, "HERMES_BD_WALLPAPER": f"{rdir}/wallpaper.png",
     }
     if browser_exec and browser_exec_line:
         child_env["HERMES_BD_BROWSER_EXEC"] = browser_exec
