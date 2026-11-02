@@ -579,6 +579,22 @@ from hermes_cli._early_recovery import recover_if_needed
 
 from hermes_cli._parser import command_argv
 
+
+def _activation_failure_message(step: str, exc: Exception) -> str:
+    """The only line a failed launch leaves, often in a worker's log: which step failed, at which call,
+    and a remedy that fits. Python names the path on a file operation, so a fileless ENOENT comes from a
+    cwd lookup (``os.getcwd``, resolving a relative path), which no dependency rebuild can fix."""
+    import traceback
+
+    frames = traceback.extract_tb(exc.__traceback__)
+    frame = next((f for f in reversed(frames) if f.filename.startswith(str(_root))), frames[-1])
+    where = f"{frame.filename}:{frame.lineno} in {frame.name}"
+    if isinstance(exc, FileNotFoundError) and not exc.filename:
+        return (f"hermes: {step} failed: {exc} (at {where}); no path is named, so the working directory "
+                "has probably been deleted: rerun from an existing directory")
+    return f"hermes: {step} failed: {exc} (at {where}); run `hermes pm repair`"
+
+
 # Repair needs only stdlib. Do not activate the damaged tree to reach it.
 _pm_repair = command_argv(sys.argv[1:])[:2] == ["pm", "repair"]
 if not _pm_repair:
@@ -608,15 +624,17 @@ if not _pm_repair:
         print(f"hermes: source-update completion failed: {exc}; "
               "running with the previous dependencies — run `hermes update` to finish it",
               file=sys.stderr)
+    _activation_step = "startup recovery"
     try:
         recover_if_needed(_root)
+        _activation_step = "dependency activation"
         activate_dependencies(_root)
     except (RuntimeError, OSError) as exc:
         if isinstance(exc, PermissionError) and (message := install_state_permission_message(_root, exc)):
             print(f"hermes: {message}", file=sys.stderr)
             raise SystemExit(1) from None
         if command_argv(sys.argv[1:])[:1] != ["pm"]:
-            print(f"hermes: {exc}; run `hermes pm repair`", file=sys.stderr)
+            print(_activation_failure_message(_activation_step, exc), file=sys.stderr)
             raise SystemExit(1) from None
 install_happy_eyeballs_socket_connect()
 export_scratch_tmp_env()
