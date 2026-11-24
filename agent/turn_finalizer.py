@@ -904,9 +904,10 @@ def finalize_turn(
     )
 
     # Opt-in (compression.prepare_ahead): near the trigger, write the next compaction summary
-    # between turns. No-op otherwise; never raises. Not after a vetoed turn (no model calls).
+    # between turns. No-op otherwise; never raises. Not after a vetoed turn (no model calls), nor after a
+    # stopped one: Stop cancels the turn's pending pass and must not start a fresh summary request.
     from agent.prepared_compaction import maybe_prepare
-    if not vetoed:
+    if not vetoed and not interrupted:
         maybe_prepare(agent, messages, origin="turn-end")
 
     # Memory provider on_session_end()/shutdown_all() are NOT called here:
