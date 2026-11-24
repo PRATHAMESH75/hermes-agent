@@ -43,10 +43,21 @@ export function splitSessionRefValue(raw: string): { trailing: string; value: st
   return { trailing: raw.slice(value.length), value }
 }
 
+/** Profile names and session ids never contain a fence character, so one left
+ *  after unwrapping is an unbalanced fence still being typed or pasted. */
+const FENCE_CHAR_RE = /[`"']/
+
 /** Session ids never contain a slash, so a slash unambiguously means
- *  `<profile>/<id>` — same split as `tools/session_search_tool.py`. */
+ *  `<profile>/<id>` — same split as `tools/session_search_tool.py`. A fenced
+ *  value is unwrapped first; an unbalanced fence is not a reference yet (empty
+ *  `sessionId`), so no consumer looks up a profile like `` `default ``. */
 export function parseSessionRefValue(value: string): { profile?: string; sessionId: string } {
-  const trimmed = value.trim()
+  const trimmed = (unwrapQuotes(value.trim()) ?? value).trim()
+
+  if (FENCE_CHAR_RE.test(trimmed)) {
+    return { sessionId: '' }
+  }
+
   const slash = trimmed.indexOf('/')
 
   if (slash === -1) {

@@ -22,6 +22,24 @@ describe('parseSessionRefValue', () => {
   it('treats bare values as session ids', () => {
     expect(parseSessionRefValue('20260101_abc123')).toEqual({ sessionId: '20260101_abc123' })
   })
+
+  it('unwraps a balanced fence before splitting', () => {
+    expect(parseSessionRefValue('`default/local-ea9efab3`')).toEqual({
+      profile: 'default',
+      sessionId: 'local-ea9efab3'
+    })
+    expect(parseSessionRefValue('"default/local-ea9efab3"')).toEqual({
+      profile: 'default',
+      sessionId: 'local-ea9efab3'
+    })
+  })
+
+  it('is not a reference while a fence is unbalanced', () => {
+    for (const partial of ['`default/local-ea9e', '"default/local-ea9e', 'default/local-ea9e"', "'local-ea9e"]) {
+      expect(parseSessionRefValue(partial).sessionId).toBe('')
+      expect(sessionRefCacheKey(partial)).toBe('')
+    }
+  })
 })
 
 describe('sessionRefFallbackLabel', () => {
